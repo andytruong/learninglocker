@@ -2,23 +2,27 @@
 
 use Site;
 
-class EloquentSiteRepository implements SiteRepository {
-
-  public function all(){
+class EloquentSiteRepository implements SiteRepository
+{
+  public function all()
+  {
     return Site::get()->first();
   }
 
-  public function find($id){
+  public function find($id)
+  {
     return Site::find($id);
   }
 
-  public function validate($data){
+  public function validate($data)
+  {
     $site = new Site;
+
     return $site->validate( $data );
   }
 
-  public function create( $data ){
-
+  public function create($data)
+  {
     $site            = new Site;
     $site->name        = $data['name'];
     $site->description = $data['description'];
@@ -31,11 +35,11 @@ class EloquentSiteRepository implements SiteRepository {
     $site->save();
 
     return $site;
-    
+
   }
 
-  public function update($id, $data){
-
+  public function update($id, $data)
+  {
     $site = $this->find( $id );
     $site->name        = $data['name'];
     $site->description = $data['description'];
@@ -43,27 +47,31 @@ class EloquentSiteRepository implements SiteRepository {
     $site->create_lrs  = $data['create_lrs'];
     $site->registration = $data['registration'];
     $site->domain      = $data['domain']; //restrict registration to a specific email domain
+
     return $site->save();
 
   }
 
-  public function delete($id){
-    
+  public function delete($id)
+  {
     $site = $this->find($id);
+
     return $site->delete();
   }
 
-  public function verifyUser( $user_id ){
+  public function verifyUser($user_id)
+  {
     //check user exists
     $user = \User::find( $user_id );
-    if( $user ){
-      if( $user->verified == 'yes' ){
+    if ($user) {
+      if ($user->verified == 'yes') {
         $user->verified = 'no';
-      }else{
+      } else {
         $user->verified = 'yes';
       }
       $user->save();
     }
+
     return $user->verified;
 
   }

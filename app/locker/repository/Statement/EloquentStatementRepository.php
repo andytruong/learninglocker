@@ -5,8 +5,8 @@ use Statement;
 use Locker\Repository\Activity\ActivityRepository as Activity;
 use Locker\Repository\Query\QueryRepository as Query;
 
-class EloquentStatementRepository implements StatementRepository {
-
+class EloquentStatementRepository implements StatementRepository
+{
   /**
   * Statement
   */
@@ -19,8 +19,8 @@ class EloquentStatementRepository implements StatementRepository {
    * @param Activity  $activity
    *
    */
-  public function __construct( Statement $statement, Activity $activity, Query $query ){
-
+  public function __construct(Statement $statement, Activity $activity, Query $query)
+  {
     $this->statement = $statement;
     $this->activity  = $activity;
     $this->query     = $query;
@@ -34,14 +34,15 @@ class EloquentStatementRepository implements StatementRepository {
    * @return count
    *
    **/
-  public function count( $lrs ){
+  public function count($lrs)
+  {
     return $this->statement->where('lrs._id', $lrs)->remember(5)->count();
   }
 
   /**
    * Return a list of statements ordered by stored desc
    *
-   * Don't return voided statements, these are requested 
+   * Don't return voided statements, these are requested
    * in a different call.
    *
    * @param $id int The LRS in question.
@@ -50,8 +51,8 @@ class EloquentStatementRepository implements StatementRepository {
    * @return statement objects
    *
    **/
-  public function all( $lrs, $parameters ){ 
-
+  public function all($lrs, $parameters)
+  {
     $statements = $this->statement->where('lrs._id', $lrs);
 
     $this->addParameters( $statements, $parameters );
@@ -59,12 +60,12 @@ class EloquentStatementRepository implements StatementRepository {
     $getStatements = $statements->get();
 
     //get Related Agents
-    if( isset($parameters['related_agents']) && $parameters['related_agents'] == 'true' && isset($parameters['agent']) ){
+    if ( isset($parameters['related_agents']) && $parameters['related_agents'] == 'true' && isset($parameters['agent']) ) {
       $getStatements = $this->relatedAgents($getStatements, $lrs, $parameters['agent']);
     }
 
     //get Related Activities
-    if( isset($parameters['related_activities']) && $parameters['related_activities'] == 'true' && isset($parameters['activity']) ){
+    if ( isset($parameters['related_activities']) && $parameters['related_activities'] == 'true' && isset($parameters['activity']) ) {
       $getStatements = $this->relatedActivities($getStatements, $lrs, $parameters['activity']);
     }
 
@@ -75,11 +76,11 @@ class EloquentStatementRepository implements StatementRepository {
 
   }
 
-  public function grouped($id, $parameters){
-
+  public function grouped($id, $parameters)
+  {
     $type = isset($parameters['grouping']) ? strtolower($parameters['grouping']) : '';
-    
-    switch( $type ){
+
+    switch ($type) {
       default:
       case "time":
         $interval = isset($parameters['interval']) ? $parameters['interval'] : "day";
@@ -107,12 +108,12 @@ class EloquentStatementRepository implements StatementRepository {
 
   /**
    * Find a statement based on statementID
-   * 
+   *
    * @param string $id A statement id (uuid)
    * @return response
    **/
-  public function find( $id ){
-
+  public function find($id)
+  {
     return \Statement::where('statement.id', $id)->first();
 
   }
@@ -120,12 +121,12 @@ class EloquentStatementRepository implements StatementRepository {
   /*
   |-----------------------------------------------------------------------
   | Store incoming xAPI statements
-  | 
-  | Notes: 
-  | Mongo doesn't allow full stops (.) in keys as it is reserved, so, 
+  |
+  | Notes:
+  | Mongo doesn't allow full stops (.) in keys as it is reserved, so,
   | we replace with &46; where required.
   |
-  | For now we use the site's details as the authority. 
+  | For now we use the site's details as the authority.
   | @todo perhaps there needs to be a way to set authority details per LRS?
   |
   | @param $input Array The TinCan statement
@@ -133,25 +134,25 @@ class EloquentStatementRepository implements StatementRepository {
   |
   |------------------------------------------------------------------------
    */
-  
+
   /**
    * @param array $statements An array of statements to create
    * @param array $lrs
    *
    **/
-  public function create( $statements, $lrs ){
-
+  public function create($statements, $lrs)
+  {
     //Full tincan statement validation to make sure the statement conforms
-    
+
     $saved_ids = array();
-    foreach( $statements as &$statement ){ //loop and amend - return on fail
+    foreach ($statements as &$statement) { //loop and amend - return on fail
 
       $verify = new \app\locker\statements\xAPIValidation();
 
       //run full validation
       $return = $verify->runValidation( $statement, \Site::first() );
 
-      if( $return['status'] == 'failed' ){
+      if ($return['status'] == 'failed') {
         return array( 'success' => 'false',  'message' => $return['errors'] );
       } else {
         $statement = $return['statement'];
@@ -159,11 +160,11 @@ class EloquentStatementRepository implements StatementRepository {
     }
 
     //now we are sure that statements are valid - loop back through and actually add them
-    foreach( $statements as $vs ){
+    foreach ($statements as $vs) {
 
       //check to see if the statementId already has a statement in the LRS
-      if( $result = $this->doesStatementIdExist( $lrs->_id, $vs['id'], $statement ) ){
-        return array( 'success' => $result ); 
+      if ( $result = $this->doesStatementIdExist( $lrs->_id, $vs['id'], $statement ) ) {
+        return array( 'success' => $result );
       }
 
       //The date stored in LRS in ISO 8601 format
@@ -172,18 +173,18 @@ class EloquentStatementRepository implements StatementRepository {
       $vs['stored'] = $current_date->format('Y-m-d\TH:i:s.uP');
 
       //if no timestamp, make it the same as stored
-      if( !isset($vs['timestamp']) ){
+      if ( !isset($vs['timestamp']) ) {
         $vs['timestamp'] = $vs['stored'];
       }
-       
+
       /*
       |------------------------------------------------------------------------------
-      | Check to see if the object is an activity, if so, check to see if that 
-      | activity is already in the DB. if it is, use the stored version. 
+      | Check to see if the object is an activity, if so, check to see if that
+      | activity is already in the DB. if it is, use the stored version.
       | If not, store it.
       |------------------------------------------------------------------------------
       */
-      if( isset($vs['object']['definition'])){
+      if ( isset($vs['object']['definition'])) {
         $vs['object']['definition'] = $this->activity->saveActivity( $vs['object']['id'], $vs['object']['definition'] );
       }
 
@@ -195,21 +196,21 @@ class EloquentStatementRepository implements StatementRepository {
       |------------------------------------------------------------------------------
       */
       $vs = $this->replaceFullStop( $vs );
-      
+
 
       //Create a new statement object
       $new_statement = new Statement;
       $new_statement->lrs = array( '_id'  => $lrs->_id, 'name' => $lrs->title );
       $new_statement->statement = $vs;
 
-      if( $new_statement->save() ){
+      if ( $new_statement->save() ) {
         $saved_ids[] = $new_statement->statement['id'];
       } else {
-        return array( 'success' => 'false', 
+        return array( 'success' => 'false',
                       'message' => $new_statement->errors );
       }
 
-      
+
     }
 
     return array('success'=>true, 'ids'=>$saved_ids );
@@ -219,7 +220,7 @@ class EloquentStatementRepository implements StatementRepository {
 
   /**
    *
-   * Mongo doesn't allow full stops (.) in keys as it is reserved, so, 
+   * Mongo doesn't allow full stops (.) in keys as it is reserved, so,
    * we replace with &46; where required. This will most likely only
    * happen in extensions.
    *
@@ -228,24 +229,25 @@ class EloquentStatementRepository implements StatementRepository {
    * @return array $statement
    *
    */
-  private function replaceFullStop( $statement ){
-
+  private function replaceFullStop($statement)
+  {
     $statement = \app\locker\helpers\Helpers::replaceFullStop( $statement );
+
     return $statement;
-    
+
   }
 
   /**
-   * 
+   *
    * Return statements with no filter for a particular LRS.
    *
    * @param int $id The LRS _id.
    *
    * @return array of statements.
-   * 
+   *
    */
-  public function statements( $id ){
-
+  public function statements($id)
+  {
     return \Statement::where('lrs._id', $id)
            ->orderBy('statement.stored', 'desc')
            ->paginate(15);
@@ -254,80 +256,80 @@ class EloquentStatementRepository implements StatementRepository {
 
   /**
    *
-   * Add parameters to statements query. This is used via xAPI GET 
+   * Add parameters to statements query. This is used via xAPI GET
    * statements.
-   * 
+   *
    * These allowed parameters are detemined by the xAPI spec see
    * https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#stmtapi
-   * 
+   *
    * @param object $statement  The statement query
    * @param array  $parameters The parameters to add
    *
    */
-  private function addParameters( $statements, $parameters ){
-
+  private function addParameters($statements, $parameters)
+  {
     //Check if agent has been passed
-    if( isset($parameters['agent']) ){
+    if ( isset($parameters['agent']) ) {
 
       $agent_param = !is_object($parameters['agent']) ? json_decode($parameters['agent']) : $parameters['agent']; //convert to object if not already
 
-      if( is_array($agent_param) ){ //if array, apply OR filtering to agents
+      if ( is_array($agent_param) ) { //if array, apply OR filtering to agents
 
-        $statements = $statements->where( function($query) use ($agent_param){ //only apply ORs within agents
-          foreach( $agent_param as $agent ){ //for each agent
+        $statements = $statements->where( function ($query) use ($agent_param) { //only apply ORs within agents
+          foreach ($agent_param as $agent) { //for each agent
             $query = $this->setAgent($query, $agent, true); //set agent with orWhere
           }
         });
 
-      } else if( is_object($agent_param) ){
+      } elseif ( is_object($agent_param) ) {
 
         $statements = $this->setAgent( $statements, $agent_param ); //do query on single agent
 
       }
 
     }
-    
+
     //set verb, if none passed ust make sure no voided statements are sent
-    if( isset($parameters['verb']) ){
+    if ( isset($parameters['verb']) ) {
       $statements->where( 'statement.verb.id', $parameters['verb'] );
       $statements->orWhere( 'statement.verb.id', '<>', 'http://adlnet.gov/expapi/verbs/voided');
-    }else{
+    } else {
       $statements->where( 'statement.verb.id', '<>', 'http://adlnet.gov/expapi/verbs/voided');
     }
 
-    if( isset($parameters['registration']) ){
+    if ( isset($parameters['registration']) ) {
       $statements->where( 'statement.context.registration', $parameters['registration'] );
     }
 
-    if( isset($parameters['activity']) ){
+    if ( isset($parameters['activity']) ) {
       $statements->where( 'statement.object.id', $parameters['activity'])->where('statement.object.objectType', 'Activity');
     }
 
     //since, until or between
-    if( isset($parameters['until']) && isset($parameters['since']) ){
+    if ( isset($parameters['until']) && isset($parameters['since']) ) {
       $statements->whereBetween('statement.timestamp', array($parameters['since'], $parameters['until']));
-    }elseif( isset($parameters['since']) ){
+    } elseif ( isset($parameters['since']) ) {
       $statements->where( 'statement.timestamp', '>', $parameters['since'] );
-    }elseif( isset($parameters['since']) ){
+    } elseif ( isset($parameters['since']) ) {
       $statements->where( 'statement.timestamp', '<', $parameters['until'] );
     }
 
     //Format
     $allowed_formats = array( 'ids', 'exact', 'canonical' );
-    if( isset($parameters['format']) && in_array($parameters['format'], $allowed_formats) ){
+    if ( isset($parameters['format']) && in_array($parameters['format'], $allowed_formats) ) {
 
       //if ids then return minimum details for agent, activity and group objects
-      if( $parameters['format'] == 'ids' ){
+      if ($parameters['format'] == 'ids') {
         $statements->select('statement.id', 'statement.actor.mbox', 'statement.verb.id', 'statement.object.id', 'statement.object.objectType');
       }
 
       //if exact - return as stored
-      if( $parameters['format'] == 'exact' ){
+      if ($parameters['format'] == 'exact') {
         //return as is
       }
 
       //if canonical, get language from Accept-Language header and only return language maps matching
-      if( $parameters['format'] == 'canonical' ){
+      if ($parameters['format'] == 'canonical') {
         //@todo
       }
     }
@@ -336,9 +338,9 @@ class EloquentStatementRepository implements StatementRepository {
 
     $server_statement_limit = 100;
 
-    if( isset( $parameters['limit'] ) ){
+    if ( isset( $parameters['limit'] ) ) {
       $limit = intval($parameters['limit']);
-      if( $limit === 0 ){
+      if ($limit === 0) {
         $statements->take( $server_statement_limit ); //server set limit
       } else {
         $statements->take( $limit );
@@ -346,14 +348,14 @@ class EloquentStatementRepository implements StatementRepository {
     } else {
       $statements->take( $server_statement_limit );
     }
-         
-    if( isset( $parameters['offset'] ) ){
+
+    if ( isset( $parameters['offset'] ) ) {
       $statements->skip( $parameters['offset'] );
     }
 
-    if( isset( $parameters['ascending'] ) && $parameters['ascending'] == 'true' ){
+    if ( isset( $parameters['ascending'] ) && $parameters['ascending'] == 'true' ) {
       $statements->orderBy('statement.stored', 'asc');
-    }else{
+    } else {
       $statements->orderBy('statement.stored', 'desc');
     }
 
@@ -361,12 +363,13 @@ class EloquentStatementRepository implements StatementRepository {
 
   }
 
-  public function timeGrouping($query, $interval ){
+  public function timeGrouping($query, $interval)
+  {
     return $query;
   }
 
-  public function actorGrouping($query){
-
+  public function actorGrouping($query)
+  {
     $query->aggregate(
       array('$match' => array()),
       array(
@@ -387,37 +390,37 @@ class EloquentStatementRepository implements StatementRepository {
    * @param @agent  The agent json object
    *
    * @return $query
-   * 
+   *
    */
-  public function setAgent( $query, $agent, $or = false ){
-
+  public function setAgent($query, $agent, $or = false)
+  {
     $agent_query = '';
 
     $where_type = $or ? 'orWhere' : 'where';
 
-    if( is_string($agent) ){
+    if ( is_string($agent) ) {
       $agent = json_decode($agent);
     }
 
     //Do some checking on what actor field we are filtering with
-    if( isset($agent->mbox) ){ //check for mbox
+    if ( isset($agent->mbox) ) { //check for mbox
       $agent_query = array('field' => 'statement.actor.mbox', 'value'=>$agent->mbox);
-    } else if( isset($agent->mbox_sha1sum) ) {//check for mbox_sha1sum
+    } elseif ( isset($agent->mbox_sha1sum) ) {//check for mbox_sha1sum
       $agent_query = array('field' => 'statement.actor.mbox_sha1sum', 'value'=>$agent->mbox_sha1sum);
-    } else if( isset($agent->openid) ){ //check for open id
+    } elseif ( isset($agent->openid) ) { //check for open id
       $agent_query = array('field' => 'statement.actor.openid', 'value'=>$agent->openid);
     }
 
-    if( isset($agent_query) && $agent_query != '' ){ //if we have agent query params lined up...
+    if ( isset($agent_query) && $agent_query != '' ) { //if we have agent query params lined up...
       $query->$where_type( $agent_query['field'], $agent_query['value'] );
-    } else if( isset($agent->account) ){ //else if there is an account
-      if( isset($agent->account->homePage) && isset($agent->account->name ) ){
-        $query->$where_type( function($query){
+    } elseif ( isset($agent->account) ) { //else if there is an account
+      if ( isset($agent->account->homePage) && isset($agent->account->name ) ) {
+        $query->$where_type( function ($query) {
           $query->where('statement.actor.account.homePage', $agent->account->homePage)
                 ->where('statement.actor.account.name', $agent->account->name );
         });
-      } 
-    } 
+      }
+    }
 
     return $query;
   }
@@ -431,16 +434,17 @@ class EloquentStatementRepository implements StatementRepository {
    * @return boolean
    *
    **/
-  private function doesStatementIdExist( $lrs, $id, $statement ){
-
+  private function doesStatementIdExist($lrs, $id, $statement)
+  {
     $exists = $this->statement->where('lrs._id', $lrs)
               ->where('statement.id', $id)
               ->first();
-    
-    if( $exists ){
-      if( array_multisort( $exists->toArray() ) === array_multisort( $statement ) ){
+
+    if ($exists) {
+      if ( array_multisort( $exists->toArray() ) === array_multisort( $statement ) ) {
         return 'conflict-matches';
       }
+
       return 'conflict-nomatch';
     }
 
@@ -454,45 +458,46 @@ class EloquentStatementRepository implements StatementRepository {
    *
    * Recursive function to drill through all statements.
    *
-   * @param $statements object 
+   * @param $statements object
    * @param $lrs int
    *
    * @return $statements object
    *
    **/
-  private function getLinkedStatements( $statements, $lrs ){
+  private function getLinkedStatements($statements, $lrs)
+  {
     $ids = array();
-    if( $statements ){
+    if ($statements) {
       //get statement ids
-      foreach($statements as $s){
+      foreach ($statements as $s) {
         $ids[] = $s->id;
       }
-      foreach( $statements as $s ){
+      foreach ($statements as $s) {
         $getConnected = $this->getConnected( $s->id, $lrs );
 
-        if( $getConnected ){
+        if ($getConnected) {
           //add new statements to statements return, if
           //the statement is not already in the return object.
-          foreach($getConnected as $c ){
-            if( !in_array($c->id, $ids) ){
+          foreach ($getConnected as $c) {
+            if ( !in_array($c->id, $ids) ) {
               $statements[] = $c;
             }
           }
           //check these statements for connected statements
           $this->getLinkedStatements( $getConnected, $lrs );
         }
-        
+
       }
 
       // $getConnected = Statement::where('lrs._id', $lrs)
       //                 ->whereIn('object.id', $ids)
       //                 ->get();
 
-      // if( $getConnected ){
+      // if ($getConnected) {
       //   //add new statements to statements return, if
       //   //the statement is not already in the return object.
-      //   foreach($getConnected as $c ){
-      //     if( !in_array($c->id, $ids) ){
+      //   foreach ($getConnected as $c) {
+      //     if ( !in_array($c->id, $ids) ) {
       //       $statements[] = $c;
       //     }
       //   }
@@ -501,6 +506,7 @@ class EloquentStatementRepository implements StatementRepository {
       // }
 
     }
+
     return $statements;
   }
 
@@ -511,34 +517,35 @@ class EloquentStatementRepository implements StatementRepository {
    * @param $lrs int LRS in question
    *
    * @return $statements
-   **/ 
-  private function getConnected( $id, $lrs ){
+   **/
+  private function getConnected($id, $lrs)
+  {
     return \Statement::where('lrs._id', $lrs)->where('statement.object.id', $id)->get();
   }
 
   /**
    * Related Actors
    *
-   * @param $statements object 
+   * @param $statements object
    *
-   * @return $statements 
+   * @return $statements
    *
    **/
-  private function relatedAgents($statements, $lrs, $actor){
-
+  private function relatedAgents($statements, $lrs, $actor)
+  {
     $actor = json_decode($actor);
 
     //Do some checking on what actor field we are filtering with
-    if( isset($actor->mbox) ){ //check for mbox
+    if ( isset($actor->mbox) ) { //check for mbox
       $query = $actor->mbox;
       $query_type = 'mbox';
-    } else if( isset($actor->mbox_sha1sum) ) {//check for mbox_sha1sum
+    } elseif ( isset($actor->mbox_sha1sum) ) {//check for mbox_sha1sum
       $query = $actor->mbox_sha1sum;
       $query_type = 'mbox_sha1sum';
-    } else if( isset($actor->openid) ){ //check for open id
+    } elseif ( isset($actor->openid) ) { //check for open id
       $query = $actor->openid;
       $query_type = 'openid';
-    } else if( isset($actor->account) ){ //else if there is an account
+    } elseif ( isset($actor->account) ) { //else if there is an account
       $query = $actor->account;
       $query_type = 'account';
     }
@@ -550,36 +557,36 @@ class EloquentStatementRepository implements StatementRepository {
 
     $ids = array();
 
-    if( $statements ){
+    if ($statements) {
       //get statement ids
-      foreach($statements as $s){
+      foreach ($statements as $s) {
         $ids[] = $s->id;
       }
-      
+
       //look in authority
       $authority = \Statement::where('lrs._id', $lrs)->where($authority, $query)->get();
-      if( $authority ){
+      if ($authority) {
         $statements = $this->addStatements( $statements, $authority, $ids );
       }
 
       //look in object where objectType = Agent
       $object = \Statement::where('lrs._id', $lrs)->where($object, $query)->get();
-      if( $object ){
+      if ($object) {
         $statements = $this->addStatements( $statements, $object, $ids );
       }
 
       //look in team
       $teams = \Statement::where('lrs._id', $lrs)->where($teams, $query)->get();
-      if( $object ){
+      if ($object) {
         $statements = $this->addStatements( $statements, $teams, $ids );
       }
 
       //look in instructor
       $instructor = \Statement::where('lrs._id', $lrs)->where($instructor, $query)->get();
-      if( $object ){
+      if ($object) {
         $statements = $this->addStatements( $statements, $instructor, $ids );
       }
-      
+
     }
 
     return $statements;
@@ -589,10 +596,10 @@ class EloquentStatementRepository implements StatementRepository {
    * Related Activities
    *
    **/
-  private function relatedActivities($statements, $lrs, $activityId){
-
+  private function relatedActivities($statements, $lrs, $activityId)
+  {
     $ids = array();
-    foreach($statements as $s){
+    foreach ($statements as $s) {
       $ids[] = $s->id;
     }
 
@@ -602,7 +609,7 @@ class EloquentStatementRepository implements StatementRepository {
               ->where('statement.context.contextActivities.parent.id', $activityId)
               ->get();
 
-    if( $parent ){
+    if ($parent) {
       $statements = $this->addStatements( $statements, $parent, $ids );
     }
     //look in context grouping
@@ -611,7 +618,7 @@ class EloquentStatementRepository implements StatementRepository {
                 ->where('statement.context.contextActivities.grouping.id', $activityId)
                 ->get();
 
-    if( $grouping ){
+    if ($grouping) {
       $statements = $this->addStatements( $statements, $grouping, $ids );
     }
     //look in context category
@@ -620,7 +627,7 @@ class EloquentStatementRepository implements StatementRepository {
                 ->where('statement.context.contextActivities.category.id', $activityId)
                 ->get();
 
-    if( $category ){
+    if ($category) {
       $statements = $this->addStatements( $statements, $category, $ids );
     }
     //look in context other
@@ -629,10 +636,10 @@ class EloquentStatementRepository implements StatementRepository {
                 ->where('statement.context.contextActivities.other.id', $activityId)
                 ->get();
 
-    if( $category ){
+    if ($category) {
       $statements = $this->addStatements( $statements, $other, $ids );
     }
-   
+
     return $statements;
   }
 
@@ -645,15 +652,17 @@ class EloquentStatementRepository implements StatementRepository {
    *
    * @return $statements
    **/
-  private function addStatements( $statements, $additional_statements, $ids ){
-    if( $additional_statements ){
-      foreach($additional_statements as $s){
+  private function addStatements($statements, $additional_statements, $ids)
+  {
+    if ($additional_statements) {
+      foreach ($additional_statements as $s) {
         //don't include duplicates
-        if( !in_array($s->id, $ids) ){
+        if ( !in_array($s->id, $ids) ) {
           $statements[] = $s;
         }
       }
     }
+
     return $statements;
   }
 
@@ -663,7 +672,7 @@ class EloquentStatementRepository implements StatementRepository {
 
   /*
   |----------------------------------------------------------------------
-  | Legacy functions for filtering which was used pre v1.0 amd will be 
+  | Legacy functions for filtering which was used pre v1.0 amd will be
   | removed. Do not use these!
   |
   |----------------------------------------------------------------------
@@ -671,23 +680,23 @@ class EloquentStatementRepository implements StatementRepository {
 
   /**
    *
-   * Filter statements via our filtering options. 
+   * Filter statements via our filtering options.
    *
    * @param int   $id        The LRS unique id.
    * @param array $vars      An array or parameters grabbed from the url
-   * @param string $restrict Value to restrict query 
+   * @param string $restrict Value to restrict query
    *
-   * @return array An array containing statements for display and data 
+   * @return array An array containing statements for display and data
    * for the graph.
    *
    */
-  public function filter( $id, $vars='', $restrict='' ){
-
+  public function filter($id, $vars='', $restrict='')
+  {
     $filter = array();
     $data   = '';
 
     //create key / value array for wheres from $vars sent over
-    if( isset($vars) && !empty($vars) ){
+    if ( isset($vars) && !empty($vars) ) {
       while (count($vars)) {
         list($key,$value) = array_splice($vars, 0, 2);
         $filter[$key] = $value;
@@ -696,7 +705,7 @@ class EloquentStatementRepository implements StatementRepository {
 
     $query = $this->statement->where('lrs._id', $id);
     $this->setRestriction( $restrict, $query );
-    if( !empty($filter) ){
+    if ( !empty($filter) ) {
       $this->setWhere( $filter, $query );
     }
     $query->orderBy('created_at', 'desc');
@@ -705,37 +714,38 @@ class EloquentStatementRepository implements StatementRepository {
     //@todo replace this using Mongo aggregation - no need to grab everything and loop through it.
     $query = $this->statement->where('lrs._id', $id);
     $this->setRestriction( $restrict, $query );
-    if( !empty($filter) ){
+    if ( !empty($filter) ) {
       $this->setWhere( $filter, $query );
     }
     $query->remember(5);
     $data = $query->get();
 
-    return array( 'statements' => $statements, 
-                  'data'       => $data, 
+    return array( 'statements' => $statements,
+                  'data'       => $data,
                   'filter'     => $filter );
 
   }
 
   /**
    *
-   * Loop through passed parameters and add to DB query. Used when 
+   * Loop through passed parameters and add to DB query. Used when
    * filtering statements on the site.
-   * 
+   *
    * @todo only decode on urls not everything
    *
    * @param string $filter
    * @param object $query
-   * 
+   *
    * @return object $query
    *
    */
-  private function setWhere( $filter, $query ){
-
-    foreach( $filter as $k => $v ){
+  private function setWhere($filter, $query)
+  {
+    foreach ($filter as $k => $v) {
       $k = $this->filterKeyLookUp( $k );
       $query->where( $k, rawurldecode( $v ) );
     }
+
     return $query;
 
   }
@@ -750,10 +760,10 @@ class EloquentStatementRepository implements StatementRepository {
    * @return
    *
    */
-  private function setRestriction( $restriction, $query ){
-
-    if( $restriction != '' ){
-      switch( $restriction ){
+  private function setRestriction($restriction, $query)
+  {
+    if ($restriction != '') {
+      switch ($restriction) {
         case 'comments':
           return $query->where( 'object.definition.type', 'http://activitystrea.ms/schema/1.0/comment' );
         case 'badges':
@@ -774,11 +784,12 @@ class EloquentStatementRepository implements StatementRepository {
    * A look up service to grab xAPI key based on url key.
    *
    * @param  string $key
-   * @return string 
+   * @return string
    *
    */
-  private function filterKeyLookUp( $key ){
-    switch( $key ){
+  private function filterKeyLookUp($key)
+  {
+    switch ($key) {
       case 'actor':
         return 'actor.mbox';
       case 'verb':

@@ -1,12 +1,12 @@
 <?php namespace app\locker\data\dashboards;
 
-class LrsDashboard extends \app\locker\data\BaseData {
-
+class LrsDashboard extends \app\locker\data\BaseData
+{
   public $stats;
   private $user,$statements=array();
 
-  public function __construct( $lrs ){
-
+  public function __construct($lrs)
+  {
     $this->setDb();
 
     $this->lrs = $lrs;
@@ -17,12 +17,13 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * Set all stats array.
    *
    **/
-  public function setTimelineGraph(){
+  public function setTimelineGraph()
+  {
     return array('statement_count' => $this->statementCount(),
                  'statement_avg'   => $this->statementAvgCount(),
                  'learner_avg'     => $this->learnerAvgCount(),
                  'statement_graph' => $this->getStatementNumbersByDate()
-                 );      
+                 );
   }
 
   /**
@@ -31,7 +32,8 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * @return count
    *
    **/
-  public function statementCount(){
+  public function statementCount()
+  {
     return \DB::collection('statements')
     ->where('lrs._id', $this->lrs)
     ->remember(5)
@@ -45,20 +47,20 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * @return count.
    *
    **/
-  public function actorCount(){
-
+  public function actorCount()
+  {
     $count = $this->db->statements->aggregate(
               array('$match' => $this->getMatch( $this->lrs )),
               array('$group' => array('_id' => '$statement.actor.mbox')),
-              array('$group' => array('_id' => 1, 'count' => array('$sum' => 1)))             
+              array('$group' => array('_id' => 1, 'count' => array('$sum' => 1)))
               );
-          
-    if( isset($count['result'][0]) ){
+
+    if ( isset($count['result'][0]) ) {
       return $count['result'][0]['count'];
-    }else{
+    } else {
       return 0;
     }
-   
+
   }
 
   /**
@@ -67,15 +69,17 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * @return $days number
    *
    **/
-  private function statementDays(){
+  private function statementDays()
+  {
     $first_day = \DB::collection('statements')->first();
-    if( $first_day ){
+    if ($first_day) {
       $datetime1 = date_create( gmdate("Y-m-d", strtotime($first_day['statement']['stored']) ) );
       $datetime2 = date_create( gmdate("Y-m-d", time()) );
       $interval  = date_diff($datetime1, $datetime2);
       $days      = $interval->days;
+
       return $days;
-    }else{
+    } else {
       return '';
     }
 
@@ -88,17 +92,19 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * @return $avg
    *
    **/
-  public function statementAvgCount(){
+  public function statementAvgCount()
+  {
     $count = $this->statementCount();
     $days  = $this->statementDays();
-    if( $days == 0 ){
+    if ($days == 0) {
       //this will be the first day, so increment to 1
       $days = 1;
     }
     $avg   = 0;
-    if( $count && $days ){
+    if ($count && $days) {
       $avg = round( $count / $days );
     }
+
     return $avg;
   }
 
@@ -106,28 +112,30 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * Get the top 6 activities
    *
    **/
-  public function getTopActivities(){
+  public function getTopActivities()
+  {
+    $match = $this->getMatch( $this->lrs );
 
-    $match = $this->getMatch( $this->lrs ); 
     return $this->db->statements->aggregate(
                 array('$match' => $match),
                 array('$group' => array('_id'   => '$statement.object.id',
                       'name'  => array('$addToSet' => '$statement.object.definition.name'),
-                      'description' => array('$addToSet' => '$statement.object.definition.description'), 
+                      'description' => array('$addToSet' => '$statement.object.definition.description'),
                       'count' => array('$sum' => 1))),
                 array('$sort'  => array('count' => -1)),
                 array('$limit' => 6)
               );
-  
+
   }
 
   /**
    * Get the top 7 most active users
    *
    **/
-  public function getActiveUsers(){
+  public function getActiveUsers()
+  {
+    $match = $this->getMatch( $this->lrs );
 
-    $match = $this->getMatch( $this->lrs ); 
     return $this->db->statements->aggregate(
                 array('$match' => $match),
                 array('$group' => array('_id'   => '$statement.actor.mbox',
@@ -147,17 +155,19 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * @return $avg
    *
    **/
-  public function learnerAvgCount(){
+  public function learnerAvgCount()
+  {
     $count = $this->actorCount();
     $days  = $this->statementDays();
-    if( $days == 0 ){
+    if ($days == 0) {
       //this will be the first day, so increment to 1
       $days = 1;
     }
     $avg   = 0;
-    if( $count && $days ){
+    if ($count && $days) {
       $avg = round( ($count / $days), 2 );
     }
+
     return $avg;
   }
 
@@ -167,8 +177,8 @@ class LrsDashboard extends \app\locker\data\BaseData {
    * @return $data json feed.
    *
    **/
-  public function getStatementNumbersByDate(){
-
+  public function getStatementNumbersByDate()
+  {
     $set_id = array( '$dayOfYear' => '$created_at' );
 
     $statements = $this->db->statements->aggregate(
@@ -184,11 +194,11 @@ class LrsDashboard extends \app\locker\data\BaseData {
       array('$sort'    => array('_id' => 1)),
       array('$project' => array('count' => 1, 'date' => 1, 'actor' => 1))
     );
-   
+
     //set statements for graphing
     $data = '';
-    if( isset($statements['result']) ){
-      foreach( $statements['result'] as $s ){
+    if ( isset($statements['result']) ) {
+      foreach ($statements['result'] as $s) {
         $data .= json_encode( array( "y" => substr($s['date'][0],0,10), "a" => $s['count'], 'b' => count($s['actor'])) ) . ' ';
       }
     }

@@ -3,15 +3,15 @@
 use Locker\Repository\Statement\StatementRepository as Statement;
 use Locker\Repository\Lrs\LrsRepository as Lrs;
 
-class ExplorerController extends BaseController {
-
+class ExplorerController extends BaseController
+{
   /**
   * Statement
   */
   protected $statement;
 
   /**
-  * Lrs 
+  * Lrs
   */
   protected $lrs;
 
@@ -20,8 +20,8 @@ class ExplorerController extends BaseController {
    *
    * @param Statement $statement
    */
-  public function __construct( Statement $statement, Lrs $lrs ){
-
+  public function __construct(Statement $statement, Lrs $lrs)
+  {
     $this->statement = $statement;
     $this->lrs       = $lrs;
 
@@ -29,8 +29,8 @@ class ExplorerController extends BaseController {
 
   }
 
-  public function explore( $id ){
-
+  public function explore($id)
+  {
     $vars = explode( '/', Request::path() );
 
     //remove lrs and statement which is always passed
@@ -43,6 +43,7 @@ class ExplorerController extends BaseController {
     $lrs_list = $this->lrs->all();
     $statements = $this->statement->filter( $id, $vars, 'comments' );
     $graph_it   = new \app\locker\data\Filter( $statements['data'] );
+
     return View::make('partials.statements.explore', array('lrs'             => $lrs,
                                                            'list'            => $lrs_list,
                                                            'statements'      => $statements['statements'],
@@ -56,15 +57,15 @@ class ExplorerController extends BaseController {
   /**
    * Display the specified resource.
    *
-   * @todo figure out how to use \Route::getCurrentRoute()->parameters() 
+   * @todo figure out how to use \Route::getCurrentRoute()->parameters()
    * instead of the hack below. The problem is exploding extra - it
    * also explodes any urls passed.
-   * 
+   *
    * @param  int  $id
    * @return Response
    */
-  public function filter( $id, $extra ){
-
+  public function filter($id, $extra)
+  {
     $vars = explode( '/', Request::path() );
 
     //remove lrs and statement which is always passed
@@ -77,7 +78,7 @@ class ExplorerController extends BaseController {
     $lrs        = $this->lrs->find( $id );
     $lrs_list   = $this->lrs->all();
 
-    return View::make('partials.statements.filter', 
+    return View::make('partials.statements.filter',
                   array('statements'      => $statements['statements'],
                         'lrs'             => $lrs,
                         'single_bar_data' => $graph_it->timeline_data,

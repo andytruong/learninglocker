@@ -2,26 +2,25 @@
 
 use Locker\Repository\OAuthApp\OAuthAppRepository as OAuthApp;
 
-class OAuthAppController extends BaseController {
-
+class OAuthAppController extends BaseController
+{
   /**
   * App
   */
   protected $app;
-
 
   /**
    * Construct
    *
    * @param App $app
    */
-  public function __construct(OAuthApp $app){
-
+  public function __construct(OAuthApp $app)
+  {
     $this->app = $app;
 
     $this->beforeFilter('auth');
     $this->beforeFilter('csrf', array('only' => array('store', 'update')));
-  
+
   }
 
   /**
@@ -29,8 +28,10 @@ class OAuthAppController extends BaseController {
    *
    * @return View
    */
-  public function index(){
+  public function index()
+  {
     $apps = $this->app->all();
+
     return View::make('partials.oauth.index', array('apps' => $apps));
   }
 
@@ -39,7 +40,8 @@ class OAuthAppController extends BaseController {
    *
    * @return View
    */
-  public function create(){
+  public function create()
+  {
     return View::make('partials.oauth.create');
   }
 
@@ -48,11 +50,12 @@ class OAuthAppController extends BaseController {
    *
    * @return View
    */
-  public function store(){
+  public function store()
+  {
     // Store app
     $s = $this->app->create( Input::all() );
 
-    if($s){
+    if ($s) {
       return Redirect::to('/oauth/apps')->with('success', Lang::get('apps.create'));
     }
 
@@ -67,8 +70,8 @@ class OAuthAppController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function edit( $id ){
-
+  public function edit($id)
+  {
   }
 
   /**
@@ -77,10 +80,11 @@ class OAuthAppController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function update($id){
+  public function update($id)
+  {
     $l = $this->app->update( $id, Input::all() );
 
-    if($l){
+    if ($l) {
       return Redirect::back()->with('success', Lang::get('app.updated'));
     }
 
@@ -95,10 +99,11 @@ class OAuthAppController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function show( $id ){
-
+  public function show($id)
+  {
     $app = $this->app->find( $id );
-    return View::make('partials.oauth.show', array('app'      => $app, 
+
+    return View::make('partials.oauth.show', array('app'      => $app,
                                            'app_nav' => true));
   }
 
@@ -108,9 +113,10 @@ class OAuthAppController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function destroy($id){
-
+  public function destroy($id)
+  {
     $this->app->delete($id);
+
     return $this->index();
 
   }

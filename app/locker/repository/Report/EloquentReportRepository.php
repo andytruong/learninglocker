@@ -2,25 +2,27 @@
 
 use Report;
 
-class EloquentReportRepository implements ReportRepository {
-
-  public function all($lrs){
+class EloquentReportRepository implements ReportRepository
+{
+  public function all($lrs)
+  {
     return Report::where('lrs', $lrs)->get();
   }
 
-  public function find($id){
+  public function find($id)
+  {
     return Report::find($id);
   }
 
-  public function create( $data ){
-
+  public function create($data)
+  {
     $report = new Report;
     $report->lrs = $data['lrs'];
     $report->query = $data['query'];
     $report->name  = $data['name'];
     $report->description = $data['description'];
-    
-    if( $report->save() ){
+
+    if ( $report->save() ) {
       return true;
     }
 
@@ -28,16 +30,19 @@ class EloquentReportRepository implements ReportRepository {
 
   }
 
-  public function update($id, $data){
-
+  public function update($id, $data)
+  {
   }
 
-  public function delete($id){
+  public function delete($id)
+  {
     $report = $this->find($id);
+
     return $report->delete();
   }
 
-  public function getActors($lrs, $query){
+  public function getActors($lrs, $query)
+  {
     return \Statement::select('statement.actor')
                ->where('lrs._id', $lrs)
                ->where('statement.actor.name', 'like', '%'.$query.'%')
@@ -46,7 +51,8 @@ class EloquentReportRepository implements ReportRepository {
                ->get();
   }
 
-  public function setQuery($lrs, $query, $field, $wheres){
+  public function setQuery($lrs, $query, $field, $wheres)
+  {
     return \Statement::select($field)
                ->where('lrs._id', $lrs)
                ->where($wheres, 'like', '%'.$query.'%')

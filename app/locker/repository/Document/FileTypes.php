@@ -1,7 +1,9 @@
 <?php namespace Locker\Repository\Document;
 
-class FileTypes{
-  public static function getMap(){
+class FileTypes
+{
+  public static function getMap()
+  {
     return array(
       '123' => 'application/vnd.lotus-1-2-3',
       '3dml' => 'text/vnd.in3d.3dml',

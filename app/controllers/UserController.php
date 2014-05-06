@@ -3,8 +3,8 @@
 use Locker\Repository\User\UserRepository as User;
 use Locker\Repository\Lrs\LrsRepository as Lrs;
 
-class UserController extends BaseController {
-
+class UserController extends BaseController
+{
   /**
   * User
   */
@@ -15,14 +15,13 @@ class UserController extends BaseController {
    **/
   protected $lrs;
 
-
   /**
    * Construct
    *
    * @param User $user
    */
-  public function __construct(User $user, Lrs $lrs){
-
+  public function __construct(User $user, Lrs $lrs)
+  {
     $this->user = $user;
     $this->lrs  = $lrs;
     $this->logged_in_user = Auth::user();
@@ -31,7 +30,7 @@ class UserController extends BaseController {
     $this->beforeFilter('csrf', array('only' => array('update','updateRole', 'updatePassword', 'addPassword', 'destroy')));
     $this->beforeFilter('user.delete', array('only' => 'destroy'));
     $this->beforeFilter('auth.super', array('only' => array('updateRole','index')));
-    
+
   }
 
   /**
@@ -39,8 +38,8 @@ class UserController extends BaseController {
    *
    * @return View
    */
-  public function index(){
-
+  public function index()
+  {
     return View::make('index', array( 'users' => $this->user->all() ));
 
   }
@@ -50,8 +49,8 @@ class UserController extends BaseController {
    *
    * @return View
    */
-  public function create(){
-    
+  public function create()
+  {
     return View::make('register.index');
 
   }
@@ -62,8 +61,8 @@ class UserController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function edit( $id ){
-
+  public function edit($id)
+  {
     return View::make('partials.users.edit')
          ->with( 'user', $this->user->find( $id ) )
          ->with( 'list', $this->lrs->all() );
@@ -76,22 +75,22 @@ class UserController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function update( $id ){
-
+  public function update($id)
+  {
     $data = Input::all();
 
     //if email being changed, verify new one, otherwise ignore
-    if( $data['email'] != Auth::user()->email ){
+    if ( $data['email'] != Auth::user()->email ) {
       $rules['email'] = 'required|email|unique:users';
     }
-    $rules['name']  = 'required';       
+    $rules['name']  = 'required';
     $validator = Validator::make($data, $rules);
     if ($validator->fails()) return Redirect::back()->withErrors($validator);
-  
+
     // Update the user
     $s = $this->user->update($id, $data);
 
-    if($s){
+    if ($s) {
       return Redirect::back()->with('success', Lang::get('users.updated'));
     }
 
@@ -107,8 +106,10 @@ class UserController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function updateRole( $id, $role ){
+  public function updateRole($id, $role)
+  {
     $s = $this->user->updateRole($id, $role);
+
     return Response::json($s);
   }
 
@@ -118,11 +119,12 @@ class UserController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function destroy( $id ){
+  public function destroy($id)
+  {
     //delete
     $this->user->delete( $id );
+
     return Redirect::back()->with('success', Lang::get('users.deleted'));
   }
-
 
 }

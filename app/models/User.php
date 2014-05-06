@@ -4,8 +4,8 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class User extends Eloquent implements UserInterface, RemindableInterface {
-
+class User extends Eloquent implements UserInterface, RemindableInterface
+{
   protected $guarded = array('_id');
 
   /**
@@ -28,7 +28,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
       'password' => 'required|confirmed'
     );
 
-  public function validate( $data ) {
+  public function validate($data)
+  {
     return Validator::make($data, $this->rules);
   }
 

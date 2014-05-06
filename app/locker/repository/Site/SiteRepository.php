@@ -1,7 +1,7 @@
 <?php namespace Locker\Repository\Site;
 
-interface SiteRepository {
-
+interface SiteRepository
+{
   public function all();
 
   public function find($id);

@@ -11,14 +11,11 @@
 |
 */
 
-App::before(function($request)
-{
+App::before(function ($request) {
   //
 });
 
-
-App::after(function($request, $response)
-{
+App::after(function ($request, $response) {
   $response->headers->set('X-Experience-API-Version', '1.0.1');
 });
 
@@ -33,16 +30,13 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
-{
+Route::filter('auth', function () {
   if (Auth::guest()) return Redirect::guest('/');
 });
 
-Route::filter('auth.basic', function()
-{
+Route::filter('auth.basic', function () {
   return Auth::basic();
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -53,7 +47,7 @@ Route::filter('auth.basic', function()
 |
 */
 
-Route::filter('auth.statement', function(){
+Route::filter('auth.statement', function () {
 
   //set passed credentials
   $key    = Request::getUser();
@@ -61,7 +55,7 @@ Route::filter('auth.statement', function(){
 
   $method = Request::server('REQUEST_METHOD');
 
-  if( $method !== "OPTIONS" ){
+  if ($method !== "OPTIONS") {
 
     //see if the lrs exists based on key and secret
     $lrs = \Lrs::where('api.basic_key', $key)
@@ -69,12 +63,12 @@ Route::filter('auth.statement', function(){
         ->select('owner._id')->first();
 
     //if no id found, return error
-    if ( $lrs == NULL ) {
+    if ($lrs == NULL) {
       return Response::json(array(
         'error' => true,
         'message' => 'Unauthorized request.'),
         401
-      ); 
+      );
     }
 
     //attempt login once
@@ -83,13 +77,12 @@ Route::filter('auth.statement', function(){
         'error' => true,
         'message' => 'Unauthorized Request'),
         401
-      ); 
+      );
     }
-    
+
   }
 
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -100,8 +93,8 @@ Route::filter('auth.statement', function(){
 |
 */
 
-Route::filter('auth.super', function( $route, $request ){
-  if( Auth::user()->role != 'super' ){
+Route::filter('auth.super', function ($route, $request) {
+  if ( Auth::user()->role != 'super' ) {
     return Redirect::to('/');
   }
 });
@@ -111,23 +104,23 @@ Route::filter('auth.super', function( $route, $request ){
 | LRS admin access
 |--------------------------------------------------------------------------
 |
-| Check the logged in user has admin privilages for current LRS. If not, 
-| then redirect to home page without a message. 
+| Check the logged in user has admin privilages for current LRS. If not,
+| then redirect to home page without a message.
 |
 */
 
-Route::filter('auth.admin', function( $route, $request ){
-  
+Route::filter('auth.admin', function ($route, $request) {
+
   $lrs      = Lrs::find( $route->parameter('lrs') );
   $user     = Auth::user()->_id;
   $is_admin = false;
-  foreach( $lrs->users as $u ){
+  foreach ($lrs->users as $u) {
     //is the user on the LRS user list with role admin?
-    if($u['user'] == $user && $u['role'] == 'admin'){
+    if ($u['user'] == $user && $u['role'] == 'admin') {
       $is_admin = true;
     }
   }
-  if( !$is_admin ){
+  if (!$is_admin) {
     return Redirect::to('/');
   }
 
@@ -143,26 +136,26 @@ Route::filter('auth.admin', function( $route, $request ){
 |
 */
 
-Route::filter('auth.lrs', function( $route, $request ){
+Route::filter('auth.lrs', function ($route, $request) {
   //check to see if lrs id exists?
   $lrs  = Lrs::find( $route->parameter('id') );
   //if not, let's try the lrs parameter
-  if( !$lrs ){
+  if (!$lrs) {
     $lrs  = Lrs::find( $route->parameter('lrs') );
   }
   $user = \Auth::user();
 
-  if( $lrs ){
+  if ($lrs) {
     //get all users will access to the lrs
-    foreach( $lrs->users as $u ){
+    foreach ($lrs->users as $u) {
       $get_users[] = $u['_id'];
     }
     //check current user is in the list of allowed users, or is super admin
-    if( !in_array($user->_id, $get_users) && $user->role != 'super' ){
+    if ( !in_array($user->_id, $get_users) && $user->role != 'super' ) {
       return Redirect::to('/');
     }
 
-  }else{
+  } else {
     return Redirect::to('/');
   }
 
@@ -177,34 +170,34 @@ Route::filter('auth.lrs', function( $route, $request ){
 |
 */
 
-Route::filter('edit.lrs', function( $route, $request ){
+Route::filter('edit.lrs', function ($route, $request) {
 
   //check to see if lrs id exists?
   $lrs  = Lrs::find( $route->parameter('id') );
   //if not, let's try the lrs parameter
-  if( !$lrs ){
+  if (!$lrs) {
     $lrs  = Lrs::find( $route->parameter('lrs') );
   }
 
   $user = \Auth::user();
 
-  if( $lrs ){
+  if ($lrs) {
 
     //get all users with admin access to the lrs
-    foreach( $lrs->users as $u ){
-      if( $u['role'] == 'admin' ){
+    foreach ($lrs->users as $u) {
+      if ($u['role'] == 'admin') {
         $get_users[] = $u['_id'];
       }
     }
 
     //check current user is in the list of allowed users or is super
-    if( !in_array($user->_id, $get_users) && $user->role != 'super' ){
+    if ( !in_array($user->_id, $get_users) && $user->role != 'super' ) {
       return Redirect::to('/');
     }
 
-  }else{
+  } else {
     return Redirect::to('/');
-  }  
+  }
 
 });
 
@@ -213,18 +206,18 @@ Route::filter('edit.lrs', function( $route, $request ){
 | Who can create a new LRS?
 |--------------------------------------------------------------------------
 |
-| Super admins can decide who is allowed to create new LRSs. Super, existing 
+| Super admins can decide who is allowed to create new LRSs. Super, existing
 | admins or everyone, including observers.
 |
 */
 
-Route::filter('create.lrs', function( $route, $request ){
-  
+Route::filter('create.lrs', function ($route, $request) {
+
   $site       = Site::first();
   $allowed    = $site->create_lrs;
   $user_role  = \Auth::user()->role;
-  
-  if( !in_array($user_role, $allowed) ){
+
+  if ( !in_array($user_role, $allowed) ) {
     return Redirect::to('/');
   }
 
@@ -236,9 +229,9 @@ Route::filter('create.lrs', function( $route, $request ){
 |---------------------------------------------------------------------------
 */
 
-Route::filter('registation.status', function( $route, $request ){
+Route::filter('registation.status', function ($route, $request) {
   $site = \Site::first();
-  if( $site ){
+  if ($site) {
     if( $site->registration != 'Open' ) return Redirect::to('/');
   }
 });
@@ -246,14 +239,14 @@ Route::filter('registation.status', function( $route, $request ){
 /*
 |---------------------------------------------------------------------------
 | Check the person deleting a user account, is allowed to.
-| 
+|
 | User's can delete their own account as can super admins
 |---------------------------------------------------------------------------
 */
 
-Route::filter('user.delete', function( $route, $request ){
+Route::filter('user.delete', function ($route, $request) {
   $user = $route->parameter('users');
-  if( \Auth::user()->_id != $user && !\app\locker\helpers\Access::isRole('super') ){
+  if ( \Auth::user()->_id != $user && !\app\locker\helpers\Access::isRole('super') ) {
     return Redirect::to('/');
   }
 });
@@ -270,8 +263,7 @@ Route::filter('user.delete', function( $route, $request ){
 |
 */
 
-Route::filter('guest', function()
-{
+Route::filter('guest', function () {
   if (Auth::check()) return Redirect::to('/');
 });
 
@@ -286,11 +278,9 @@ Route::filter('guest', function()
 |
 */
 
-Route::filter('csrf', function()
-{
+Route::filter('csrf', function () {
   $token = Request::ajax() ? Request::header('X-CSRF-Token') : Input::get('_token');
-  if (Session::token() != $token)
-  {
+  if (Session::token() != $token) {
     throw new Illuminate\Session\TokenMismatchException;
   }
 });

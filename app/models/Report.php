@@ -2,8 +2,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Report extends Eloquent {
-
+class Report extends Eloquent
+{
   /**
    * Our MongoDB collection used by the model.
    *

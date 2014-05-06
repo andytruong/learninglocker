@@ -3,8 +3,8 @@
 use \Locker\Repository\Document\DocumentRepository as Document;
 use Carbon\Carbon;
 
-class DocumentController extends BaseController {
-
+class DocumentController extends BaseController
+{
   /**
   * Document Repository
   */
@@ -15,13 +15,12 @@ class DocumentController extends BaseController {
    *
    * @param DocumentRepository $document
    */
-  public function __construct(Document $document){
+  public function __construct(Document $document)
+  {
     $this->document = $document;
     $this->beforeFilter('@getLrs');
     $this->beforeFilter('@setParameters');
   }
-
-
 
   /**
    * Handle Single and Multiple GETs and CORS PUT/POST/DELETE requests
@@ -29,11 +28,13 @@ class DocumentController extends BaseController {
    *
    * @return Response
    */
-  public function index(){
-    switch( $this->method ){
+  public function index()
+  {
+    switch ($this->method) {
       case "HEAD":
       case "GET":
-        if( isset($this->params[$this->document_ident]) ){ //If a stateId is passed then redirect to get method
+        if ( isset($this->params[$this->document_ident]) ) { //If a stateId is passed then redirect to get method
+
           return $this->get();
         } else {
           return $this->all();
@@ -48,23 +49,24 @@ class DocumentController extends BaseController {
       break;
     }
   }
-  
+
   /**
    * Retrieve attached file content
-   * 
+   *
    * @param  string $name Field name
-   * 
+   *
    * @return Array
    */
-  public function getAttachedContent($name='content'){
-    switch( $this->method ){
+  public function getAttachedContent($name='content')
+  {
+    switch ($this->method) {
       case "PUT":
-        if( $this->CORS ){ //Cross browser PUT implementation, using POST
+        if ($this->CORS) { //Cross browser PUT implementation, using POST
           //Retrieve POST content
           return $this->getPostContent($name);
         } else {
           $contentType    = \Request::header('Content-Type');
-          if( !isset($contentType) ){
+          if ( !isset($contentType) ) {
             \App::abort(400, 'PUT requests must include a Content-Type header');
           }
           //Get body content and check content type sent
@@ -88,19 +90,19 @@ class DocumentController extends BaseController {
 
   /**
    * Checks for files, then retrieves the stored param
-   * 
+   *
    * @param  String $name Field name
-   * 
-   * @return Array       
+   *
+   * @return Array
    */
-  public function getPostContent($name){
-
-    if( \Input::hasFile($name) ){ //If a file has been sent, retrieve it with the correct file type
+  public function getPostContent($name)
+  {
+    if ( \Input::hasFile($name) ) { //If a file has been sent, retrieve it with the correct file type
 
       $content  = \Input::file($name);
       $type     = $content->getClientMimeType();
 
-    } else if( isset($this->params[$name] ) ){
+    } elseif ( isset($this->params[$name] ) ) {
 
       $content = $this->params['content'];
       $type = is_object( json_decode($content) ) ? "application/json" : "text/plain";
@@ -117,15 +119,15 @@ class DocumentController extends BaseController {
 
   /**
    * Generate content response
-   * 
+   *
    * @param  array $data Mixed data var to select Document with
-   * 
+   *
    * @return Response
    */
-  public function documentResponse($data){
-
+  public function documentResponse($data)
+  {
     $document = $this->document->find( $this->lrs->_id, $this->document_type, $data ); //find the correct document
-    if( !$document ){
+    if (!$document) {
       \App::abort(204);
     }
 
@@ -134,11 +136,11 @@ class DocumentController extends BaseController {
       'Content-Type'  => $document->contentType
     );
 
-    if( $this->method === 'HEAD' ){ //Only return headers
+    if ($this->method === 'HEAD') { //Only return headers
         $response = \Response::make(null, 200, $headers);
     } else {
 
-      switch( $document->contentType ){
+      switch ($document->contentType) {
         case "application/json":
           $response = \Response::json($document->content, 200, $headers);
         break;
@@ -162,24 +164,24 @@ class DocumentController extends BaseController {
    * @param
    *
    * @return array
-   * 
+   *
    */
-  public function checkParams( $required = array(), $optional=array(), $data = null ){
-
+  public function checkParams( $required = array(), $optional=array(), $data = null )
+  {
     $return_data = array();
 
-    if( is_null($data) ){
+    if ( is_null($data) ) {
       $data = $this->params;
     }
 
     //loop through all required parameters
-    foreach( $required as $name=>&$expected_types ){
+    foreach ($required as $name=>&$expected_types) {
       //check the parameter has been passed
-      if( !isset($data[$name]) ){
+      if ( !isset($data[$name]) ) {
         \App::abort(400, 'Required parameter is missing - '.$name );
       }
 
-      if( !empty($expected_types) ){
+      if ( !empty($expected_types) ) {
         $value = $this->checkTypes( $name, $data[$name], $expected_types );
       } else {
         $value = $data[$name];
@@ -188,9 +190,9 @@ class DocumentController extends BaseController {
       $return_data[$name] = $value;
     }
 
-    foreach( $optional as $name=>&$expected_types ){
+    foreach ($optional as $name=>&$expected_types) {
 
-      if( isset($data[$name]) ){
+      if ( isset($data[$name]) ) {
         $value = ( !empty($expected_types) ) ? $this->checkTypes( $name, $data[$name], $expected_types ) : $data[$name];
       } else {
         $value = null;
@@ -204,14 +206,15 @@ class DocumentController extends BaseController {
 
   /**
    * Get the updated parameter from the header and check formatting
-   * 
+   *
    * @return String The updated timestamp ISO 8601 formatted
    */
-  public function getUpdatedValue(){
+  public function getUpdatedValue()
+  {
     //Get the updated parameter from the header and check formatting
     $updated = \Request::header('Updated');
-    if( !empty($updated) ){
-      if( !$this->validateTimestamp($updated) ){
+    if ( !empty($updated) ) {
+      if ( !$this->validateTimestamp($updated) ) {
         \App::abort(400, sprintf( "`%s` is not an valid ISO 8601 formatted timestamp", $updated ) );
       }
     } else {
@@ -223,10 +226,10 @@ class DocumentController extends BaseController {
 
   /**
    * Check types submitted to ensure allowed
-   * 
+   *
    */
-  public function checkTypes($name, $value, $expected_types ){
-
+  public function checkTypes($name, $value, $expected_types)
+  {
     //convert expected type string into array
     $expected_types = ( is_string($expected_types) ) ? array($expected_types) : $expected_types;
 
@@ -234,21 +237,21 @@ class DocumentController extends BaseController {
     $type = gettype($value);
 
     //error on any unexpected parameter types
-    if( !in_array( $type, $expected_types ) ){
+    if ( !in_array( $type, $expected_types ) ) {
       \App::abort(400, sprintf( "`%s` is not an accepted type - expected %s - received %s", $name, implode(',', $expected_types), $type ) );
     }
 
     //Check if we have requested a JSON parameter
-    if( in_array('json', $expected_types ) ){
+    if ( in_array('json', $expected_types ) ) {
       $value = json_decode($value);
-      if( !is_object( $value ) ){
+      if ( !is_object( $value ) ) {
         \App::abort(400, sprintf( "`%s` is not an accepted type - expected a JSON formatted string", $name ) );
       }
     }
 
     //Check if we have a timestamp paramater
-    if( in_array('timestamp', $expected_types ) ){
-      if ( !$this->validateTimestamp($value) ){
+    if ( in_array('timestamp', $expected_types ) ) {
+      if ( !$this->validateTimestamp($value) ) {
         \App::abort(400, sprintf( "`%s` is not an accepted type - expected an ISO 8601 formatted timestamp", $name ) );
       }
     }
@@ -256,7 +259,8 @@ class DocumentController extends BaseController {
     return $value;
   }
 
-  public function validateTimestamp($timestamp){
+  public function validateTimestamp($timestamp)
+  {
     if (!preg_match('/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/', $timestamp) > 0) {
       return false;
     }

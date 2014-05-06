@@ -1,7 +1,7 @@
 <?php namespace Locker\Repository\OAuthApp;
 
-interface OAuthAppRepository {
-
+interface OAuthAppRepository
+{
   public function create( $input );
 
   public function all();

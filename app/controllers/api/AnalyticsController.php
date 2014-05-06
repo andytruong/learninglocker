@@ -2,8 +2,8 @@
 
 use \Locker\Data\Analytics\AnalyticsInterface as Analytics;
 
-class AnalyticsController extends BaseController {
-
+class AnalyticsController extends BaseController
+{
   /**
   * Analytics Interface
   */
@@ -14,14 +14,13 @@ class AnalyticsController extends BaseController {
    **/
   protected $params;
 
-
   /**
    * Construct
    *
    * @param StatementRepository $statement
    */
-  public function __construct(Analytics $analytics){
-
+  public function __construct(Analytics $analytics)
+  {
     $this->analytics = $analytics;
     $this->beforeFilter('@setParameters');
     $this->beforeFilter('@getLrs');
@@ -29,22 +28,22 @@ class AnalyticsController extends BaseController {
   }
 
   /**
-   * Our pre-defined segment routes. These allow for easy querying of one of 
+   * Our pre-defined segment routes. These allow for easy querying of one of
    * the following: verb, agents, activities, results, courses, badges.
    *
    * @param $param
    *
-   * @return jSON response 
+   * @return jSON response
    *
    **/
-  public function getSection( $section ){
-
+  public function getSection($section)
+  {
     $filter       = isset($this->params['filter'])       ? $this->params['filter']       : '';
     $returnFields = isset($this->params['returnFields']) ? $this->params['returnFields'] : '';
 
     $data = $this->analytics->section( $this->lrs->_id, $section, $filter, $returnFields );
 
-    if( $data['success'] == false ){
+    if ($data['success'] == false) {
       return $this->returnSuccessError( false, \Lang::get('apps.api.invalid_route'), 400 );
     }
 
@@ -59,11 +58,11 @@ class AnalyticsController extends BaseController {
    * @return Json  $results
    *
    **/
-  public function index(){
-
+  public function index()
+  {
     $data = $this->analytics->analytics( $this->lrs->_id, $this->params );
 
-    if( $data['success'] == false ){
+    if ($data['success'] == false) {
       return $this->returnSuccessError( false, \Lang::get('apps.no_data'), 400 );
     }
 

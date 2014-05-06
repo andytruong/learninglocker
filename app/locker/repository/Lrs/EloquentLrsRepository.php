@@ -3,8 +3,8 @@
 use Lrs;
 //use Illuminate\Database\Eloquent\Model;
 
-class EloquentLrsRepository implements LrsRepository {
-
+class EloquentLrsRepository implements LrsRepository
+{
   /**
   * @var $lrs
   */
@@ -15,29 +15,34 @@ class EloquentLrsRepository implements LrsRepository {
    *
    * @param $lrs
    */
-  public function __construct(Lrs $lrs){
+  public function __construct(Lrs $lrs)
+  {
     $this->lrs = $lrs;
   }
 
-  public function all(){
-    if( \Auth::user()->role == 'super' ){
+  public function all()
+  {
+    if ( \Auth::user()->role == 'super' ) {
       return $this->lrs->all();
-    }else{
+    } else {
       return $this->lrs->where('users._id', \Auth::user()->_id)->remember(10)->get();
     }
   }
 
-  public function find($id){
+  public function find($id)
+  {
     return $this->lrs->find($id);
   }
 
-  public function validate($data){
+  public function validate($data)
+  {
     $lrs = new Lrs;
+
     return $lrs->validate( $data );
   }
 
-  public function create( $input ){
-
+  public function create($input)
+  {
     $user             = \Auth::user();
     $lrs              = new Lrs;
     $lrs->title       = $input['title'];
@@ -47,7 +52,7 @@ class EloquentLrsRepository implements LrsRepository {
     $lrs->owner       = array( '_id' => \Auth::user()->_id );
     $lrs->users       = array( array('_id'   => $user->_id,
                                      'email' => $user->email,
-                                     'name'  => $user->name, 
+                                     'name'  => $user->name,
                                      'role'  => 'admin' ) );
 
     $lrs->save() ? $result = true : $return = false;
@@ -57,24 +62,24 @@ class EloquentLrsRepository implements LrsRepository {
       \Event::fire('user.create_lrs', array('user' => $user));
 
     return $result;
-    
+
   }
 
-  public function update($id, $input){
-
+  public function update($id, $input)
+  {
     $lrs = $this->find($id);
 
     $lrs->title       = $input['title'];
     $lrs->description = $input['description'];
-   
+
     $lrs->save();
-      
+
     return $lrs;
 
   }
 
-  public function delete($id){
-    
+  public function delete($id)
+  {
     $lrs = $this->find($id);
 
     //first delete all statements
@@ -83,28 +88,32 @@ class EloquentLrsRepository implements LrsRepository {
     return $lrs->delete();
   }
 
-  public function removeUser( $id, $user ){
+  public function removeUser($id, $user)
+  {
     return $this->lrs->where('_id', $id)->pull('users', array('_id' => $user));
   }
 
-  public function getLrsOwned( $user ){
+  public function getLrsOwned($user)
+  {
     return $this->lrs->where('owner._id', $user)->select('title')->get()->toArray();
   }
 
-  public function getLrsMember( $user ){
+  public function getLrsMember($user)
+  {
     return $this->lrs->where('users.user', $user)->select('title')->get()->toArray();
   }
 
-  public function changeRole( $id, $user, $role ){
-  
+  public function changeRole($id, $user, $role)
+  {
     $lrs = $this->find($id);
     $users = $lrs->users;
-    foreach($users as &$u){
-      if( $u['_id'] == $user ){
+    foreach ($users as &$u) {
+      if ($u['_id'] == $user) {
         $u['role'] = $role;
       }
     }
     $lrs->users = $users;
+
     return $lrs->save();
   }
 

@@ -2,8 +2,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class OAuthApp extends Eloquent {
-
+class OAuthApp extends Eloquent
+{
   /**
    * Our MongoDB collection used by the model.
    *
@@ -17,9 +17,9 @@ class OAuthApp extends Eloquent {
                            'callback' => 'required',
                            'rules'    => 'required');
 
-  public function validate( $data ) {
+  public function validate($data)
+  {
     return Validator::make($data, $this->rules);
   }
-
 
 }

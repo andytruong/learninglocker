@@ -6,8 +6,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Activity extends Eloquent {
-
+class Activity extends Eloquent
+{
   /**
    * Our MongoDB collection used by the model.
    *
@@ -20,6 +20,5 @@ class Activity extends Eloquent {
    * set the fillable fields.
    **/
   protected $fillable = array('id', 'definition');
-
 
 }

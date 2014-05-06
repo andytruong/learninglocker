@@ -2,8 +2,8 @@
 
 use \Locker\Repository\Query\QueryRepository as Query;
 
-class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface {
-
+class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface
+{
   /**
    * Query Repository Interface
    **/
@@ -15,8 +15,8 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @param Locker\Repository\Data\QueryRepository $query
    *
    */
-  public function __construct( Query $query ){
-
+  public function __construct(Query $query)
+  {
     //get the LRS connected to this query
     $this->query = $query;
 
@@ -30,14 +30,14 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return array
    *
    **/
-  public function analytics( $lrs, $options ){
-
+  public function analytics($lrs, $options)
+  {
     $since = $until = '';
 
     //grab the filter object and decode
-    if( isset($options['filter']) ){
+    if ( isset($options['filter']) ) {
       $filter = json_decode( $options['filter'], true );
-    }else{
+    } else {
       $filter = array();
     }
 
@@ -45,26 +45,26 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
     $filter = $this->setFilter( $filter );
 
     //set type if passed
-    if( isset( $options['type'] ) ){
+    if ( isset( $options['type'] ) ) {
       $type = $this->setType( $options['type'] );
-    }else{
+    } else {
       $type = $this->setType( 'time' ); //time is default
     }
 
     //set interval if passed
-    if( isset( $options['interval'] ) ){
+    if ( isset( $options['interval'] ) ) {
       $interval = $this->setInterval( $options['interval'] );
-    }else{
+    } else {
       $interval = $this->setInterval();
     }
 
     //set since
-    if( isset( $options['since'] ) ){
+    if ( isset( $options['since'] ) ) {
       $since = $this->setMongoDate( $options['since'] );
     }
 
     //set until
-    if( isset( $options['until'] ) ){
+    if ( isset( $options['until'] ) ) {
       $until = $this->setMongoDate( $options['until'] );
     }
 
@@ -72,16 +72,16 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
     $dates = $this->buildDates($since, $until);
 
     //set filters
-    if( !empty($dates) ){
+    if ( !empty($dates) ) {
       $filters = array_merge( $dates, $filter );
-    }else{
+    } else {
       $filters = $filter;
     }
 
     //get the data
     $data = $this->query->timedGrouping( $lrs, $filters, $interval, $type );
 
-    if( !$data || isset($data['errmsg']) ){
+    if ( !$data || isset($data['errmsg']) ) {
       return array('success' => false, 'message' => $data['errmsg'] );
     }
 
@@ -100,31 +100,31 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return array
    *
    **/
-  public function section( $lrs, $section, $filter, $returnFields='' ){
-
-    if( !$section = $this->setSection( $section ) ){
+  public function section($lrs, $section, $filter, $returnFields='')
+  {
+    if ( !$section = $this->setSection( $section ) ) {
       return array('success' => false);
     }
 
     //grab the filter object and decode
-    if( isset($filter) && !empty($filter) ){
+    if ( isset($filter) && !empty($filter) ) {
       $filter = json_decode( $filter, true );
-    }else{
+    } else {
       $filter=array();
     }
 
     //if section is courses or badges, add appropriate filter for the $match pipe
-    switch( $section ){
-      case 'courses': 
+    switch ($section) {
+      case 'courses':
         $filter = array_merge( $filter, array('statement.context.contextActivities.grouping.type' => 'http://adlnet.gov/expapi/activities/course'));
         break;
-      case 'badges': 
+      case 'badges':
         $filter = array_merge( $filter, array('statement.object.definition.type' => 'http://activitystrea.ms/schema/1.0/badge'));
         break;
     }
 
     //grab returnFields and decode
-    if( $returnFields != '' ){
+    if ($returnFields != '') {
       $returnFields = json_decode( $returnFields, true );
     }
 
@@ -144,99 +144,101 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return boolean
    *
    **/
-  private function setSection( $section ){
-    switch( $section ){
-      case 'agents': 
-        return '$actor'; 
+  private function setSection($section)
+  {
+    switch ($section) {
+      case 'agents':
+        return '$actor';
         break;
-      case 'verbs': 
-        return '$verb'; 
+      case 'verbs':
+        return '$verb';
         break;
-      case 'activities': 
-        return '$object'; 
+      case 'activities':
+        return '$object';
         break;
-      case 'results': 
-        return '$result'; 
+      case 'results':
+        return '$result';
         break;
-      case 'courses': 
-        return true; 
+      case 'courses':
+        return true;
         break;
-      case 'badges': 
-        return true; 
+      case 'badges':
+        return true;
         break;
     }
+
     return false;
   }
 
   /**
    * Check the filters passed to see if it contains any where criteria.
    *
-   * Formats include: 
-   * key => value - where key equals value 
+   * Formats include:
+   * key => value - where key equals value
    * key => array(foo, bar) - where key equals foo AND bar
    * key => array(array(foo,bar)) - where key equals foo OR bar
    * key => array(array(foo,bar), hello) - where key equals foo OR bar AND hello
    *
    * If there are no $in criteria (we can tell based on whether values = array)
-   * then we only need to pass to mongo query as a single array as $and is implied. 
+   * then we only need to pass to mongo query as a single array as $and is implied.
    * However, if multiple criteria, we need to include $and hence the dual
    * approach here.
    *
    * @param  array $options
-   * @return array $filter 
+   * @return array $filter
    *
    **/
-  private function setFilter( $options ){
-
+  private function setFilter($options)
+  {
     $use_and = false;
     $filter  = array();
     $set_in  = array();
     $set_inbetween = array();
 
-    if( $options ){
+    if ($options) {
       //loop through submitted filters
-      foreach( $options as $key => $value ){
+      foreach ($options as $key => $value) {
         //if any value is an array, it containes multiple elements so requires $and
-        if( is_array($value) ){
+        if ( is_array($value) ) {
           $use_and = true;
         }
 
       }
 
-      if( !$use_and ){
-        foreach( $options as $key => $value ){
+      if (!$use_and) {
+        foreach ($options as $key => $value) {
           $filter[$key] = $value;
         }
-      }else{
-        foreach( $options as $key => $value ){
+      } else {
+        foreach ($options as $key => $value) {
           $in_statement = array();
           //loop through this value to check for nested array
-          if( is_array($value) ){
+          if ( is_array($value) ) {
             //is it an in request, or a between two values request?
-            if( $value[0] == '<>' ){
+            if ($value[0] == '<>') {
               $set_inbetween[$key] = array('$gte' => (int) $value[1], '$lte' => (int) $value[2]);
-            }else{
-              foreach( $value as $v ){
+            } else {
+              foreach ($value as $v) {
                 $in_statement[] = $v;
               }
               $set_in[] = array($key => array('$in' => $in_statement));
             }
-          }else{
+          } else {
             $set_in[] = array( $key => $value );
           }
-        
+
         }
         //we need to use Mongo $and for this type of statement.
-        if( !empty($set_in) ){
+        if ( !empty($set_in) ) {
           $filter = array('$and' => $set_in );
         }
 
         //now merge and and between if available
-        if( !empty($filter) && !empty($set_inbetween) ){
+        if ( !empty($filter) && !empty($set_inbetween) ) {
           $filter = array_merge($filter, $set_inbetween);
-        }elseif( !empty($set_inbetween) ){
+        } elseif ( !empty($set_inbetween) ) {
           $filter = $set_inbetween; //just use in_between
-        }else{
+        } else {
           //do nothing
         }
       }
@@ -251,7 +253,8 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return MongoDate object
    *
    **/
-  private function setMongoDate( $date ){
+  private function setMongoDate($date)
+  {
     return new \MongoDate(strtotime($date));
   }
 
@@ -264,16 +267,18 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return array $dates
    *
    **/
-  private function buildDates($since='', $until=''){
-    if( $since != '' && $until != ''){
+  private function buildDates($since='', $until='')
+  {
+    if ($since != '' && $until != '') {
       $dates = array( 'created_at' => array( '$gte' => $since, '$lte' => $until));
-    }elseif( $since != '' ){
+    } elseif ($since != '') {
       $dates = array( 'created_at' => array( '$gte' => $since ));
-    }elseif( $until != '' ){
+    } elseif ($until != '') {
       $dates = array( 'created_at' => array( '$lte' => $until));
-    }else{
+    } else {
       $dates = array();
     }
+
     return $dates;
   }
 
@@ -285,8 +290,9 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return string $identifier
    *
    **/
-  private function setInterval( $interval='' ){    
-    switch( $interval ){
+  private function setInterval($interval='')
+  {
+    switch ($interval) {
       case 'day'        : return '$dayOfYear';  break;
       case 'dayOfMonth' : return '$dayOfMonth'; break;
       case 'dayOfWeek'  : return '$dayOfWeek';  break;
@@ -305,13 +311,15 @@ class Analytics extends \app\locker\data\BaseData implements AnalyticsInterface 
    * @return $type - default is time
    *
    **/
-  private function setType( $type ){
-    switch( $type ){
+  private function setType($type)
+  {
+    switch ($type) {
       case 'time'     : return $type; break;
       case 'user'     : return $type; break;
       case 'verb'     : return $type; break;
       case 'activity' : return $type; break;
     }
+
     return 'time';
   }
 

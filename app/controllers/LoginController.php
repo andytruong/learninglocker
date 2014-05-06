@@ -1,17 +1,17 @@
 <?php
 
-class LoginController extends BaseController {
-
- 
+class LoginController extends BaseController
+{
   /**
   * Show the form for creating a new Session
   */
-  public function create(){
+  public function create()
+  {
     return View::make('system.forms.login');
   }
 
-  public function login(){
-
+  public function login()
+  {
     $creds = array(
       'email'    => Input::get('email'),
       'password' => Input::get('password')
@@ -19,9 +19,9 @@ class LoginController extends BaseController {
 
     $remember_me = Input::get('remember', 0);
 
-    if( Auth::attempt($creds, $remember_me) ){
+    if ( Auth::attempt($creds, $remember_me) ) {
       return Redirect::to('/');
-    } 
+    }
 
     return Redirect::route('login.create')
         ->withInput()
@@ -32,8 +32,10 @@ class LoginController extends BaseController {
   /**
    * Logout
    **/
-  public function destroy(){
+  public function destroy()
+  {
     Auth::logout();
+
     return Redirect::to('/');
   }
 

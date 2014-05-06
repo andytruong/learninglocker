@@ -1,7 +1,7 @@
 <?php namespace Locker\Repository\Report;
 
-interface ReportRepository {
-
+interface ReportRepository
+{
   public function all($lrs);
 
   public function create( $input );

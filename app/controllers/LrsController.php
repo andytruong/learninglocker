@@ -4,10 +4,10 @@ use Locker\Repository\Lrs\LrsRepository as Lrs;
 use Locker\Repository\Statement\StatementRepository as Statement;
 use Locker\Data\Analytics\AnalyticsInterface;
 
-class LrsController extends BaseController {
-
+class LrsController extends BaseController
+{
   /**
-  * Lrs 
+  * Lrs
   */
   protected $lrs;
 
@@ -21,7 +21,6 @@ class LrsController extends BaseController {
    **/
   protected $statements;
 
-
   /**
    * Construct
    *
@@ -30,8 +29,8 @@ class LrsController extends BaseController {
    * @param Locker\Repository\StatementRepository
    *
    */
-  public function __construct(Lrs $lrs, AnalyticsInterface $analytics, Statement $statement){
-
+  public function __construct(Lrs $lrs, AnalyticsInterface $analytics, Statement $statement)
+  {
     $this->lrs       = $lrs;
     $this->analytics = $analytics;
     $this->statement = $statement;
@@ -39,7 +38,7 @@ class LrsController extends BaseController {
     $this->beforeFilter('auth');
     $this->beforeFilter('csrf', array('only' => array('store', 'update', 'destroy', 'editCredentials', 'usersRemove', 'changeRole')));
     $this->beforeFilter('auth.lrs', array('except' => array('index','create','store'))); //check user can access LRS.
-    $this->beforeFilter('edit.lrs', array('only' => array('edit','update','endpoint', 
+    $this->beforeFilter('edit.lrs', array('only' => array('edit','update','endpoint',
                                                           'users', 'usersRemove', 'inviteUsersForm',
                                                           'changeRole', 'api', 'editCredentials'))); //check user can edit LRS.
     $this->beforeFilter('create.lrs', array('only' => array('create','store'))); //Allowed to create an LRS?
@@ -51,8 +50,10 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function index(){
+  public function index()
+  {
     $lrs = $this->lrs->all();
+
     return View::make('partials.lrs.list', array('lrs' => $lrs));
   }
 
@@ -61,9 +62,11 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function create(){
+  public function create()
+  {
     //has the user verified their email address?
     $verified = Auth::user()->verified;
+
     return View::make('partials.lrs.create', array('verified' => $verified));
   }
 
@@ -72,20 +75,20 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function store(){
-
+  public function store()
+  {
     $data = Input::all();
 
     //lrs input validation
     $rules['title']        = 'required|alpha_spaces';
-    $rules['description']  = 'alpha_spaces';       
+    $rules['description']  = 'alpha_spaces';
     $validator = Validator::make($data, $rules);
     if ($validator->fails()) return Redirect::back()->withErrors($validator);
 
     // Store lrs
     $s = $this->lrs->create( $data );
 
-    if($s){
+    if ($s) {
       return Redirect::to('/lrs')->with('success', Lang::get('lrs.created'));
     }
 
@@ -100,12 +103,13 @@ class LrsController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function edit( $id ){
-
+  public function edit($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
-    return View::make('partials.lrs.edit', array('account_nav' => true, 
-                                                 'lrs'         => $lrs, 
+
+    return View::make('partials.lrs.edit', array('account_nav' => true,
+                                                 'lrs'         => $lrs,
                                                  'list'        => $lrs_list));
 
   }
@@ -116,19 +120,19 @@ class LrsController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function update($id){
-
+  public function update($id)
+  {
     $data = Input::all();
 
     //lrs input validation
     $rules['title']        = 'required|alpha_spaces';
-    $rules['description']  = 'alpha_spaces';       
+    $rules['description']  = 'alpha_spaces';
     $validator = Validator::make($data, $rules);
     if ($validator->fails()) return Redirect::back()->withErrors($validator);
 
     $l = $this->lrs->update( $id, Input::all() );
 
-    if($l){
+    if ($l) {
       return Redirect::back()->with('success', Lang::get('lrs.updated'));
     }
 
@@ -141,27 +145,28 @@ class LrsController extends BaseController {
   /**
    * Display the specified resource.
    *
-   * This is a temp hack until the single page app for 
+   * This is a temp hack until the single page app for
    * analytics is ready. v1.0 stable.
    *
    * @param  int  $id
    * @return View
    */
-  public function show( $id ){
-
+  public function show($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
-    return View::make('partials.lrs.dashboard', array('lrs'      => $lrs, 
+
+    return View::make('partials.lrs.dashboard', array('lrs'      => $lrs,
                                                       'list'     => $lrs_list,
                                                       'dash_nav' => true));
-    
+
   }
 
-  public function getStats( $id, $segment = '' ){
-
+  public function getStats($id, $segment = '')
+  {
     $stats = new \app\locker\data\dashboards\LrsDashboard( $id );
 
-    switch( $segment ){
+    switch ($segment) {
       case 'topActivities':
         $get_stats = $stats->getTopActivities( $id );
         $get_stats = $get_stats['result'];
@@ -174,6 +179,7 @@ class LrsController extends BaseController {
         $get_stats = $stats->setTimelineGraph();
         break;
     }
+
     return Response::json($get_stats);
   }
 
@@ -183,9 +189,10 @@ class LrsController extends BaseController {
    * @param  int  $id
    * @return View
    */
-  public function destroy($id){
-
+  public function destroy($id)
+  {
     $this->lrs->delete($id);
+
     return Response::json(array('success'=>200, 'message'=>'deleted'));
 
   }
@@ -195,12 +202,13 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function statements( $id ){
-
+  public function statements($id)
+  {
     $statements = $this->statement->statements($id);
     $lrs        = $this->lrs->find( $id );
     $lrs_list   = $this->lrs->all();
-    return View::make('partials.statements.list', 
+
+    return View::make('partials.statements.list',
                   array('statements'    => $statements,
                         'lrs'           => $lrs,
                         'list'          => $lrs_list,
@@ -213,11 +221,12 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function endpoint( $id ){
-
+  public function endpoint($id)
+  {
     $lrs    = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
-    return View::make('partials.lrs.endpoint', array('lrs'          => $lrs, 
+
+    return View::make('partials.lrs.endpoint', array('lrs'          => $lrs,
                                                      'endpoint_nav' => true,
                                                      'list'         => $lrs_list));
 
@@ -228,11 +237,12 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function api( $id ){
-
+  public function api($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
-    return View::make('partials.lrs.api', array('lrs'     => $lrs, 
+
+    return View::make('partials.lrs.api', array('lrs'     => $lrs,
                                                 'api_nav' => true,
                                                 'list'    => $lrs_list));
 
@@ -242,23 +252,23 @@ class LrsController extends BaseController {
    * Generate a new key and secret for basic auth
    *
    **/
-  public function editCredentials( $id ){
-
+  public function editCredentials($id)
+  {
     $lrs = $this->lrs->find( $id );
 
     $lrs->api  = array('basic_key'    => \app\locker\helpers\Helpers::getRandomValue(),
                        'basic_secret' => \app\locker\helpers\Helpers::getRandomValue());
 
-    if( $lrs->save() ){
+    if ( $lrs->save() ) {
       $message_type = 'success';
       $message      = Lang::get('update_key');
-    }else{
+    } else {
       $message_type = 'error';
       $message      = Lang::get('update_key_error');
     }
-    
+
     return Redirect::back()->with($message_type, $message);
-    
+
   }
 
   /**
@@ -266,34 +276,41 @@ class LrsController extends BaseController {
    *
    * @return View
    */
-  public function users( $id ){
-
+  public function users($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
-    return View::make('partials.users.list', array('lrs'      => $lrs, 
+
+    return View::make('partials.users.list', array('lrs'      => $lrs,
                                                    'users'    => $lrs->users,
                                                    'list'     => $lrs_list,
                                                    'user_nav' => true));
 
   }
 
-  public function inviteUsersForm( $id ){
+  public function inviteUsersForm($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
-    return View::make('partials.lrs.invite', array('lrs'      => $lrs, 
+
+    return View::make('partials.lrs.invite', array('lrs'      => $lrs,
                                                    'users'    => $lrs->users,
                                                    'list'     => $lrs_list,
                                                    'user_nav' => true));
 
   }
 
-  public function usersRemove( $id ){
+  public function usersRemove($id)
+  {
     $lrs = $this->lrs->removeUser( $id, Input::get('user') );
+
     return Redirect::back()->with('success', Lang::get('lrs.remove_user'));
   }
 
-  public function changeRole( $id, $user, $role ){
+  public function changeRole($id, $user, $role)
+  {
     $change = $this->lrs->changeRole( $id, $user, $role );
+
     return Response::json(array('success' => true));
   }
 

@@ -5,8 +5,8 @@ use Locker\Repository\Lrs\LrsRepository as Lrs;
 use Locker\Repository\Query\QueryRepository as Query;
 use Locker\Repository\Report\ReportRepository as Report;
 
-class ReportingController extends \BaseController {
-
+class ReportingController extends \BaseController
+{
   /**
   * Analytics Interface
   */
@@ -27,7 +27,7 @@ class ReportingController extends \BaseController {
    **/
   protected $report;
 
-  /** 
+  /**
    * Lrs
    **/
 
@@ -36,13 +36,13 @@ class ReportingController extends \BaseController {
    **/
   protected $params;
 
-  public function __construct(Analytics $analytics, Lrs $lrs, Query $query, Report $report){
-
+  public function __construct(Analytics $analytics, Lrs $lrs, Query $query, Report $report)
+  {
     $this->analytics = $analytics;
     $this->lrs       = $lrs;
     $this->query     = $query;
     $this->report    = $report;
-    
+
     $this->beforeFilter('auth');
     $this->beforeFilter('auth.lrs'); //check user can access LRS.
     $this->beforeFilter('csrf', array('only' => array('update', 'store', 'destroy')));
@@ -54,11 +54,13 @@ class ReportingController extends \BaseController {
    *
    * @return Response
    */
-  public function index($id){
+  public function index($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
     $reports  = $this->report->all($id);
-    return View::make('partials.reporting.index', array('lrs' => $lrs, 
+
+    return View::make('partials.reporting.index', array('lrs' => $lrs,
       'list' => $lrs_list, 'reporting_nav' => true, 'reports' => $reports));
   }
 
@@ -67,8 +69,10 @@ class ReportingController extends \BaseController {
    *
    * @return response
    **/
-  public function getReports($id, $limit=5){
+  public function getReports($id, $limit=5)
+  {
     $reports = $this->report->all($id);
+
     return Response::json( $reports );
   }
 
@@ -78,14 +82,15 @@ class ReportingController extends \BaseController {
    * @param string $id Lrs ID
    * @return Response
    */
-  public function create($id){
-
+  public function create($id)
+  {
     $lrs      = $this->lrs->find( $id );
     $lrs_list = $this->lrs->all();
     $verbs    = new \app\locker\data\reporting\getVerbs();
     $activities = new \app\locker\data\reporting\getActivities();
     $activities = $activities->getActivities( $id );
     $context = new \app\locker\data\reporting\getContext();
+
     return View::make('partials.reporting.create', array('lrs'           => $lrs,
                                                          'verbs'         => $verbs->getVerbs( $id ),
                                                          'languages'     => $context->getContextLanguages( $id ),
@@ -101,21 +106,21 @@ class ReportingController extends \BaseController {
    *
    * @return Response
    */
-  public function store(){
-
+  public function store()
+  {
     $request  = \Request::instance();
     $incoming = $request->getContent();
     $data     = json_decode($incoming, true);
 
     //lrs input validation
     $rules['name']         = 'required|alpha_spaces';
-    $rules['description']  = 'alpha_spaces';       
+    $rules['description']  = 'alpha_spaces';
     $validator = Validator::make($data, $rules);
     if ($validator->fails())  return \Response::json( $validator );
 
     $save = $this->report->create( $data );
 
-    if( $save ){
+    if ($save) {
       return \Response::json( 'success' );
     }
 
@@ -128,16 +133,17 @@ class ReportingController extends \BaseController {
    * @param  int  $id
    * @return Response
    */
-  public function show($id, $report){
-
+  public function show($id, $report)
+  {
     $lrs      = $this->lrs->find($id);
     $lrs_list = $this->lrs->all();
     $report   = $this->report->find($report);
     $statements = $this->getStatements($id, $this->decodeURL( $report->query ));
+
     return View::make('partials.reporting.view', array('lrs'        => $lrs,
                                                        'list'       => $lrs_list,
                                                        'statements' => $statements,
-                                                       'report'     => $report, 
+                                                       'report'     => $report,
                                                        'reporting_nav' => true));
 
   }
@@ -146,15 +152,15 @@ class ReportingController extends \BaseController {
    * Loop through saved report query and decode any url's
    *
    **/
-  public function decodeURL($array){
-
+  public function decodeURL($array)
+  {
     $output = '';
 
-    if( !empty($array) ){
-      foreach($array as $key => $value){
-        if(is_array($value)){
+    if ( !empty($array) ) {
+      foreach ($array as $key => $value) {
+        if (is_array($value)) {
           $output[$key] = $this->decodeURL( $value );
-        }else{
+        } else {
           $output[$key] = urldecode($value);
         }
       }
@@ -192,19 +198,21 @@ class ReportingController extends \BaseController {
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id, $report){
+  public function destroy($id, $report)
+  {
     $report = $this->report->delete($report);
-    return Redirect::back()->with('success', Lang::get('reporting.deleted')); 
+
+    return Redirect::back()->with('success', Lang::get('reporting.deleted'));
   }
 
-  /** 
+  /**
    * Get data based on query created.
    **/
-  public function getData($lrs){
-
+  public function getData($lrs)
+  {
     $data = $this->analytics->analytics( $lrs, $this->params );
 
-    if( $data['success'] == false ){
+    if ($data['success'] == false) {
       return \Response::json( array( 'success'  => false, 'message'  => \Lang::get('apps.no_data')), 400 );
     }
 
@@ -214,8 +222,8 @@ class ReportingController extends \BaseController {
   /**
    * Return statements based on query created
    **/
-  public function getStatements($lrs, $filter=''){
-
+  public function getStatements($lrs, $filter='')
+  {
     return $this->query->selectStatements( $lrs, $filter );
     return \Response::json( $getStatements );
 
@@ -224,36 +232,45 @@ class ReportingController extends \BaseController {
   /**
    * Get available actors to use with typeahead.
    **/
-  public function getActors($lrs, $query){
+  public function getActors($lrs, $query)
+  {
     $results = $this->report->getActors($lrs, $query);
+
     return Response::json($results);
   }
 
   /**
    * Get available activities to use with typeahead.
    **/
-  public function getActivities($lrs, $query){
+  public function getActivities($lrs, $query)
+  {
     $results = $this->setQuery($lrs, $query, 'statement.object', 'statement.object.id');
+
     return Response::json($results);
   }
 
   /**
    * Get available parent activities to use with typeahead.
    **/
-  public function getParents($lrs, $query){
+  public function getParents($lrs, $query)
+  {
     $results = $this->setQuery($lrs, $query, 'statement.context.contextActivities.parent', 'statement.context.contextActivities.parent.id');
+
     return Response::json($results);
   }
 
   /**
    * Get available grouping activities to use with typeahead.
    **/
-  public function getGrouping($lrs, $query){
+  public function getGrouping($lrs, $query)
+  {
     $results = $this->setQuery($lrs, $query, 'statement.context.contextActivities.grouping', 'statement.context.contextActivities.grouping.id');
+
     return Response::json($results);
   }
 
-  public function setQuery($lrs, $query, $field, $wheres){
+  public function setQuery($lrs, $query, $field, $wheres)
+  {
     return $this->report->setQuery($lrs, $query, $field, $wheres);
   }
 
@@ -261,7 +278,8 @@ class ReportingController extends \BaseController {
    * Get all of the input and files for the request and store them in params.
    *
    */
-  public function setParameters(){
+  public function setParameters()
+  {
     $this->params = \Request::all();
   }
 

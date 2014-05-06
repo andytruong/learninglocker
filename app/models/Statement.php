@@ -2,8 +2,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Statement extends Eloquent {
-
+class Statement extends Eloquent
+{
   /**
    * Our MongoDB collection used by the model.
    *
@@ -27,14 +27,15 @@ class Statement extends Eloquent {
    * For mass assigning which we use for TC statements,
    * set the fillable fields.
    **/
-  // protected $fillable = array('actor', 'verb', 'result', 'object', 'context', 
+  // protected $fillable = array('actor', 'verb', 'result', 'object', 'context',
   //   'authority', 'stored', 'timestamp', 'id', 'attachments', 'version');
 
   /**
    * All statements belong to an LRS
    *
    **/
-  public function lrs(){
+  public function lrs()
+  {
     return $this->belongsTo('Lrs');
   }
 

@@ -1,7 +1,7 @@
 <?php namespace Locker\Repository\Document;
 
-interface DocumentRepository {
-
+interface DocumentRepository
+{
   public function store( $lrs, $documentType, $data, $updated, $method );
 
   public function find( $lrs, $documentType, $data, $get );

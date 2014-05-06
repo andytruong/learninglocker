@@ -1,10 +1,11 @@
 <?php namespace app\locker\data;
 
-class BaseData {
-
+class BaseData
+{
   // protected $db;
 
-  protected function setDB(){
+  protected function setDB()
+  {
     $this->db = \DB::getMongoDB();
   }
 
@@ -15,7 +16,8 @@ class BaseData {
    * @return array
    *
    **/
-  protected function getMatch( $lrs ){
+  protected function getMatch($lrs)
+  {
     return array('lrs._id' => $lrs);
   }
 

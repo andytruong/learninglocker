@@ -2,8 +2,8 @@
 
 use Jenssegers\Mongodb\Model as Eloquent;
 
-class Lrs extends Eloquent {
-
+class Lrs extends Eloquent
+{
   /**
    * Our MongoDB collection used by the model.
    *
@@ -16,7 +16,8 @@ class Lrs extends Eloquent {
    **/
   protected $rules = array('title' => 'required');
 
-  public function validate( $data ) {
+  public function validate($data)
+  {
     return Validator::make($data, $this->rules);
   }
 

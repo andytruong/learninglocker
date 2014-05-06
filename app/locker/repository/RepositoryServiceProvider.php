@@ -2,10 +2,10 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class RepositoryServiceProvider extends ServiceProvider {
-
-  public function register(){
-
+class RepositoryServiceProvider extends ServiceProvider
+{
+  public function register()
+  {
     $this->app->bind(
       'Locker\Repository\User\UserRepository',
       'Locker\Repository\User\EloquentUserRepository'
@@ -43,6 +43,5 @@ class RepositoryServiceProvider extends ServiceProvider {
       'Locker\Repository\Report\EloquentReportRepository'
     );
   }
-
 
 }

@@ -4,8 +4,8 @@ use \Locker\Repository\Document\DocumentRepository as Document;
 use \Locker\Repository\Activity\ActivityRepository as Activity;
 use Locker\Repository\Document\DocumentType as DocumentType;
 
-class ActivityController extends DocumentController {
-
+class ActivityController extends DocumentController
+{
   /**
   * Activity Repository
   */
@@ -16,8 +16,8 @@ class ActivityController extends DocumentController {
    *
    * @param DocumentRepository $document
    */
-  public function __construct(Document $document, Activity $activity){
-
+  public function __construct(Document $document, Activity $activity)
+  {
     parent::__construct($document);
 
     $this->activity = $activity;
@@ -33,21 +33,22 @@ class ActivityController extends DocumentController {
    *
    * @return Response
    */
-  public function all(){
-
-    $data = $this->checkParams( 
+  public function all()
+  {
+    $data = $this->checkParams(
       array(
         'activityId' => 'string'
-      ), 
+      ),
       array(
         'since'        => array('string', 'timestamp')
-      ), $this->params 
+      ), $this->params
     );
 
     $documents = $this->document->all( $this->lrs->_id, $this->document_type, $data );
-    
+
     //return array of only the stateId values for each document
     $ids = array_column($documents->toArray(), 'identId');
+
     return \Response::json( $ids );
   }
 
@@ -57,9 +58,9 @@ class ActivityController extends DocumentController {
    *
    * @return Response
    */
-  public function get(){
-    
-    $data = $this->checkParams( 
+  public function get()
+  {
+    $data = $this->checkParams(
       array(
         'activityId' => 'string',
         'profileId'  => 'string'
@@ -76,9 +77,9 @@ class ActivityController extends DocumentController {
    *
    * @return Response
    */
-  public function store(){
-
-    $data = $this->checkParams( 
+  public function store()
+  {
+    $data = $this->checkParams(
       array(
         'activityId' => 'string',
         'profileId'    => 'string'
@@ -95,7 +96,7 @@ class ActivityController extends DocumentController {
     //Store the document
     $store = $this->document->store( $this->lrs->_id, $this->document_type, $data, $updated, $this->method );
 
-    if( $store ){
+    if ($store) {
       return \Response::json( array( 'ok', 204 ) );
     }
 
@@ -108,14 +109,15 @@ class ActivityController extends DocumentController {
    * Multiple document deletes are not permitted on activities
    *
    * @param  int  $id
-   * 
+   *
    * @return Response
    */
-  public function delete(){
+  public function delete()
+  {
     $single_delete = isset($this->params[$this->document_ident]);
 
-    if( $single_delete ){ //single document delete
-      $data = $this->checkParams( 
+    if ($single_delete) { //single document delete
+      $data = $this->checkParams(
         array(
           'activityId' => 'string',
           'profileId'    => 'string'
@@ -127,8 +129,8 @@ class ActivityController extends DocumentController {
     }
 
     $success = $this->document->delete( $this->lrs->_id, $this->document_type, $data, $single_delete );
-    
-    if( $success ){
+
+    if ($success) {
       return \Response::json( array( 'ok', 204 ) );
     }
 
@@ -137,22 +139,22 @@ class ActivityController extends DocumentController {
 
   /**
    * Return the full activity object
-   * 
+   *
    * @return Response
    **/
-  public function full(){
-
-    $data = $this->checkParams( 
+  public function full()
+  {
+    $data = $this->checkParams(
       array(
         'activityId' => 'string'
-      ), 
-      array(), $this->params 
+      ),
+      array(), $this->params
     );
 
     $activity = $this->activity->getActivity($data['activityId']);
+
     return \Response::json($activity);
 
   }
-
 
 }

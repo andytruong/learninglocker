@@ -2,16 +2,15 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class GraphServiceProvider extends ServiceProvider {
-
-  public function register(){
-
+class GraphServiceProvider extends ServiceProvider
+{
+  public function register()
+  {
     $this->app->bind(
       'Locker\Graphing\GraphingInterface',
       'Locker\Graphing\Graphing'
     );
-    
-  }
 
+  }
 
 }

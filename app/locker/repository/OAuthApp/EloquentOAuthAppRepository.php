@@ -2,8 +2,8 @@
 
 use OAuthApp;
 
-class EloquentOAuthAppRepository implements OAuthAppRepository {
-
+class EloquentOAuthAppRepository implements OAuthAppRepository
+{
   /**
   * App
   */
@@ -14,26 +14,28 @@ class EloquentOAuthAppRepository implements OAuthAppRepository {
    *
    * @param App $app
    */
-  public function __construct( OAuthApp $app ){
-
+  public function __construct(OAuthApp $app)
+  {
     $this->app = $app;
 
   }
 
-  public function find($id){
+  public function find($id)
+  {
     return $this->app->find($id);
   }
 
-  public function all(){
-    if( \Auth::user()->role == 'super' ){
+  public function all()
+  {
+    if ( \Auth::user()->role == 'super' ) {
       return $this->app->all();
-    }else{
+    } else {
       return $this->app->where('owner._id', \Auth::user()->_id)->get();
     }
   }
 
-  public function create( $input ){
-
+  public function create($input)
+  {
     $user             = \Auth::user();
     $app              = new OAuthApp;
     $app->name        = $input['name'];
@@ -47,7 +49,7 @@ class EloquentOAuthAppRepository implements OAuthAppRepository {
                                'website' => $input['org_url'] ? $input['org_url'] : '');
     $app->owner       = array('_id'   => $user->_id,
                               'email' => $user->email,
-                              'name'  => $user->name, 
+                              'name'  => $user->name,
                               'role'  => $user->role );
 
     $app->save() ? $result = true : $return = false;
@@ -55,11 +57,11 @@ class EloquentOAuthAppRepository implements OAuthAppRepository {
     $this->oauthDetails( $app->_id, $input['name'], $app->client_id, $app->secret, 1, $input['callback'] );
 
     return $result;
-    
+
   }
 
-   public function update( $id, $input ){
-
+   public function update($id, $input)
+   {
     $app              = $this->app->find( $id );
     $app->name        = $input['name'];
     $app->description = $input['description'];
@@ -70,14 +72,15 @@ class EloquentOAuthAppRepository implements OAuthAppRepository {
 
     $app->save() ? $result = true : $return = false;
 
-    //@todo 
+    //@todo
     $this->oauthEditDetails( $app->client_id, $input['name'], $input['callback'] );
 
     return $result;
-    
+
   }
 
-  public function delete($id){
+  public function delete($id)
+  {
     $app = $this->app->find( $id );
     //@todo delete from mysql tables based on client_id
     $app->delete();
@@ -87,13 +90,13 @@ class EloquentOAuthAppRepository implements OAuthAppRepository {
    * @todo save scope for the app e.g. read only, read and write or read / write / manage
    *
    **/
-  private function oauthDetails( $app_id, $name, $client_id, $secret, $approve=1, $callback ){
-   
+  private function oauthDetails($app_id, $name, $client_id, $secret, $approve=1, $callback)
+  {
     \DB::connection('mysql')->table('oauth_clients')->insert(
-        array('id'           => $client_id, 
+        array('id'           => $client_id,
               'secret'       => $secret,
               'name'         => $name,
-              'app_id'       => $app_id, 
+              'app_id'       => $app_id,
               'auto_approve' => $approve)
       );
 
@@ -104,8 +107,8 @@ class EloquentOAuthAppRepository implements OAuthAppRepository {
 
   }
 
-  private function oauthEditDetails( $client_id, $name, $callback ){
-   
+  private function oauthEditDetails($client_id, $name, $callback)
+  {
     \DB::connection('mysql')
     ->table('oauth_clients')
     ->where('id', $client_id)

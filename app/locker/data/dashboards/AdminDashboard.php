@@ -1,12 +1,12 @@
 <?php namespace app\locker\data\dashboards;
 
-class AdminDashboard extends \app\locker\data\BaseData {
-
+class AdminDashboard extends \app\locker\data\BaseData
+{
   public $stats;
   private $user;
 
-  public function __construct(){
-
+  public function __construct()
+  {
     $this->setDb();
 
     $this->user = \Auth::user(); //we might want to pass user in, for example when use the API
@@ -19,7 +19,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * Set all stats array.
    *
    **/
-  public function setFullStats(){
+  public function setFullStats()
+  {
     $this->stats = array('statement_count' => $this->statementCount(),
                          'lrs_count'       => $this->lrsCount(),
                          'actor_count'     => $this->actorCount(),
@@ -36,7 +37,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return count
    *
    **/
-  public function statementCount(){
+  public function statementCount()
+  {
     return \DB::collection('statements')->remember(5)->count();
   }
 
@@ -46,7 +48,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return count
    *
    **/
-  public function lrsCount(){
+  public function lrsCount()
+  {
     return \DB::collection('lrs')->remember(5)->count();
   }
 
@@ -56,7 +59,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return count.
    *
    **/
-  public function actorCount(){
+  public function actorCount()
+  {
     return count( \Statement::distinct('statement.actor.mbox')->remember(5)->get() );
   }
 
@@ -66,7 +70,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return count.
    *
    **/
-  public function userCount(){
+  public function userCount()
+  {
     return \DB::collection('users')->remember(5)->count();
   }
 
@@ -76,15 +81,17 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return $days number
    *
    **/
-  private function statementDays(){
+  private function statementDays()
+  {
     $first_day = \DB::collection('statements')->first();
-    if( $first_day ){
+    if ($first_day) {
       $datetime1 = date_create( gmdate("Y-m-d", $first_day['created_at']->sec) );
       $datetime2 = date_create( gmdate("Y-m-d", time()) );
       $interval  = date_diff($datetime1, $datetime2);
       $days      = $interval->days;
+
       return $days;
-    }else{
+    } else {
       return '';
     }
   }
@@ -96,17 +103,19 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return $avg
    *
    **/
-  public function statementAvgCount(){
+  public function statementAvgCount()
+  {
     $count = $this->statementCount();
     $days  = $this->statementDays();
-    if( $days == 0 ){
+    if ($days == 0) {
       //this will be the first day, so increment to 1
       $days = 1;
     }
     $avg   = 0;
-    if( $count && $days ){
+    if ($count && $days) {
       $avg = round( $count / $days );
     }
+
     return $avg;
   }
 
@@ -117,17 +126,19 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return $avg
    *
    **/
-  public function learnerAvgCount(){
+  public function learnerAvgCount()
+  {
     $count = $this->actorCount();
     $days  = $this->statementDays();
-    if( $days == 0 ){
+    if ($days == 0) {
       //this will be the first day, so increment to 1
       $days = 1;
     }
     $avg   = 0;
-    if( $count && $days ){
+    if ($count && $days) {
       $avg = round( $count / $days );
     }
+
     return $avg;
   }
 
@@ -137,8 +148,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
    * @return $data json feed.
    *
    **/
-  public function getStatementNumbersByDate(){
-
+  public function getStatementNumbersByDate()
+  {
     $set_id = array( '$dayOfYear' => '$created_at' );
 
     $statements = $this->db->statements->aggregate(
@@ -153,8 +164,8 @@ class AdminDashboard extends \app\locker\data\BaseData {
 
     //set statements for graphing
     $data = '';
-    if( isset($statements['result']) ){
-      foreach( $statements['result'] as $s ){
+    if ( isset($statements['result']) ) {
+      foreach ($statements['result'] as $s) {
         $data .= json_encode( array( "y" => substr($s['date'][0],0,10), "a" => $s['count'], 'b' => count($s['actor'])) ) . ' ';
       }
     }

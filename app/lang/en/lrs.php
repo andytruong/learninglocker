@@ -24,27 +24,27 @@ return array(
     'active'    => 'Active',
 
     'sidebar'	=> array(
-    	'dash' 	    => 'Dashboard',
-    	'edit' 	    => 'Edit LRS details',
-    	'endpoint'  => 'xAPI statements',
-    	'api'	    => 'LRS API',
-    	'users'     => 'Manage users',
-    	'analytics' => 'Analytics',
-    	'reporting' => 'Reporting'
+        'dash' 	    => 'Dashboard',
+        'edit' 	    => 'Edit LRS details',
+        'endpoint'  => 'xAPI statements',
+        'api'	    => 'LRS API',
+        'users'     => 'Manage users',
+        'analytics' => 'Analytics',
+        'reporting' => 'Reporting'
     ),
 
     'endpoint' 	=> array(
-    	'endpoint'       => 'Endpoint',
-    	'basic_http'     => 'Basic HTTP Authentication',
-    	'submit'         => 'Accept xAPI Statements',
-    	'instructions'   => 'In order to accept xAPI statements you will need to submit to the following endpoint and authenticate.',
-    	'new_key_secret' => 'Generate new key and secret'
+        'endpoint'       => 'Endpoint',
+        'basic_http'     => 'Basic HTTP Authentication',
+        'submit'         => 'Accept xAPI Statements',
+        'instructions'   => 'In order to accept xAPI statements you will need to submit to the following endpoint and authenticate.',
+        'new_key_secret' => 'Generate new key and secret'
     ),
 
     'api'       => array(
-    	'oauth'    => 'OAuth 2.0',
-    	'settings' => 'API Settings',
-    	'api'	   => 'LRS API'
+        'oauth'    => 'OAuth 2.0',
+        'settings' => 'API Settings',
+        'api'	   => 'LRS API'
     ),
 
     'update_key'       => 'Your key has now been updated.',

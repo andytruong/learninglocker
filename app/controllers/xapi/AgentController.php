@@ -3,15 +3,15 @@
 use \Locker\Repository\Document\DocumentRepository as Document;
 use Locker\Repository\Document\DocumentType as DocumentType;
 
-class AgentController extends DocumentController {
-
+class AgentController extends DocumentController
+{
   /**
    * Construct
    *
    * @param DocumentRepository $document
    */
-  public function __construct(Document $document){
-
+  public function __construct(Document $document)
+  {
     parent::__construct($document);
 
     $this->document_type = DocumentType::AGENT;
@@ -25,21 +25,22 @@ class AgentController extends DocumentController {
    *
    * @return Response
    */
-  public function all(){
-
-    $data = $this->checkParams( 
+  public function all()
+  {
+    $data = $this->checkParams(
       array(
         'agent' => array('string','json')
-      ), 
+      ),
       array(
         'since'        => array('string', 'timestamp')
-      ), $this->params 
+      ), $this->params
     );
 
     $documents = $this->document->all( $this->lrs->_id, $this->document_type, $data );
-    
+
     //return array of only the stateId values for each document
     $ids = array_column($documents->toArray(), 'identId');
+
     return \Response::json( $ids );
   }
 
@@ -49,9 +50,9 @@ class AgentController extends DocumentController {
    *
    * @return Response
    */
-  public function get(){
-    
-    $data = $this->checkParams( 
+  public function get()
+  {
+    $data = $this->checkParams(
       array(
         'agent' => array('string','json'),
         'profileId'    => 'string'
@@ -68,9 +69,9 @@ class AgentController extends DocumentController {
    *
    * @return Response
    */
-  public function store(){
-
-    $data = $this->checkParams( 
+  public function store()
+  {
+    $data = $this->checkParams(
       array(
         'agent' => array('string','json'),
         'profileId'    => 'string'
@@ -87,7 +88,7 @@ class AgentController extends DocumentController {
     //Store the document
     $store = $this->document->store( $this->lrs->_id, $this->document_type, $data, $updated, $this->method );
 
-    if( $store ){
+    if ($store) {
       return \Response::json( array( 'ok', 204 ) );
     }
 
@@ -100,15 +101,15 @@ class AgentController extends DocumentController {
    * Multiple document deletes are not permitted on activities
    *
    * @param  int  $id
-   * 
+   *
    * @return Response
    */
-  public function delete(){
-
+  public function delete()
+  {
     $single_delete = isset($this->params[$this->document_ident]);
 
-    if( $single_delete ){ //single document delete
-      $data = $this->checkParams( 
+    if ($single_delete) { //single document delete
+      $data = $this->checkParams(
         array(
           'agent' => array('string','json'),
           'profileId'    => 'string'
@@ -120,8 +121,8 @@ class AgentController extends DocumentController {
     }
 
     $success = $this->document->delete( $this->lrs->_id, $this->document_type, $data, $single_delete );
-    
-    if( $success ){
+
+    if ($success) {
       return \Response::json( array( 'ok', 204 ) );
     }
 
@@ -130,16 +131,16 @@ class AgentController extends DocumentController {
 
   /**
    * Search for and return a Person object
-   * 
+   *
    * @return Response
    **/
-  public function search(){
-
-    $data = $this->checkParams( 
+  public function search()
+  {
+    $data = $this->checkParams(
       array(
         'agent' => array('string','json')
-      ), 
-      array(), $this->params 
+      ),
+      array(), $this->params
     );
 
 
@@ -151,27 +152,25 @@ class AgentController extends DocumentController {
       'objectType'  =>  'Person'
     );
 
-    if( isset($agent->name) ){
+    if ( isset($agent->name) ) {
       $person['name'] = array($agent->name);
     }
 
-    if( isset($agent->mbox) ){
+    if ( isset($agent->mbox) ) {
       $person['mbox'] = array($agent->mbox);
     }
-    if( isset($agent->mbox_sha1sum) ){
+    if ( isset($agent->mbox_sha1sum) ) {
       $person['mbox_sha1sum'] = array($agent->mbox_sha1sum);
     }
-    if( isset($agent->openid) ){
+    if ( isset($agent->openid) ) {
       $person['openid'] = array($agent->openid);
     }
-    if( isset($agent->account) ){
+    if ( isset($agent->account) ) {
       $person['account'] = array($agent->account);
     }
-
 
     return \Response::json($person);
 
   }
-
 
 }

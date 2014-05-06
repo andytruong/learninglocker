@@ -1,7 +1,7 @@
 <?php namespace Locker\Graphing;
 
-interface GraphingInterface {
-
+interface GraphingInterface
+{
   public function morrisLineGraph( $data );
 
 }

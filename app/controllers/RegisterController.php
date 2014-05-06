@@ -2,8 +2,8 @@
 
 use Locker\Repository\User\UserRepository as User;
 
-class RegisterController extends BaseController {
-
+class RegisterController extends BaseController
+{
   /**
   * User
   */
@@ -14,30 +14,30 @@ class RegisterController extends BaseController {
    *
    * @param User $user
    */
-  public function __construct(User $user){
-
+  public function __construct(User $user)
+  {
     $this->user = $user;
     $this->beforeFilter('guest');
     $this->beforeFilter('registation.status');
 
   }
 
-
-  public function index(){
+  public function index()
+  {
     return View::make('system.forms.register');
   }
 
-  public function store(){
-
+  public function store()
+  {
     //event hook to fire and check domain registration
     $event = Event::fire('user.domain_check', array(Input::all()));
-    if( $event == false ){
+    if ($event == false) {
       return Redirect::back()->withErrors('That email address is not premitted.');
     }
 
     //validate input
     $validator = $this->user->validate( Input::all() );
-    if ($validator->fails()){
+    if ($validator->fails()) {
       return Redirect::back()
       ->withInput(Input::except('password'))
       ->withErrors($validator);
@@ -46,7 +46,7 @@ class RegisterController extends BaseController {
     // Save the user
     $user = $this->user->create(Input::all());
 
-    if($user){
+    if ($user) {
       //event hook to fire upon successful regitration
       Event::fire('user.register', array($user));
       // log in new user
@@ -54,6 +54,7 @@ class RegisterController extends BaseController {
         'email'    => Input::get('email'),
         'password' => Input::get('password')
       ));
+
       return Redirect::to('/')
       ->with('flash', 'The new user has been created');
     }
