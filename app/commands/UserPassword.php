@@ -45,7 +45,7 @@ class UserPassword extends Command {
 
         $user = Password::getUser($credentials);
         if ($user) {
-            $user->password = Hash::make($password);
+            $user->password = Hash::make($this->argument('password'));
             $user->save();
             $this->info('Updated');
         }
