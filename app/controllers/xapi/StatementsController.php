@@ -2,7 +2,7 @@
 
 use \Locker\Repository\Statement\StatementRepository as Statement;
 
-class StatementController extends BaseController
+class StatementsController extends BaseController
 {
   /**
   * Statement Repository
