@@ -12,3 +12,4 @@
 */
 
 Artisan::add(new UserPassword());
+Artisan::add(new Generate());
