@@ -4,6 +4,22 @@
 - API is for external device to manage site resources (Analytics, Report, Site, …)
 
 2. How to test app with Goft & Tetris?
+3. How to run test using different db
+- Adding app/config/testing/database.php with following configuration:
+ 
+return array(
+    'default' => 'mongodb',
+    'connections' => array(
+        'mongodb' => array(
+            'driver'   => 'mongodb',
+            'host'     => '192.168.1.223',
+            'port'     => 27017,
+            'username' => '',
+            'password' => '',
+            'database' => 'quanll_testing'
+        )
+    )
+);
 
 - Download: http://tincanapi.com/download-prototypes/
 - To configure them to report statements to an LRS, you need to edit the config.js (rename it from config.js.template to just config.js in your TinCan_Prototypes folder).
@@ -21,4 +37,15 @@ Config.actor = { "mbox":["mailto:name@domain.com"], "name":["First Last"] };
 	+ Go to any LRS item & xapi statements page of that lrs (http://lrs.example.com/lrs/536b02d4c01f1325618b4567/endpoint).
 
 - Run the prototype (index.html) and go through the activities. You can see statements in the statement viewer, report sample in the index file or by logging to your LRS and looking statements page.
+- Before running tests: Since the in-memory database is always empty when a connection is made, it's important to migrate the database before every test. To do this, open app/tests/TestCase.php and add the following method to the end of the class:
 
+/**
+ * Migrates the database and set the mailer to 'pretend'.
+ * This will cause the tests to run quickly.
+ *
+ */
+private function prepareForTests()
+{
+    Artisan::call('migrate');
+    Mail::pretend(true);
+}
