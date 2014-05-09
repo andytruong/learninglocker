@@ -76,3 +76,30 @@ If you are running a developer version of Learning Locker (pre 1.0rc1) then you 
 db.statements.renameCollection(‘old_statements’)
 ```
 3. Visit /migrate and follow the instructions. (make sure you are logged in)
+
+
+#### Config mongodb with multiple db
+Edit app/database.php and follow example:
+
+1. 	'mongodb' => array(
+	    'host' => array('server1', 'server2'),
+	    'driver'   => 'mongodb',
+	    'port'     => 27017,
+	    'username' => '',
+	    'password' => '',
+	    'database' => 'dbname'
+	)
+
+2.	'mongodb' => array(
+	    'read' => array(
+	        'host' => 'server1',
+	    ),
+	    'write' => array(
+	        'host' => 'server2'
+	    ),
+	    'driver'   => 'mongodb',
+	    'port'     => 27017,
+	    'username' => '',
+	    'password' => '',
+	    'database' => 'dbname'
+	)
