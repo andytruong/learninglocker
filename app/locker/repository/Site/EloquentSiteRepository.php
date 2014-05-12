@@ -32,6 +32,8 @@ class EloquentSiteRepository implements SiteRepository
     $site->restrict    = $data['restrict']; //restrict registration to a specific email domain
     $site->domain      = $data['domain'];
     $site->super       = array( array('user' => \Auth::user()->_id ) );
+    $site->footer_sitename = 'Aduro LRS';
+    $site->footer_url = 'http://adurolms.com';
     $site->save();
 
     return $site;
@@ -47,6 +49,8 @@ class EloquentSiteRepository implements SiteRepository
     $site->create_lrs  = $data['create_lrs'];
     $site->registration = $data['registration'];
     $site->domain      = $data['domain']; //restrict registration to a specific email domain
+    $site->footer_sitename = $data['footer_sitename'];
+    $site->footer_url = $data['footer_url'];
 
     return $site->save();
 

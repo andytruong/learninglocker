@@ -4,7 +4,7 @@
 
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-lg-offset-4 col-md-offset-3">
-      
+
       <div class="logo">
         <img src="{{ URL() }}/assets/img/logo2-grey.png" alt="Logo" />
       </div>
@@ -15,7 +15,7 @@
             {{ implode('', $errors->all('<li>:message</li>'))}}
           </ul>
         @endif
-  
+
         @yield('content')
 
       </div>
@@ -29,10 +29,15 @@
       </div>
 
       <div class="links">
-        Powered by <a href="http://learninglocker.net">Learning Locker</a>
+        Powered by
+        @if( isset($site) && ($site->footer_sitename === '' || $site->footer_url === '' ))
+          <a href="http://adurolms.com" target='_blank'>Aduro LRS</a>
+        @else
+          <a href="{{ $site->footer_url }}" target='_blank'>{{ $site->footer_sitename }}</a>
+        @endif
       </div>
 
-    </div>  
+    </div>
   </div>
 
 @show

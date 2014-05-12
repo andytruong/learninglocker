@@ -1,49 +1,70 @@
 {{ Form::model($site, array('route' => array('site.update', $site->_id), 
       'method' => 'PUT', 'class' => 'form-horizontal')) }}
-  <div class="form-group">
-    {{ Form::label('name', Lang::get('site.name'), array('class' => 'col-sm-4 control-label' )) }}
-    <div class="col-sm-8">
-      {{ Form::text('name', $site->name,array('class' => 'form-control')) }}
+  <fieldset>
+    <legend>Site Configuration</legend>
+    <div class="form-group">
+      {{ Form::label('name', Lang::get('site.name'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('name', $site->name,array('class' => 'form-control')) }}
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    {{ Form::label('description', Lang::get('site.description'), array('class' => 'col-sm-4 control-label' )) }}
-    <div class="col-sm-8">
-      {{ Form::text('description', $site->description,array('class' => 'form-control')) }}
+    <div class="form-group">
+      {{ Form::label('description', Lang::get('site.description'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('description', $site->description,array('class' => 'form-control')) }}
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    {{ Form::label('email', Lang::get('site.email'), array('class' => 'col-sm-4 control-label' )) }}
-    <div class="col-sm-8">
-      {{ Form::text('email', $site->email,array('class' => 'form-control')) }}
-      <span class="help-block">{{ Lang::get('site.help.email') }}</span>
+    <div class="form-group">
+      {{ Form::label('email', Lang::get('site.email'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('email', $site->email,array('class' => 'form-control')) }}
+        <span class="help-block">{{ Lang::get('site.help.email') }}</span>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    {{ Form::label('create_lrs', Lang::get('site.create_lrs'), array('class' => 'col-sm-4 control-label' )) }}
-    <div class="col-sm-8">
-      <span class='label label-default'><i class="icon icon-check"></i> {{ Lang::get('site.super_admin') }}</span>
-      {{ Form::checkbox('create_lrs[]', 'plus') }} {{ Lang::get('site.plus') }}
-      {{ Form::checkbox('create_lrs[]', 'observer') }} {{ Lang::get('site.observers') }}
-      <input type="hidden" name="create_lrs[]" value="super" />
-      <span class="help-block">{{ Lang::get('site.help.create_lrs') }}</span>
+    <div class="form-group">
+      {{ Form::label('create_lrs', Lang::get('site.create_lrs'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        <span class='label label-default'><i class="icon icon-check"></i> {{ Lang::get('site.super_admin') }}</span>
+        {{ Form::checkbox('create_lrs[]', 'plus') }} {{ Lang::get('site.plus') }}
+        {{ Form::checkbox('create_lrs[]', 'observer') }} {{ Lang::get('site.observers') }}
+        <input type="hidden" name="create_lrs[]" value="super" />
+        <span class="help-block">{{ Lang::get('site.help.create_lrs') }}</span>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    {{ Form::label('registration', Lang::get('site.registration'), array('class' => 'col-sm-4 control-label' )) }}
-    <div class="col-sm-8">
-      {{ Form::radio('registration', 'Open') }} {{ Lang::get('site.open') }}
-      {{ Form::radio('registration', 'Closed') }} {{ Lang::get('site.closed') }}
-      <span class="help-block">{{ Lang::get('site.help.registration') }}</span>
+    <div class="form-group">
+      {{ Form::label('registration', Lang::get('site.registration'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::radio('registration', 'Open') }} {{ Lang::get('site.open') }}
+        {{ Form::radio('registration', 'Closed') }} {{ Lang::get('site.closed') }}
+        <span class="help-block">{{ Lang::get('site.help.registration') }}</span>
+      </div>
     </div>
-  </div>
-  <div class="form-group">
-    {{ Form::label('open', 'Restrict registration (email domain)', array('class' => 'col-sm-4 control-label' )) }}
-    <div class="col-sm-8">
-      {{ Form::text('domain', $site->domain, array('class' => 'form-control')) }}
-      <span class="help-block">{{ Lang::get('site.help.restrict') }}</span>
+    <div class="form-group">
+      {{ Form::label('open', 'Restrict registration (email domain)', array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('domain', $site->domain, array('class' => 'form-control')) }}
+        <span class="help-block">{{ Lang::get('site.help.restrict') }}</span>
+      </div>
     </div>
-  </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Footer Configuration</legend>
+    <div class="form-group">
+      {{ Form::label('footer_sitename', 'Footer sitename', array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('footer_sitename', $site->footer_sitename, array('class' => 'form-control')) }}
+        <span class="help-block">Powered by ..sitename.. Eg. Powered by Aduro LRS</span>
+      </div>
+    </div>
+    <div class="form-group">
+      {{ Form::label('footer_url', 'Footer URL', array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('footer_url', $site->footer_url, array('class' => 'form-control')) }}
+        <span class="help-block">Eg. http://adurolms.com</span>
+      </div>
+    </div>
+  </fieldset>
   <hr>
   <div class="form-group">
     <div class="col-sm-offset-4 col-sm-8">
