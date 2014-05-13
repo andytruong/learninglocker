@@ -283,4 +283,16 @@ class ReportingController extends \BaseController
     $this->params = \Request::all();
   }
 
+  /**
+   * Clone function for report
+   */
+
+  public function getClone($id, $report)
+  {
+    $report = $this->report->find($report);
+    $new = $report->replicate();
+    $new->name = Input::get('reportname');
+    $new->save();
+    return Redirect::to("lrs/$new->lrs/reporting/show/$new->_id")->with('success', 'That report has been cloned');
+  }
 }

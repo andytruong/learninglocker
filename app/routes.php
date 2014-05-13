@@ -239,6 +239,9 @@ Route::delete('lrs/{id}/reporting/delete/{report}', array(
 Route::get('lrs/{id}/reporting/getReports/{limt?}', array(
   'uses' => 'ReportingController@getReports',
 ));
+Route::post('lrs/{id}/reporting/clone/{report}', array(
+  'uses' => 'ReportingController@getClone',
+));
 
 
 /*

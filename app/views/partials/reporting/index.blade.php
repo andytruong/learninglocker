@@ -23,6 +23,7 @@
           <th>Created</th>
           <th>Run</th>
           <th></th>
+          <th></th>
         </tr>
       </thead>
 
@@ -49,6 +50,11 @@
             <a href="{{ URL() }}/lrs/{{ $lrs->_id }}/reporting/show/{{ $r->_id }}" class="btn btn-success btn-sm"><i class="icon-play-circle"></i> Run</a>
           </td>
           <td>
+            {{link_to('#', 'clone', $attributes = array('class'=>'btn btn-success btn-info btn-sm',
+                    'data-toggle'=>'modal', 'data-target'=>'#cloneForm'), $secure = null);}}
+            @include('partials.reporting.forms.clone', array('lrs' => $lrs->_id, 'report' => $r->_id))
+          </td>
+          <td>
             @include('partials.reporting.forms.delete', array('lrs' => $lrs->_id, 'report' => $r->_id))
           </td>
         </tr>
@@ -59,3 +65,4 @@
   @endif
 
 @stop
+
