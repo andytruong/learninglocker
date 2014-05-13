@@ -22,6 +22,7 @@ return array(
     'create_problem' => 'There was a problem creating that LRS.',
     'created'   => 'The LRS was created.',
     'active'    => 'Active',
+    'auth_service_update'    => 'The authentication saved',
 
     'sidebar'	=> array(
         'dash' 	    => 'Dashboard',
@@ -44,7 +45,12 @@ return array(
     'api'       => array(
         'oauth'    => 'OAuth 2.0',
         'settings' => 'API Settings',
-        'api'	   => 'LRS API'
+        'api'      => 'LRS API',
+        'auth_service'	   => 'Default Authentication service',
+        'label' => array(
+            'internal' => 'Internal LRS authentication',
+            'auth_service' => 'Aduro Auth Service'
+        ),
     ),
 
     'update_key'       => 'Your key has now been updated.',

@@ -48,6 +48,20 @@ Route::filter('auth.basic', function () {
 */
 
 Route::filter('auth.statement', function () {
+  // ------------
+  // @todo This is not yet good, will be followed up with LRS-51
+  // ------------
+  $auth_service = new \app\aduro\authentication\AuthenticationService();
+  if (!$auth_service->verify()) {
+    return Response::json(array(
+      'error' => true,
+      'message' => 'Unauthorized request.'),
+      401
+    );
+  } else {
+    return;
+  }
+
 
   //set passed credentials
   $key    = Request::getUser();

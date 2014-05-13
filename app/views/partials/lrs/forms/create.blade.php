@@ -13,6 +13,16 @@
       {{ Form::text('description', '',array('class' => 'form-control')) }}
     </div>
   </div>
+  <div class="col-sm-offset-2 col-sm-10">
+    <div class="form-group">
+      {{ Form::radio('auth_service', Lrs::ADURO_AUTH_SERVICE, true, array('id'=>'aduro-auth-service')) }}
+      {{ Form::label('auth-service', Lang::get('lrs.api.label.auth_service')) }}
+    </div>
+    <div class="form-group">
+      {{ Form::radio('auth_service', Lrs::INTERNAL_LRS, false ,array('id'=>'internal-lrs-authentication')) }}
+      {{ Form::label('internal', Lang::get('lrs.api.label.internal')) }}
+    </div>
+  </div>
   <hr>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
