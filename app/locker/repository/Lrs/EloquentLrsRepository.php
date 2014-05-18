@@ -79,7 +79,6 @@ class EloquentLrsRepository implements LrsRepository
             \Event::fire('lrs.create', array('lrs' => $lrs));
         }
 
-
         return $result;
     }
 

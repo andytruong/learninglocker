@@ -64,6 +64,7 @@ Route::filter('auth.statement', function () {
         $auth_service = new \app\aduro\authentication\AuthenticationInternal();
         return $auth_service->verify($key, $secret);
     }
+    // @todo: Replace 3 with constant
     elseif ($lrs->auth_service == 3) {
         $auth_service = new \app\aduro\authentication\AuthenticationMock();
         return $auth_service->verify($key, $secret);

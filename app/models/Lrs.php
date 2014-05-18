@@ -17,7 +17,7 @@ class Lrs extends Eloquent
 
     /**
      * Validation rules for statement input
-     * */
+     */
     protected $rules = array(
         'title' => 'required|alpha_dash',
         'auth_cache_time' => 'numeric',

@@ -10,7 +10,6 @@ class AuthenticationInternal implements AuthenticationInterface
         $method = \Request::server('REQUEST_METHOD');
 
         if ($method !== "OPTIONS") {
-
             // see if the lrs exists based on key and secret
             $lrs = \Lrs::where('api.basic_key', $key)
                     ->where('api.basic_secret', $secret)

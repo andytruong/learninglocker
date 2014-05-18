@@ -1,4 +1,4 @@
-{{ Form::model($lrs, array('route' => array('lrs.update', $lrs->_id), 
+{{ Form::model($lrs, array('route' => array('lrs.update', $lrs->_id),
       'method' => 'PUT', 'class' => 'form-horizontal')) }}
 
 <div class="form-group">
