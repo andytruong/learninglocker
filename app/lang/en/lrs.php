@@ -23,6 +23,9 @@ return array(
     'created'   => 'The LRS was created.',
     'active'    => 'Active',
     'auth_service_update'    => 'The authentication saved',
+    'auth_cache_time'    => 'Cache time',
+    'auth_service_url'    => 'Service URL',
+    'subdomain' => 'Subdomain',
 
     'sidebar'	=> array(
         'dash' 	    => 'Dashboard',

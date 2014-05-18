@@ -34,7 +34,8 @@
     "rhumsaa/array_column": "~1.1",
     "barryvdh/laravel-cors": "dev-master",
     "lucadegasperi/oauth2-server-laravel": "1.0.x",
-    "fzaninotto/faker": "dev-master"
+    "fzaninotto/faker": "dev-master",
+    "guzzlehttp/guzzle": "4.*"
   },
   "autoload": {
     "classmap": [
@@ -50,7 +51,8 @@
       "app/locker/graphing",
       "app/locker/explorer",
       "app/locker/statements",
-      "app/locker/listeners"
+      "app/locker/listeners",
+      "app/aduro/authentication"
     ]
   },
   "scripts": {

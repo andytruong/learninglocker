@@ -17,9 +17,10 @@ define([
   'views/stats/header',
   'views/activity/ActivityList',
   'views/actor/UserList',
-  'views/report/ReportList'
+  'views/report/ReportList',
+  'views/aduro/lrs'
 ], function($, _, Backbone, Marionette, App, TimelineModel, ActivityModel, UserModel, ReportModel, ActivityCollection, UserCollection, 
-    ReportCollection, Stats, LineGraph, LoadingView, Header, ActivityList, UserList, ReportList){
+    ReportCollection, Stats, LineGraph, LoadingView, Header, ActivityList, UserList, ReportList, lrs){
 
   var Controller = Backbone.Marionette.Controller.extend({
 

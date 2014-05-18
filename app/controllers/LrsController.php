@@ -80,8 +80,11 @@ class LrsController extends BaseController
     $data = Input::all();
 
     //lrs input validation
-    $rules['title']        = 'required|alpha_spaces';
+    $rules['title']        = 'required|alpha_dash|unique:lrs';
     $rules['description']  = 'alpha_spaces';
+    $rules['auth_cache_time']  = 'numeric';
+    $rules['auth_service_url']  = 'url';
+    $rules['subdomain']  = 'unique:lrs|alpha_dash';
     $validator = Validator::make($data, $rules);
     if ($validator->fails()) return Redirect::back()->withErrors($validator);
 
@@ -123,10 +126,16 @@ class LrsController extends BaseController
   public function update($id)
   {
     $data = Input::all();
-
+    $lrs      = $this->lrs->find( $id );
+    
     //lrs input validation
-    $rules['title']        = 'required|alpha_spaces';
+    $rules['title']        = "required|alpha_dash";
     $rules['description']  = 'alpha_spaces';
+    if ( $data['subdomain'] != $lrs->subdomain )
+    {
+      $rules['subdomain']  = 'unique:lrs|alpha_dash';
+    }
+  
     $validator = Validator::make($data, $rules);
     if ($validator->fails()) return Redirect::back()->withErrors($validator);
 

@@ -97,12 +97,7 @@ public function returnJSON( $data=array(), $additional_params=array(), $extra=ar
   public function getLrs()
   {
     //get the lrs
-    $key    = \Request::getUser();
-    $secret = \Request::getPassword();
-    $lrs    = \Lrs::where('api.basic_key', $key)
-           ->where('api.basic_secret', $secret)
-           ->first();
-    $this->lrs = $lrs;
+    $this->lrs = \LrsHelpers::getLrsBySubdomain();
   }
 
 }

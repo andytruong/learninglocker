@@ -1,8 +1,0 @@
-<?php 
- namespace app\aduro\authentication;
-
-class AuthenticationService {
-	public function verify() {
-		return TRUE;
-	}
-}
