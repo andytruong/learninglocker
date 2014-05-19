@@ -83,9 +83,13 @@ since=2014-03-01&until=2014-03-02 - this will return all results for a 24 hour p
 
 ### POST - /lrs-create
 Parameter:
-- title: string
-- description: string
-- auth_service: number in (1, 2, 3)
+- title: string, required
+- description: string, required
+- auth_service: number in (1, 2, 3), required
+- auth_service_url: string
+- auth_cache_time: number, minutes
+- token: string
+- subdomain: string
 
 Return an json with following properties:
 - success: string (true or false)
