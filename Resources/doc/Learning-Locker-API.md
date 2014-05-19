@@ -80,3 +80,20 @@ until: 2014-03-02
 
 To get results for a single day include both since and until. E.g. 
 since=2014-03-01&until=2014-03-02 - this will return all results for a 24 hour period from 2014-03-01
+
+### POST - /lrs-create
+Parameter:
+- title: string
+- description: string
+- auth_service: number in (1, 2, 3)
+
+Autherized:
+- email: string
+- pass: string
+
+Return an json with following properties:
+- success: string (true or false)
+- if success is true, the next property is new_lrs(string) which is lrs's id
+- if success is false, the next property is message(string) which is error message
+
+Referrer: app/test/AduroLrsControllerTest.php for more details

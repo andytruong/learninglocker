@@ -494,3 +494,13 @@ App::missing(function ($exception) {
     return Response::view( 'errors.missing', array( 'message'=>$exception->getMessage() ), 404);
   }
 });
+
+/*
+|------------------------------------------------------------------
+| For Aduro
+|------------------------------------------------------------------
+*/
+Route::post('lrs-create', array(
+  'before' => 'auth.basic',
+  'uses'   => 'Controllers\Aduro\AduroLrsController@create'
+));
