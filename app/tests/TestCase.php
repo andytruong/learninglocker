@@ -28,6 +28,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
         $lrs = new Lrs;
         $lrs->title = helpers::getRandomValue();
         $lrs->description = helpers::getRandomValue();
+        $lrs->subdomain = helpers::getRandomValue();
         $lrs->api = array(
             'basic_key' => helpers::getRandomValue(),
             'basic_secret' => helpers::getRandomValue()
@@ -49,6 +50,9 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         $lrs->save();
         $this->lrs = $lrs;
+        
+        // Hack header request
+        $_SERVER['SERVER_NAME'] = $this->lrs->title . '.com.vn';
         return $lrs;
     }
 

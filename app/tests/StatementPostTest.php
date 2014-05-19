@@ -81,6 +81,7 @@ class StatementPostTest extends TestCase
         $this->assertEquals($responseGet->getStatusCode(), 200);
 
         // Make sure response data for the get request
+        unset($param['result']);
         $responsePost = $this->_makeRequest($param, "POST", $auth);
         $this->assertEquals($responsePost->getStatusCode(), 204);
     }
@@ -92,7 +93,7 @@ class StatementPostTest extends TestCase
      */
     public function testPostAuthService()
     {
-        $this->lrsAuthMethod = Lrs::ADURO_AUTH_SERVICE;
+        $this->lrsAuthMethod = 3;
         $this->createLRS();
 
         $vs = $this->defaultStatment();
@@ -115,11 +116,7 @@ class StatementPostTest extends TestCase
              'api_key' => $this->lrs->api['basic_key'],
              'api_secret' => $this->lrs->api['basic_secret'],
          ];
-
-        $authClientOptions = [
-            'query' => ['token' => 'our-token'],
-            'body' => json_encode($authClientBody)
-        ];
+  
         $authClient = $this->createClientAuth($authBody);
 
         $auth = array(

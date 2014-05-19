@@ -1,38 +1,18 @@
 <?php
 
-use Lrs;
-use User;
-
 class ApiV1QueryAnalyticsTest extends TestCase {
-
-    private $lrs;
 
     public function setUp() {
         parent::setUp();
 
         Route::enableFilters();
 
-        $lrs = new Lrs;
-        $lrs->title = \app\locker\helpers\Helpers::getRandomValue();
-        $lrs->description = \app\locker\helpers\Helpers::getRandomValue();
-        $lrs->api = array('basic_key' => \app\locker\helpers\Helpers::getRandomValue(),
-          'basic_secret' => \app\locker\helpers\Helpers::getRandomValue()
-        );
+        // Authentication as super user.
+        $user = User::firstOrCreate(['email' => 'quan@ll.com']);
+        Auth::login($user);
 
-        $user = User::first();
-        $lrs->owner = array('_id' => $user->_id);
-        $lrs->users = array(
-          array('_id' => $user->_id,
-            'email' => $user->email,
-            'name' => $user->name,
-            'role' => 'admin'
-          )
-        );
-
-        $lrs->save();
-
-        $this->lrs = $lrs;
-
+        $this->createLRS();
+        
         $vs = array(
           'actor' => array(
             'objectType' => 'Agent',
@@ -77,13 +57,13 @@ class ApiV1QueryAnalyticsTest extends TestCase {
 
 
         $statement = App::make('Locker\Repository\Statement\EloquentStatementRepository');
-        $statement->create(array($vs), $lrs);
+        $statement->create(array($vs), $this->lrs);
 
         $vs2 = $vs;
         $vs2['object']['definition']['type'] = 'http://activitystrea.ms/schema/2.0/badge';
 
         $statement2 = App::make('Locker\Repository\Statement\EloquentStatementRepository');
-        $statement2->create(array($vs2), $lrs);
+        $statement2->create(array($vs2), $this->lrs);
     }
 
     /**
