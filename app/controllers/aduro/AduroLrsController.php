@@ -43,11 +43,17 @@ class AduroLrsController extends \Controller
         
         $lrs = new \Lrs;
 
-        $validator = $lrs->validate($input);
+        //lrs input validation
+        $rules['title'] = 'required|alpha_dash|unique:lrs';
+        $rules['description'] = 'alpha_spaces';
+        $rules['auth_cache_time'] = 'numeric';
+        $rules['auth_service_url'] = 'url';
+        $rules['subdomain'] = 'unique:lrs|alpha_dash';
+        $validator = \Validator::make($input, $rules);
         if ($validator->fails()) {
             $ouput = [
                 'success' => false,
-                'message' => $validator->messages()
+                'message' => "Error data"
             ];
             return \Response::json($ouput);
         }
