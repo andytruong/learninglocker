@@ -438,7 +438,11 @@ class EloquentStatementRepository implements StatementRepository
             ->first();
 
         if ($exists) {
-            if (array_multisort($exists->toArray()) === array_multisort($statement)) {
+            $dbStatement = $exists->statement;
+            // ensure two statements identical
+            unset($dbStatement['stored']);
+
+            if (count($dbStatement) == count($statement)) {
                 return 'conflict-matches';
             }
 
