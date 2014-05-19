@@ -40,6 +40,7 @@ return array(
     'open'		    => 'Open',
     'closed'	    => 'Closed',
     'details'	    => 'Details',
+    'token'        => 'Token',
 
     'total_learners'   => 'Total learners',
     'statement_total'  => 'Statement total',

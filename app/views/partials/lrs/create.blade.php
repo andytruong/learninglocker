@@ -1,5 +1,11 @@
 @extends('layouts.master')
 
+@section('footer')
+  @parent
+  <!-- load in one page application with requirejs -->
+  <script data-main="{{ URL() }}/assets/js/lrs/aduro/lrs.js" src="{{ URL() }}/assets/js/lrs/aduro/lrs.js"></script>
+  {{ HTML::style('assets/css/typeahead.css')}}
+@stop
 @section('sidebar')
   @if( app\locker\helpers\Access::isRole('super') )
     @include('partials.site.sidebars.admin')

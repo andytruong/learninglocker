@@ -424,7 +424,7 @@ class EloquentStatementRepository implements StatementRepository
 
     /**
      * Check to see if a submitted statementId already exist and if so
-     * are the two statements identical? If not, return false.
+     * are the two statements idntical? If not, return true.
      *
      * @param uuid   $id
      * @param string $lrs
