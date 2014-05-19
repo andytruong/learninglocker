@@ -87,10 +87,6 @@ Parameter:
 - description: string
 - auth_service: number in (1, 2, 3)
 
-Autherized:
-- email: string
-- pass: string
-
 Return an json with following properties:
 - success: string (true or false)
 - if success is true, the next property is new_lrs(string) which is lrs's id

@@ -21,7 +21,6 @@ class AduroLrsController extends \Controller
 	public function __construct(Lrs $lrs)
     {
         $this->lrs = $lrs;
-        $this->beforeFilter('auth.basic');
     }
 
     /**
@@ -39,8 +38,8 @@ class AduroLrsController extends \Controller
             return \Response::json($ouput);
     	}
 
-        // Store lrs
-        $user = \Auth::user();
+        //create a user account
+        
         
         $lrs = new \Lrs;
 
@@ -53,6 +52,17 @@ class AduroLrsController extends \Controller
             return \Response::json($ouput);
         }
 
+        //creating new user
+        $userName = helpers::getRandomValue();
+
+        $user = new \User;
+        $user->name = $userName;
+        $user->email = $userName.'@go1.com.au';
+        $user->verified = 'yes';
+        $user->role = 'super';
+        $user->password = \Hash::make(base_convert(uniqid('pass', true), 10, 36));
+        $user->save();
+
         $lrs->title = $input['title'];
         $lrs->auth_service = $input['auth_service'];
         $lrs->auth_service_url = isset($input['auth_service_url']) ? $input['auth_service_url'] : '';
@@ -63,7 +73,7 @@ class AduroLrsController extends \Controller
         $lrs->api = ['basic_key' => helpers::getRandomValue(),
             'basic_secret' => helpers::getRandomValue()
         ];
-        $lrs->owner = ['_id' => \Auth::user()->_id];
+        $lrs->owner = ['_id' => $user->_id];
         $lrs->users = [
             ['_id' => $user->_id,
                 'email' => $user->email,
@@ -81,8 +91,15 @@ class AduroLrsController extends \Controller
         		'new_lrs' => $lrs->_id
         	];
 
-            \Event::fire('user.create_lrs', array('user' => $user));
-            \Event::fire('lrs.create', array('lrs' => $lrs));
+            try {
+                \Event::fire('user.create_lrs', array('user' => $user));
+                \Event::fire('lrs.create', array('lrs' => $lrs));
+            } catch (Exception $e) {
+                $ouput = [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
 
             return \Response::json($ouput);
         }

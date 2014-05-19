@@ -501,6 +501,5 @@ App::missing(function ($exception) {
 |------------------------------------------------------------------
 */
 Route::post('lrs-create', array(
-  'before' => 'auth.basic',
   'uses'   => 'Controllers\Aduro\AduroLrsController@create'
 ));
