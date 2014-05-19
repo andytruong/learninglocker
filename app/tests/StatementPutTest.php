@@ -53,7 +53,7 @@ class StatementPutTest extends TestCase
             'pass' => $this->lrs->api['basic_secret'],
         );
 
-        //case: conflict-matches
+        // case: conflict-matches
         $response = $this->_makeRequest($param, $auth);
         $responseData = $response->getData();
         $responseStatus = $response->getStatusCode();
@@ -97,7 +97,7 @@ class StatementPutTest extends TestCase
             'timestamp' => $createdStatement->statement['timestamp'],
         ];
 
-        //create client for Auth Service
+        // create client for Auth Service
         $authBody = [
             'api_key' => $this->lrs->api['basic_key'],
             'api_secret' => $this->lrs->api['basic_secret'],
