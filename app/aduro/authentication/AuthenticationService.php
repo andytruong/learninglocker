@@ -12,20 +12,27 @@ class AuthenticationService implements AuthenticationInterface
 
             // Get timestamp from request parameter
             $timestamp = isset($_GET['timestamp']) ? $_GET['timestamp'] : time();
-
+            
             // cache auth service
             $cache_key = "{$key}_{$secret}";
-            if (\Cache::has($key)) {
+            if (\Cache::has($cache_key)) {
                 $res = \Cache::get($cache_key, '');
-                $res = unserialize($res);
+                $return = unserialize($res);
             }
             else {
                 $client = new \GuzzleHttp\Client();
                 $res = $client->get("{$lrs->auth_service_url}/client/validate/{$key}/{$secret}/{$timestamp}", ['query' => ['token' => $lrs->token]]);
                 $minutes = !empty($lrs->auth_cache_time) ? $lrs->auth_cache_time : 15;
-                \Cache::put($cache_key, serialize($res), $minutes);
+                $return = $res->json();
+                \Cache::put($cache_key, serialize($return), $minutes);
             }
-            $res->json();
+            
+            if (isset($return['error']) && $return['error']) {
+                return \Response::json(array(
+                    'error' => true,
+                    'message' => 'Unauthorized request.'), 401
+                );
+            }
             return;
         }
         catch (\GuzzleHttp\Exception\ClientException $ex) {
