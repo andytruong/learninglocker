@@ -1,7 +1,5 @@
 <?php
 
-use Activity;
-
 class ActivityTest extends TestCase {
 
   /**

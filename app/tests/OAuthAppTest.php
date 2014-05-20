@@ -1,7 +1,5 @@
 <?php
 
-use OAuthApp;
-
 class OAuthAppTest extends TestCase
 {
   public function testOAuthApp()

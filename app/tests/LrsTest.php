@@ -1,7 +1,5 @@
 <?php
 
-use Lrs;
-
 class LrsTest extends TestCase {
 
   /**

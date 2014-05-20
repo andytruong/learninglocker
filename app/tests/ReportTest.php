@@ -9,9 +9,6 @@
  *  - Report works correctly
  *  - Delete report works
  */
-use Lrs;
-use User;
-use Report;
 
 class ReportTest extends TestCase {
 
