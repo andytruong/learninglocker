@@ -114,6 +114,7 @@ return array(
     'Way\Generators\GeneratorsServiceProvider',
     'Barryvdh\Cors\CorsServiceProvider',
     'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
+    'anlutro\LaravelSettings\ServiceProvider',
 
   ),
 
@@ -184,5 +185,6 @@ return array(
     'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
     'ResourceServer'  => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
     'LrsHelpers'      => 'app\locker\helpers\Lrs',
+    'Setting' => 'anlutro\LaravelSettings\Facade',
   ),
 );
