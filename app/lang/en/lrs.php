@@ -26,6 +26,7 @@ return array(
     'auth_cache_time'    => 'Cache time',
     'auth_service_url'    => 'Service URL',
     'subdomain' => 'Subdomain',
+    'machine_name' => 'Machine name',
     'sidebar'	=> array(
         'dash' 	    => 'Dashboard',
         'edit' 	    => 'Edit LRS details',
