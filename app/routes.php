@@ -500,6 +500,12 @@ App::missing(function ($exception) {
 | For Aduro
 |------------------------------------------------------------------
 */
-Route::post('lrs-create', array(
+Route::get('aduro/lrs', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@index'
+));
+Route::post('aduro/lrs/create', array(
   'uses'   => 'Controllers\Aduro\AduroLrsController@create'
+));
+Route::post('aduro/lrs/delete', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@delete'
 ));

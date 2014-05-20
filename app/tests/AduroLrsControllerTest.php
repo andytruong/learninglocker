@@ -11,15 +11,37 @@ class AduroLrsControllerTest extends TestCase
         Route::enableFilters();        
     }
 
+    public function testGetLRS()
+    {   
+        //test get all
+        $response = $this->call("GET", '/aduro/lrs');
+        $responseContent = json_decode($response->getContent());
+        $this->assertTrue(property_exists($responseContent, 'lrs'));
+
+        //test show lrs by id
+        $lrs = array(
+            'title' => helpers::getRandomValue(),
+            'description' => 'testing description',
+            'auth_service' => 3
+        );
+        $responseLrs = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+        $responseContent = json_decode($responseLrs->getContent());
+        $response = $this->call("GET", '/aduro/lrs', ['lrsId' => $responseContent->new_lrs]);
+        $responseContent = json_decode($response->getContent());
+
+        $this->assertTrue(count($responseContent->lrs) == 1);
+
+    }
+    
     public function testCreateLRS()
     {
         $lrs = array(
             'title' => helpers::getRandomValue(),
-            'description' => helpers::getRandomValue(),
+            'description' => 'testing description',
             'auth_service' => 3
         );
 
-        $response = $this->call("POST", '/lrs-create', [], [], [], json_encode($lrs));
+        $response = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
 
         $responseData = $response->getData();
 
@@ -30,4 +52,5 @@ class AduroLrsControllerTest extends TestCase
 
         $this->assertTrue($checkResponse);
     }
+
 }
