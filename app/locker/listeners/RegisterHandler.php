@@ -18,10 +18,13 @@ class RegisterHandler
       $site->super       = array( array('user' => $user->_id ) );
       $site->save();
     }
+    
+    // Set base url
+    \Setting::set('base_url', $_SERVER['SERVER_NAME']);
 
     //now send an email asking to verify email
     $this->sendEmail( $user );
-
+    
   }
 
   public function domain_check($data)
