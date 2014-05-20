@@ -83,14 +83,14 @@ since=2014-03-01&until=2014-03-02 - this will return all results for a 24 hour p
 
 ### GET - /aduro/lrs
 Parameter:
-- lrsId: lrs id
+- lrsId: lrs id, numberic
 
 Return an json with array of lrs:
 - 1 lrs match with lrsId param
 - all of lrs if the request hasn't lrsId
 Referrer: app/test/AduroLrsControllerTest.php, function testGetLRS() for more details
 
-### POST - /adurolrs-create
+### POST - /aduro/lrs/create
 Parameter:
 - title: string, required
 - description: string, required
@@ -106,3 +106,12 @@ Return an json with following properties:
 - if success is false, the next property is message(string) which is error message
 
 Referrer: app/test/AduroLrsControllerTest.php, function testCreateLRS() for more details
+
+### POST - /aduro/lrs/delete
+Parameter:
+- lrsId: lrs id, numberic
+
+Return an json with following properties:
+- success: string (true or false)
+
+Referrer: app/test/AduroLrsControllerTest.php, function testDeleteLRS() for more details

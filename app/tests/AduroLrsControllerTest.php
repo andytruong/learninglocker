@@ -52,5 +52,24 @@ class AduroLrsControllerTest extends TestCase
 
         $this->assertTrue($checkResponse);
     }
+    
+    public function testDeleteLRS()
+    {
+        $lrs = array(
+            'title' => helpers::getRandomValue(),
+            'description' => 'testing description',
+            'auth_service' => 3
+        );
+
+        $responseLrs = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+        $responseContent = json_decode($responseLrs->getContent());
+        $deleteParam = ['lrsId' => $responseContent->new_lrs];
+        $response = $this->call("POST", '/aduro/lrs/delete', [], [], [], json_encode($deleteParam));
+        $responseContent = json_decode($response->getContent());
+
+        $this->assertTrue($responseContent->success === true);
+    }
+
+
 
 }

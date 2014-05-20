@@ -137,6 +137,27 @@ class AduroLrsController extends \Controller
         return \Response::json($ouput);
     }
 
+    public function delete()
+    {
+        $input = json_decode(\Request::instance()->getContent(), TRUE);
+
+        if (!isset($input['lrsId'])) {
+            $output = [
+                'success' => false,
+                'message' => 'Please provide lrs id'
+            ];
+
+            return \Response::json($output);
+        }
+
+        \Lrs::destroy($input['lrsId']);
+        $output = [
+            'success' => true
+        ];
+
+        return \Response::json($output);
+    }
+
     public function validate($input)
     {
         if (!$input) {
