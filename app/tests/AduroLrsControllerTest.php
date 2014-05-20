@@ -7,7 +7,6 @@ class AduroLrsControllerTest extends TestCase
 	public function setUp()
     {
         parent::setUp();
-
         Route::enableFilters();        
     }
 
