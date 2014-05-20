@@ -1,10 +1,10 @@
 {{ Form::open(array('route' => 'lrs.store', 'class' => 'form-horizontal')) }}
 
 <div class="form-group">
-    {{ Form::label('title', Lang::get('site.title'), array('class' => 'col-sm-2 control-label' )) }}
+    {{ Form::label('title', Lang::get('lrs.machine_name'), array('class' => 'col-sm-2 control-label' )) }}
     <div class="col-sm-10">
         {{ Form::text('title', '',array('class' => 'form-control')) }}
-        <span class="help-block">Machine name (Only lowercase letter, number and hyphen are allowed. E.g.: lms1, lms2)</span>
+        <span class="help-block">Only lowercase letter, number and hyphen are allowed. E.g.: lms1, lms2</span>
     </div>
 </div>
 
