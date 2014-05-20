@@ -14,9 +14,9 @@
     <div class="alert alert-success clearfix">
       <div class="col-sm-10">
         @if (isset($lrs->subdomain))
-            <b>http://{{ $lrs->subdomain }}.{{ Config::get('app.base_url') }}/data/xAPI/</b>
+            <b>http://{{ $lrs->subdomain }}.{{ \Setting::get('base_url') }}/data/xAPI/</b>
         @else
-            <b>http://{{ $lrs->title }}.{{ Config::get('app.base_url') }}/data/xAPI/</b>
+            <b>http://{{ $lrs->title }}.{{ \Setting::get('base_url') }}/data/xAPI/</b>
         @endif
       </div>
     </div>

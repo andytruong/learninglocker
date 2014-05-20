@@ -30,7 +30,7 @@ class StatementGetTest extends TestCase
      */
     public function testGetAuthService()
     {
-        $this->lrsAuthMethod = Lrs::ADURO_AUTH_SERVICE;
+        $this->lrsAuthMethod = 3;
         $this->createLRS();
 
         //create client for Auth Service

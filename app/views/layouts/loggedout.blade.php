@@ -6,7 +6,7 @@
     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-lg-offset-4 col-md-offset-3">
 
       <div class="logo">
-        <img src="{{ URL() }}/assets/img/logo2-grey.png" alt="Logo" />
+        <img src="{{ URL() }}/assets/img/logo-aduro.png" alt="Logo" />
       </div>
       <div class="wrapper">
 

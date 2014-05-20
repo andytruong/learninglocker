@@ -35,7 +35,8 @@
     "barryvdh/laravel-cors": "dev-master",
     "lucadegasperi/oauth2-server-laravel": "1.0.x",
     "fzaninotto/faker": "dev-master",
-    "guzzlehttp/guzzle": "4.*"
+    "guzzlehttp/guzzle": "4.*",
+    "anlutro/l4-settings": "dev-master"
   },
   "autoload": {
     "classmap": [
