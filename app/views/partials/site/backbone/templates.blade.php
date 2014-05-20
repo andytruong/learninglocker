@@ -25,7 +25,7 @@
 <script id="lrsTable" type="text/template">
   <thead>        
     <tr>
-      <th>Title</th>
+      <th>Machine name</th>
       <th>Description</th>
       <th>Statement #</th>
       <th>User #</th>
