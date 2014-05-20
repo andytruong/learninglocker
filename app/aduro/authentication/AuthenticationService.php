@@ -14,7 +14,7 @@ class AuthenticationService implements AuthenticationInterface
             $timestamp = isset($_GET['timestamp']) ? $_GET['timestamp'] : time();
             
             // cache auth service
-            $cache_key = "{$key}_{$secret}";
+            $cache_key = "{$key}_{$secret}_{$timestamp}";
             if (\Cache::has($cache_key)) {
                 $res = \Cache::get($cache_key, '');
                 $return = unserialize($res);
