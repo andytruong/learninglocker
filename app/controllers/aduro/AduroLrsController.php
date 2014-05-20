@@ -137,6 +137,42 @@ class AduroLrsController extends \Controller
         return \Response::json($ouput);
     }
 
+    public function update()
+    {
+        $input = json_decode(\Request::instance()->getContent(), TRUE);
+        if (!isset($input['lrsId'])) {
+            $output = [
+                'success' => false,
+                'message' => 'Please provide lrs id'
+            ];
+
+            return \Response::json($output);
+        }
+
+        $validator = $this->validate($input);
+        if ($validator['success'] === false) {
+            return \Response::json($validator);
+        }
+
+
+        $lrs = \Lrs::find($input['lrsId']);
+
+        foreach ($input as $key => $value) {
+            if ($key == 'lrsId') {
+                continue;
+            }
+
+            $lrs->{$key} = $value;
+        }
+
+        $lrs->save();
+
+        $ouput = [
+            'success' => true
+        ];
+        return \Response::json($ouput);
+    }
+
     public function delete()
     {
         $input = json_decode(\Request::instance()->getContent(), TRUE);
@@ -179,7 +215,7 @@ class AduroLrsController extends \Controller
         if ($validator->fails()) {
             return [
                 'success' => false,
-                'message' => "Error data"
+                'message' => $validator->messages()->all()
             ];
         }
 

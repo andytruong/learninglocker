@@ -10,7 +10,7 @@ class AduroLrsControllerTest extends TestCase
         Route::enableFilters();        
     }
 
-    public function testGetLRS()
+    public function _testGetLRS()
     {   
         //test get all
         $response = $this->call("GET", '/aduro/lrs');
@@ -32,7 +32,7 @@ class AduroLrsControllerTest extends TestCase
 
     }
     
-    public function testCreateLRS()
+    public function _testCreateLRS()
     {
         $lrs = array(
             'title' => helpers::getRandomValue(),
@@ -51,8 +51,31 @@ class AduroLrsControllerTest extends TestCase
 
         $this->assertTrue($checkResponse);
     }
+
+    public function testUpdateLRS()
+    {
+        $lrs = array(
+            'title' => helpers::getRandomValue(),
+            'description' => 'testing description',
+            'auth_service' => 3
+        );
+
+        $responseLrs = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+        $responseContent = json_decode($responseLrs->getContent());
+        $updateParam = [
+            'lrsId' => $responseContent->new_lrs,
+            'title' => 'update'.helpers::getRandomValue(),
+            'description' => 'testing description',
+            'auth_service' => 3
+        ];
+        $response = $this->call("POST", '/aduro/lrs/update', [], [], [], json_encode($updateParam));
+
+        $responseContent = json_decode($response->getContent());
+
+        $this->assertTrue($responseContent->success === true);
+    }
     
-    public function testDeleteLRS()
+    public function _testDeleteLRS()
     {
         $lrs = array(
             'title' => helpers::getRandomValue(),

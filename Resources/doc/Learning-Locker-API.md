@@ -107,9 +107,25 @@ Return an json with following properties:
 
 Referrer: app/test/AduroLrsControllerTest.php, function testCreateLRS() for more details
 
-### POST - /aduro/lrs/delete
+### POST - /aduro/lrs/update
 Parameter:
 - lrsId: lrs id, numberic
+- title: string, required
+- description: string, required
+- auth_service: number in (1, 2, 3), required
+- auth_service_url: string
+- auth_cache_time: number, minutes
+- token: string
+- subdomain: string
+
+Return an json with following properties:
+- success: string (true or false)
+
+Referrer: app/test/AduroLrsControllerTest.php, function testUpdateLRS() for more details
+
+### POST - /aduro/lrs/delete
+Parameter:
+- lrsId: lrs id, numberic, required
 
 Return an json with following properties:
 - success: string (true or false)

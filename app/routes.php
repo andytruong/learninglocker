@@ -506,6 +506,9 @@ Route::get('aduro/lrs', array(
 Route::post('aduro/lrs/create', array(
   'uses'   => 'Controllers\Aduro\AduroLrsController@create'
 ));
+Route::post('aduro/lrs/update', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@update'
+));
 Route::post('aduro/lrs/delete', array(
   'uses'   => 'Controllers\Aduro\AduroLrsController@delete'
 ));
