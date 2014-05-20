@@ -87,7 +87,7 @@ class LrsController extends BaseController
         $rules['subdomain'] = 'unique:lrs|alpha_dash';
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator);
+            return Redirect::back()->withInput()->withErrors($validator);
         }
 
         // Store lrs
@@ -138,7 +138,7 @@ class LrsController extends BaseController
 
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
-            return Redirect::back()->withErrors($validator);
+            return Redirect::back()->withInput()->withErrors($validator);
         }
 
         $l = $this->lrs->update($id, Input::all());
