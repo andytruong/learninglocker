@@ -81,7 +81,7 @@ class LrsController extends BaseController
 
         //lrs input validation
         $rules['title'] = 'required|alpha_dash|unique:lrs';
-        $rules['description'] = 'alpha_spaces';
+//        $rules['description'] = 'alpha_spaces';
         $rules['auth_cache_time'] = 'numeric';
         $rules['auth_service_url'] = 'url';
         $rules['subdomain'] = 'unique:lrs|alpha_dash';
@@ -131,7 +131,7 @@ class LrsController extends BaseController
 
         //lrs input validation
         $rules['title'] = "required|alpha_dash";
-        $rules['description'] = 'alpha_spaces';
+//        $rules['description'] = 'alpha_spaces';
         if ($data['subdomain'] != $lrs->subdomain) {
             $rules['subdomain'] = 'unique:lrs|alpha_dash';
         }
