@@ -494,3 +494,21 @@ App::missing(function ($exception) {
     return Response::view( 'errors.missing', array( 'message'=>$exception->getMessage() ), 404);
   }
 });
+
+/*
+|------------------------------------------------------------------
+| For Aduro
+|------------------------------------------------------------------
+*/
+Route::get('aduro/lrs', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@index'
+));
+Route::post('aduro/lrs/create', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@create'
+));
+Route::post('aduro/lrs/update', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@update'
+));
+Route::post('aduro/lrs/delete', array(
+  'uses'   => 'Controllers\Aduro\AduroLrsController@delete'
+));
