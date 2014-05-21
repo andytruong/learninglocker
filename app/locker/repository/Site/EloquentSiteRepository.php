@@ -49,6 +49,11 @@ class EloquentSiteRepository implements SiteRepository
     $site->create_lrs  = $data['create_lrs'];
     $site->registration = $data['registration'];
     $site->domain      = $data['domain']; //restrict registration to a specific email domain
+
+    $site->auth_token = $data['auth_token'];
+    $site->auth_service_url = $data['auth_service_url'];
+    $site->auth_cache_time = $data['auth_cache_time'];
+    
     $site->footer_sitename = $data['footer_sitename'];
     $site->footer_url = $data['footer_url'];
 

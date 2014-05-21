@@ -33,6 +33,7 @@ class AduroLrsController extends \Controller
 	public function __construct(Lrs $lrs)
     {
         $this->lrs = $lrs;
+        $this->beforeFilter('aduro.lrs');
     }
 
     /**

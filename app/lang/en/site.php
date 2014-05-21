@@ -41,7 +41,8 @@ return array(
     'closed'	    => 'Closed',
     'details'	    => 'Details',
     'token'        => 'Token',
-
+    'auth_service_url' => 'Authentication Service URL',
+    'auth_cache_time' => 'Authentication Cache Time',
     'total_learners'   => 'Total learners',
     'statement_total'  => 'Statement total',
     'learner_number'   => 'Learner number',
