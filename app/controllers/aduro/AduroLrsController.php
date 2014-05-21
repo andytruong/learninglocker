@@ -12,6 +12,18 @@ class AduroLrsController extends \Controller
     */
 	protected $lrs;
 
+    /**
+    * Lrs rules
+    */
+    protected $rules = [
+        'title' => 'required|alpha_dash|unique:lrs',
+        'description' => 'required|alpha_spaces',
+        'auth_service' => 'required|numeric',
+        'auth_cache_time' => 'numeric',
+        'auth_service_url' => 'url',
+        'subdomain' => 'unique:lrs|alpha_dash'
+    ];
+
 	/**
 	* Construct
 	*
@@ -28,11 +40,8 @@ class AduroLrsController extends \Controller
     *
     */
     public function index() {
-        $lrsId = \Request::instance()->query('lrsId');
-
-        $output = [];
-        if ($lrsId) {
-            $lrs = \Lrs::where('_id', $lrsId)->first();
+        $lrss = \Lrs::get();
+        foreach ($lrss as $lrs) {
             $output[] = [
                 'id' => $lrs->_id,
                 'title' => $lrs->title,
@@ -42,20 +51,30 @@ class AduroLrsController extends \Controller
                 'auth_service_url' => $lrs->auth_service_url,
                 'token' => $lrs->token
             ];
-        } else {
-            $lrss = \Lrs::get();
-            foreach ($lrss as $lrs) {
-                $output[] = [
-                    'id' => $lrs->_id,
-                    'title' => $lrs->title,
-                    'description' => $lrs->description,
-                    'api' => $lrs->api,
-                    'auth_service' => $lrs->auth_service,
-                    'auth_service_url' => $lrs->auth_service_url,
-                    'token' => $lrs->token
-                ];
-            }
         }
+
+        $ouput = [
+            'lrs' => $output
+        ];
+
+        return \Response::json($ouput);
+    }
+
+    /**
+    * get LRS by id
+    *
+    */
+    public function show($id) {
+        $lrs = \Lrs::where('_id', $id)->first();
+        $output = [
+            'id' => $lrs->_id,
+            'title' => $lrs->title,
+            'description' => $lrs->description,
+            'api' => $lrs->api,
+            'auth_service' => $lrs->auth_service,
+            'auth_service_url' => $lrs->auth_service_url,
+            'token' => $lrs->token
+        ];
 
         $ouput = [
             'lrs' => $output
@@ -68,7 +87,7 @@ class AduroLrsController extends \Controller
     * Store a newly created resource in storage.
     *
     */
-    public function create()
+    public function store()
     {	
     	$input = json_decode(\Request::instance()->getContent(), TRUE);
         $validator = $this->validate($input);
@@ -118,8 +137,8 @@ class AduroLrsController extends \Controller
         	];
 
             try {
-                \Event::fire('user.create_lrs', array('user' => $user));
-                \Event::fire('lrs.create', array('lrs' => $lrs));
+                \Event::fire('user.create_lrs', ['user' => $user]);
+                \Event::fire('lrs.create', ['lrs' => $lrs]);
             } catch (Exception $e) {
                 $ouput = [
                     'success' => false,
@@ -137,32 +156,36 @@ class AduroLrsController extends \Controller
         return \Response::json($ouput);
     }
 
-    public function update()
+    /**
+    * Update LRS by id.
+    *
+    */
+    public function update($id)
     {
-        $input = json_decode(\Request::instance()->getContent(), TRUE);
-        if (!isset($input['lrsId'])) {
+        $lrs = \Lrs::find($id);
+
+        if (!$lrs) {
             $output = [
                 'success' => false,
-                'message' => 'Please provide lrs id'
+                'message' => 'Invalid id'
             ];
 
             return \Response::json($output);
         }
 
-        $validator = $this->validate($input);
-        if ($validator['success'] === false) {
-            return \Response::json($validator);
+        $input = json_decode(\Request::instance()->getContent(), TRUE);
+
+        $rules = [];
+        foreach ($input as $key => $value) {
+            $lrs->{$key} = $value;
+            if (isset($this->rules[$key])) {
+                $rules[$key] = $this->rules[$key];
+            }
         }
 
-
-        $lrs = \Lrs::find($input['lrsId']);
-
-        foreach ($input as $key => $value) {
-            if ($key == 'lrsId') {
-                continue;
-            }
-
-            $lrs->{$key} = $value;
+        $validator = $this->validate($input, $rules);
+        if ($validator['success'] === false) {
+            return \Response::json($validator);
         }
 
         $lrs->save();
@@ -173,20 +196,25 @@ class AduroLrsController extends \Controller
         return \Response::json($ouput);
     }
 
-    public function delete()
+    /**
+    * Delete LRS by id.
+    *
+    */
+    public function destroy($id)
     {
-        $input = json_decode(\Request::instance()->getContent(), TRUE);
+        $lrs = \Lrs::find($id);
 
-        if (!isset($input['lrsId'])) {
+        if (!$lrs) {
             $output = [
                 'success' => false,
-                'message' => 'Please provide lrs id'
+                'message' => 'Invalid id'
             ];
 
             return \Response::json($output);
         }
 
-        \Lrs::destroy($input['lrsId']);
+        $lrs->delete();
+        
         $output = [
             'success' => true
         ];
@@ -194,7 +222,20 @@ class AduroLrsController extends \Controller
         return \Response::json($output);
     }
 
-    public function validate($input)
+
+    //follow http://laravel.com/docs/controllers#resource-controllers but not work
+    public function missingMethod($parameters = [])
+    {
+        $output = [
+            'success' => false,
+            'message' => 'Missing Methods'
+        ];
+
+        return \Response::json($output);
+    }
+
+    //validate lrs data
+    public function validate($input, $rules = [])
     {
         if (!$input) {
             return [
@@ -203,13 +244,9 @@ class AduroLrsController extends \Controller
             ];
         }
 
-        $rules['title'] = 'required|alpha_dash|unique:lrs';
-        $rules['description'] = 'required|alpha_spaces';
-        $rules['auth_service'] = 'required|numeric';
-        $rules['auth_cache_time'] = 'numeric';
-        $rules['auth_service_url'] = 'url';
-        $rules['subdomain'] = 'unique:lrs|alpha_dash';
-
+        if (empty($rules)) {
+            $rules = $this->rules;
+        }
         $validator = \Validator::make($input, $rules);
         
         if ($validator->fails()) {
