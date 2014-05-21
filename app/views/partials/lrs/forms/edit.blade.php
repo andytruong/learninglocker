@@ -1,5 +1,5 @@
 {{ Form::model($lrs, array('route' => array('lrs.update', $lrs->_id),
-      'method' => 'PUT', 'class' => 'form-horizontal')) }}
+      'method' => 'PUT', 'class' => 'form-horizontal lrs-edit')) }}
 
 <div class="form-group">
     {{ Form::label('title', Lang::get('lrs.machine_name'), array('class' => 'col-sm-2 control-label' )) }}

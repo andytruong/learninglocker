@@ -1,4 +1,4 @@
-{{ Form::open(array('route' => 'lrs.store', 'class' => 'form-horizontal')) }}
+{{ Form::open(array('route' => 'lrs.store', 'class' => 'form-horizontal lrs-create')) }}
 
 <div class="form-group">
     {{ Form::label('title', Lang::get('lrs.machine_name'), array('class' => 'col-sm-2 control-label' )) }}

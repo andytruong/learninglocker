@@ -2,6 +2,10 @@
 
 $(document).ready(function() {
     toggleTextBoxs($('input[name=auth_service]:checked').val());
+    
+    $('.lrs-create input[id=title]').change(function(){
+       $('.lrs-create input[id=subdomain]').val($(this).val());
+    });
 });
 
 $('input[name=auth_service]').change(function(e) {
