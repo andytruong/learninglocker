@@ -6,6 +6,7 @@ use DateTime;
 use Statement;
 use Locker\Repository\Activity\ActivityRepository as Activity;
 use Locker\Repository\Query\QueryRepository as Query;
+use Locker\Repository\Document\FileTypes;
 
 class EloquentStatementRepository implements StatementRepository
 {
@@ -24,6 +25,7 @@ class EloquentStatementRepository implements StatementRepository
      */
     public function __construct(Statement $statement, Activity $activity, Query $query)
     {
+
         $this->statement = $statement;
         $this->activity = $activity;
         $this->query = $query;
@@ -55,6 +57,7 @@ class EloquentStatementRepository implements StatementRepository
      * */
     public function all($lrs, $parameters)
     {
+
         $statements = $this->statement->where('lrs._id', $lrs);
 
         $this->addParameters($statements, $parameters);
@@ -79,6 +82,7 @@ class EloquentStatementRepository implements StatementRepository
 
     public function grouped($id, $parameters)
     {
+
         $type = isset($parameters['grouping']) ? strtolower($parameters['grouping']) : '';
 
         switch ($type) {
@@ -114,6 +118,7 @@ class EloquentStatementRepository implements StatementRepository
      * */
     public function find($id)
     {
+
         return \Statement::where('statement.id', $id)->first();
     }
 
@@ -138,8 +143,9 @@ class EloquentStatementRepository implements StatementRepository
      * @param array $statements An array of statements to create
      * @param array $lrs
      */
-    public function create($statements, $lrs)
+    public function create($statements, $lrs, $attachments = '')
     {
+
         //Full tincan statement validation to make sure the statement conforms
 
         $saved_ids = array();
@@ -210,6 +216,11 @@ class EloquentStatementRepository implements StatementRepository
             }
         }
 
+        //now we have saved statements, store attachments
+        if ($attachments != '') {
+            $this->storeAttachments($attachments, $lrs->_id);
+        }
+
         return array('success' => true, 'ids' => $saved_ids);
     }
 
@@ -226,8 +237,8 @@ class EloquentStatementRepository implements StatementRepository
      */
     private function replaceFullStop($statement)
     {
-        $statement = \app\locker\helpers\Helpers::replaceFullStop($statement);
 
+        $statement = \app\locker\helpers\Helpers::replaceFullStop($statement);
         return $statement;
     }
 
@@ -242,6 +253,7 @@ class EloquentStatementRepository implements StatementRepository
      */
     public function statements($id)
     {
+
         return \Statement::where('lrs._id', $id)
                 ->orderBy('statement.stored', 'desc')
                 ->paginate(15);
@@ -261,19 +273,20 @@ class EloquentStatementRepository implements StatementRepository
      */
     private function addParameters($statements, $parameters)
     {
+
         //Check if agent has been passed
         if (isset($parameters['agent'])) {
 
             $agent_param = !is_object($parameters['agent']) ? json_decode($parameters['agent']) : $parameters['agent']; //convert to object if not already
 
             if (is_array($agent_param)) { //if array, apply OR filtering to agents
-                $statements = $statements->where(function ($query) use ($agent_param) { //only apply ORs within agents
+                $statements = $statements->where(function($query) use ($agent_param) { //only apply ORs within agents
                     foreach ($agent_param as $agent) { //for each agent
                         $query = $this->setAgent($query, $agent, true); //set agent with orWhere
                     }
                 });
             }
-            elseif (is_object($agent_param)) {
+            else if (is_object($agent_param)) {
 
                 $statements = $this->setAgent($statements, $agent_param); //do query on single agent
             }
@@ -365,6 +378,7 @@ class EloquentStatementRepository implements StatementRepository
 
     public function actorGrouping($query)
     {
+
         $query->aggregate(
             array('$match' => array()), array(
             '$group' => array(
@@ -387,6 +401,7 @@ class EloquentStatementRepository implements StatementRepository
      */
     public function setAgent($query, $agent, $or = false)
     {
+
         $agent_query = '';
 
         $where_type = $or ? 'orWhere' : 'where';
@@ -399,19 +414,19 @@ class EloquentStatementRepository implements StatementRepository
         if (isset($agent->mbox)) { //check for mbox
             $agent_query = array('field' => 'statement.actor.mbox', 'value' => $agent->mbox);
         }
-        elseif (isset($agent->mbox_sha1sum)) {//check for mbox_sha1sum
+        else if (isset($agent->mbox_sha1sum)) {//check for mbox_sha1sum
             $agent_query = array('field' => 'statement.actor.mbox_sha1sum', 'value' => $agent->mbox_sha1sum);
         }
-        elseif (isset($agent->openid)) { //check for open id
+        else if (isset($agent->openid)) { //check for open id
             $agent_query = array('field' => 'statement.actor.openid', 'value' => $agent->openid);
         }
 
         if (isset($agent_query) && $agent_query != '') { //if we have agent query params lined up...
             $query->$where_type($agent_query['field'], $agent_query['value']);
         }
-        elseif (isset($agent->account)) { //else if there is an account
+        else if (isset($agent->account)) { //else if there is an account
             if (isset($agent->account->homePage) && isset($agent->account->name)) {
-                $query->$where_type(function ($query) {
+                $query->$where_type(function($query) {
                     $query->where('statement.actor.account.homePage', $agent->account->homePage)
                         ->where('statement.actor.account.name', $agent->account->name);
                 });
@@ -432,19 +447,15 @@ class EloquentStatementRepository implements StatementRepository
      * */
     private function doesStatementIdExist($lrs, $id, $statement)
     {
+
         $exists = $this->statement->where('lrs._id', $lrs)
             ->where('statement.id', $id)
             ->first();
 
         if ($exists) {
-            $dbStatement = $exists->statement;
-            // ensure two statements identical
-            unset($dbStatement['stored']);
-
-            if (count($dbStatement) == count($statement)) {
+            if (array_multisort($exists->toArray()) === array_multisort($statement)) {
                 return 'conflict-matches';
             }
-
             return 'conflict-nomatch';
         }
 
@@ -490,11 +501,11 @@ class EloquentStatementRepository implements StatementRepository
             // $getConnected = Statement::where('lrs._id', $lrs)
             //                 ->whereIn('object.id', $ids)
             //                 ->get();
-            // if ($getConnected) {
+            // if( $getConnected ){
             //   //add new statements to statements return, if
             //   //the statement is not already in the return object.
-            //   foreach ($getConnected as $c) {
-            //     if ( !in_array($c->id, $ids) ) {
+            //   foreach($getConnected as $c ){
+            //     if( !in_array($c->id, $ids) ){
             //       $statements[] = $c;
             //     }
             //   }
@@ -502,7 +513,6 @@ class EloquentStatementRepository implements StatementRepository
             //   $this->getLinkedStatements( $getConnected, $lrs );
             // }
         }
-
         return $statements;
     }
 
@@ -529,6 +539,7 @@ class EloquentStatementRepository implements StatementRepository
      * */
     private function relatedAgents($statements, $lrs, $actor)
     {
+
         $actor = json_decode($actor);
 
         //Do some checking on what actor field we are filtering with
@@ -536,15 +547,15 @@ class EloquentStatementRepository implements StatementRepository
             $query = $actor->mbox;
             $query_type = 'mbox';
         }
-        elseif (isset($actor->mbox_sha1sum)) {//check for mbox_sha1sum
+        else if (isset($actor->mbox_sha1sum)) {//check for mbox_sha1sum
             $query = $actor->mbox_sha1sum;
             $query_type = 'mbox_sha1sum';
         }
-        elseif (isset($actor->openid)) { //check for open id
+        else if (isset($actor->openid)) { //check for open id
             $query = $actor->openid;
             $query_type = 'openid';
         }
-        elseif (isset($actor->account)) { //else if there is an account
+        else if (isset($actor->account)) { //else if there is an account
             $query = $actor->account;
             $query_type = 'account';
         }
@@ -596,6 +607,7 @@ class EloquentStatementRepository implements StatementRepository
      * */
     private function relatedActivities($statements, $lrs, $activityId)
     {
+
         $ids = array();
         foreach ($statements as $s) {
             $ids[] = $s->id;
@@ -660,140 +672,53 @@ class EloquentStatementRepository implements StatementRepository
                 }
             }
         }
-
         return $statements;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////
-
-    /*
-      |----------------------------------------------------------------------
-      | Legacy functions for filtering which was used pre v1.0 amd will be
-      | removed. Do not use these!
-      |
-      |----------------------------------------------------------------------
-     */
-
     /**
+     * Store any attachments
      *
-     * Filter statements via our filtering options.
-     *
-     * @param int   $id        The LRS unique id.
-     * @param array $vars      An array or parameters grabbed from the url
-     * @param string $restrict Value to restrict query
-     *
-     * @return array An array containing statements for display and data
-     * for the graph.
-     *
-     */
-    public function filter($id, $vars = '', $restrict = '')
+     * */
+    private function storeAttachments($attachments, $lrs)
     {
-        $filter = array();
-        $data = '';
 
-        //create key / value array for wheres from $vars sent over
-        if (isset($vars) && !empty($vars)) {
-            while (count($vars)) {
-                list($key, $value) = array_splice($vars, 0, 2);
-                $filter[$key] = $value;
+        foreach ($attachments as $a) {
+
+            // Separate body contents from headers
+            $a = ltrim($a, "\n");
+            list($raw_headers, $body) = explode("\n\n", $a, 2);
+
+            // Parse headers and separate so we can access
+            $raw_headers = explode("\n", $raw_headers);
+            $headers = array();
+            foreach ($raw_headers as $header) {
+                list($name, $value) = explode(':', $header);
+                $headers[strtolower($name)] = ltrim($value, ' ');
             }
-        }
 
-        $query = $this->statement->where('lrs._id', $id);
-        $this->setRestriction($restrict, $query);
-        if (!empty($filter)) {
-            $this->setWhere($filter, $query);
-        }
-        $query->orderBy('created_at', 'desc');
-        $statements = $query->paginate(18);
-
-        //@todo replace this using Mongo aggregation - no need to grab everything and loop through it.
-        $query = $this->statement->where('lrs._id', $id);
-        $this->setRestriction($restrict, $query);
-        if (!empty($filter)) {
-            $this->setWhere($filter, $query);
-        }
-        $query->remember(5);
-        $data = $query->get();
-
-        return array('statements' => $statements,
-            'data' => $data,
-            'filter' => $filter);
-    }
-
-    /**
-     *
-     * Loop through passed parameters and add to DB query. Used when
-     * filtering statements on the site.
-     *
-     * @todo only decode on urls not everything
-     *
-     * @param string $filter
-     * @param object $query
-     *
-     * @return object $query
-     *
-     */
-    private function setWhere($filter, $query)
-    {
-        foreach ($filter as $k => $v) {
-            $k = $this->filterKeyLookUp($k);
-            $query->where($k, rawurldecode($v));
-        }
-
-        return $query;
-    }
-
-    /**
-     *
-     * Set a restriction for the query if one was passed
-     *
-     * @param $restriction
-     * @param $query
-     *
-     * @return
-     *
-     */
-    private function setRestriction($restriction, $query)
-    {
-        if ($restriction != '') {
-            switch ($restriction) {
-                case 'comments':
-                    return $query->where('object.definition.type', 'http://activitystrea.ms/schema/1.0/comment');
-                case 'badges':
-                    return $query->where('object.definition.type', 'http://activitystrea.ms/schema/1.0/badge');
-                case 'results':
-                    return $query->where('', '');
-                case 'courses':
-                    return $query->where('object.definition.type', 'http://activitystrea.ms/schema/1.0/course');
-                default:
-                    return $query->where('object.definition.type', 'http://activitystrea.ms/schema/1.0/comment');
+            //get the correct ext if valid
+            $ext = array_search($headers['content-type'], FileTypes::getMap());
+            if ($ext === false) {
+                \App::abort(400, 'This file type cannot be supported');
             }
-        }
-    }
 
-    /**
-     *
-     * A look up service to grab xAPI key based on url key.
-     *
-     * @param  string $key
-     * @return string
-     *
-     */
-    private function filterKeyLookUp($key)
-    {
-        switch ($key) {
-            case 'actor':
-                return 'actor.mbox';
-            case 'verb':
-                return 'verb.display.en-US';
-            case 'parent':
-                return 'context.contextActivities.parent.id';
-            case 'course':
-                return 'context.contextActivities.grouping.id';
-            case 'activity':
-                return 'object.id';
+            $filename = str_random(12) . "." . $ext;
+
+            //create directory if it doesn't exist
+            if (!\File::exists(base_path() . '/uploads/' . $lrs . '/attachments/' . $headers['x-experience-api-hash'] . '/')) {
+                \File::makeDirectory(base_path() . '/uploads/' . $lrs . '/attachments/' . $headers['x-experience-api-hash'] . '/', 0775, true);
+            }
+
+            $destinationPath = base_path() . '/uploads/' . $lrs . '/attachments/' . $headers['x-experience-api-hash'] . '/';
+
+            $filename = $destinationPath . $filename;
+            $file = fopen($filename, 'wb'); //opens the file for writing with a BINARY (b) fla
+            $size = fwrite($file, $body); //write the data to the file
+            fclose($file);
+
+            if ($size === false) {
+                \App::abort(400, 'There was an issue saving the attachment');
+            }
         }
     }
 
