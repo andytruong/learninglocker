@@ -19,8 +19,8 @@ class AduroLrsControllerTest extends TestCase
         $this->authPassword =  base64_encode( hash_hmac('sha256', "{$api_key}{$this->timestamp}", $api_secret) );
 
         $site = \Site::first();
-        $site->auth_token = 'our-token';
-        $site->auth_service_url = 'http://auth.aduro.go1.com.vn';
+        $site->auth_token = 'aduro';
+        $site->auth_service_url = 'http://auth.services.adurolms.com';
         $site->save();
     }
 
