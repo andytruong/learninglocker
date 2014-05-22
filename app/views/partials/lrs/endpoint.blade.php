@@ -13,7 +13,7 @@
     <p>{{ Lang::get('lrs.endpoint.instructions') }}</p>
     <div class="alert alert-success clearfix">
       <div class="col-sm-10">
-        @if (isset($lrs->subdomain))
+        @if (isset($lrs->subdomain) && !empty($lrs->subdomain))
             <b>http://{{ $lrs->subdomain }}.{{ \Setting::get('base_url') }}/data/xAPI/</b>
         @else
             <b>http://{{ $lrs->title }}.{{ \Setting::get('base_url') }}/data/xAPI/</b>
