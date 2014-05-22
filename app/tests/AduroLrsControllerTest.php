@@ -17,7 +17,11 @@ class AduroLrsControllerTest extends TestCase
         $api_secret = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANH9tnNhhmbwLRcaV1rJLvcix/Ol7mreCtmleIFzCFDx2ni9Sub7o58K7h4AHoKoBUv0JdQBPTGnjqT/Nhy6QqkCAwEAAQ==-----END PUBLIC KEY-----';
 
         $this->authPassword =  base64_encode( hash_hmac('sha256', "{$api_key}{$this->timestamp}", $api_secret) );
-        
+
+        $site = \Site::first();
+        $site->auth_token = 'our-token';
+        $site->auth_service_url = 'http://auth.aduro.go1.com.vn';
+        $site->save();
     }
 
     public function testGetLRS()
