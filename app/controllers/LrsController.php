@@ -86,6 +86,14 @@ class LrsController extends BaseController
         $rules['auth_service_url'] = 'url';
         $rules['subdomain'] = 'unique:lrs|alpha_dash';
         $validator = Validator::make($data, $rules);
+        
+        if (!isset($data['subdomain']) || empty($data['subdomain'])) {
+            $count = \Lrs::where('subdomain', '=', $data['title'])->count();
+            if ($count > 0) {
+                return Redirect::back()->withInput()->withErrors("The subdomain {$data['title']} exist");
+            }
+        }
+        
         if ($validator->fails()) {
             return Redirect::back()->withInput()->withErrors($validator);
         }
@@ -134,6 +142,13 @@ class LrsController extends BaseController
 //        $rules['description'] = 'alpha_spaces';
         if ($data['subdomain'] != $lrs->subdomain) {
             $rules['subdomain'] = 'unique:lrs|alpha_dash';
+        }
+        
+        if (!isset($data['subdomain']) || empty($data['subdomain'])) {
+            $count = \Lrs::where('subdomain', '=', $data['title'])->count();
+            if ($count > 0) {
+                return Redirect::back()->withInput()->withErrors("The subdomain {$data['title']} exist");
+            }
         }
 
         $validator = Validator::make($data, $rules);
