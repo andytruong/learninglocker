@@ -39,6 +39,7 @@ return array(
     'total_learners' => 'Total learners',
     'statement_total' => 'Statement total',
     'learner_number' => 'Learner number',
+    'use_auth' => 'Use Authentication',
     'activity_sources' => 'Activity sources',
     'xapi_calls' => 'xAPI calls (retrival)',
     'create_lrs' => 'Who can create new LRSs?',

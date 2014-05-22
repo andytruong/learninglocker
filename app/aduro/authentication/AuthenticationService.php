@@ -5,7 +5,6 @@ namespace app\aduro\authentication;
 use \GuzzleHttp\Client as Client;
 use \GuzzleHttp\Exception\ClientException as ClientException;
 
-
 class AuthenticationService implements AuthenticationInterface
 {
 
@@ -16,7 +15,7 @@ class AuthenticationService implements AuthenticationInterface
 
             // Get timestamp from request parameter
             $timestamp = isset($_GET['timestamp']) ? $_GET['timestamp'] : time();
-            
+
             // cache auth service
             $cache_key = "{$key}_{$secret}_{$timestamp}";
             if (\Cache::has($cache_key)) {
@@ -30,11 +29,11 @@ class AuthenticationService implements AuthenticationInterface
                 $return = $res->json();
                 \Cache::put($cache_key, serialize($return), $minutes);
             }
-            
+
             if (isset($return['error']) && $return['error']) {
                 return \Response::json(array(
-                    'error' => true,
-                    'message' => 'Unauthorized request.'), 401
+                        'error' => true,
+                        'message' => 'Unauthorized request.'), 401
                 );
             }
             return;
@@ -54,6 +53,14 @@ class AuthenticationService implements AuthenticationInterface
             return;
         }
 
+        if (!$site->auth_token || !$site->auth_service_url) {
+            return \Response::json(array(
+                    'error' => true,
+                    'message' => 'Please configure auth token or auth service url in LRS Service'
+                    )
+            );
+        }
+
         $key = \Request::getUser();
         $secret = \Request::getPassword();
         $timestamp = \Request::get('timestamp');
@@ -65,15 +72,7 @@ class AuthenticationService implements AuthenticationInterface
                 $res = \Cache::get($cache_key, '');
                 $return = unserialize($res);
             }
-            else {                
-                if (!$site->auth_token || !$site->auth_service_url) {
-                    return \Response::json(array(
-                            'error' => true,
-                            'message' => 'Please configure auth token or auth service url in LRS Service'
-                        )
-                    );
-                }
-
+            else {
                 $client = new Client();
                 $url = "{$site->auth_service_url}/client/validate/{$key}/{$secret}/{$timestamp}";
                 $urlParam = ['query' => ['token' => $site->auth_token]];
@@ -83,12 +82,12 @@ class AuthenticationService implements AuthenticationInterface
                 $return = $res->json();
                 \Cache::put($cache_key, serialize($return), $minutes);
             }
-            
+
             if (isset($return['error']) && $return['error']) {
                 return \Response::json(array(
                         'error' => true,
                         'message' => 'Unauthorized request.'
-                    )
+                        )
                 );
             }
             return;
@@ -97,7 +96,7 @@ class AuthenticationService implements AuthenticationInterface
             return \Response::json(array(
                     'error' => true,
                     'message' => $ex->getMessage()
-                )
+                    )
             );
         }
     }

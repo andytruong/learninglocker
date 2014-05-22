@@ -53,6 +53,7 @@ class EloquentSiteRepository implements SiteRepository
     $site->auth_token = $data['auth_token'];
     $site->auth_service_url = $data['auth_service_url'];
     $site->auth_cache_time = $data['auth_cache_time'];
+    $site->use_auth = isset($data['use_auth'])?1:0;
     
     $site->footer_sitename = $data['footer_sitename'];
     $site->footer_url = $data['footer_url'];
