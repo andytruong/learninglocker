@@ -39,7 +39,7 @@ class AduroLrsControllerTest extends TestCase
             'description' => 'testing description',
             'auth_service' => 3
         );
-        $responseLrs = $this->call("POST", '/resource/lrs/', 
+        $responseLrs = $this->call("POST", '/resource/lrs', 
             ['timestamp' => $this->timestamp], 
             [], 
             ['PHP_AUTH_USER' => $this->authUser,
@@ -67,7 +67,7 @@ class AduroLrsControllerTest extends TestCase
             'auth_service' => 3
         );
 
-        $response = $this->call("POST", '/resource/lrs/', 
+        $response = $this->call("POST", '/resource/lrs', 
             ['timestamp' => $this->timestamp], 
             [], 
             ['PHP_AUTH_USER' => $this->authUser,
@@ -93,7 +93,7 @@ class AduroLrsControllerTest extends TestCase
             'description' => 'testing description',
             'auth_service' => 3
         );
-        $responseLrs = $this->call("POST", '/resource/lrs/', 
+        $responseLrs = $this->call("POST", '/resource/lrs', 
             ['timestamp' => $this->timestamp], 
             [], 
             ['PHP_AUTH_USER' => $this->authUser,
@@ -129,7 +129,7 @@ class AduroLrsControllerTest extends TestCase
             'auth_service' => 3
         );
 
-         $responseLrs = $this->call("POST", '/resource/lrs/', 
+         $responseLrs = $this->call("POST", '/resource/lrs', 
             ['timestamp' => $this->timestamp], 
             [], 
             ['PHP_AUTH_USER' => $this->authUser,
