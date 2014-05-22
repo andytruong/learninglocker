@@ -68,6 +68,12 @@
         {{ Form::text('auth_cache_time', $site->auth_cache_time, array('class' => 'form-control')) }}
       </div>
     </div>
+    <div class="form-group">
+      {{ Form::label('use_auth', Lang::get('site.use_auth'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::checkbox('use_auth', $site->use_auth, array('class' => 'form-control')) }}
+      </div>
+    </div>
   </fieldset>
 
   <fieldset>
