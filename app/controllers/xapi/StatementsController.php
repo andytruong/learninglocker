@@ -49,11 +49,11 @@ class StatementsController extends BaseController
     public function store()
     {
 
-        //grab incoming statement
+        // grab incoming statement
         $request = \Request::instance();
         $incoming_statement = $request->getContent();
 
-        //get content type header
+        // get content type header
         $content_type = \Request::header('content-type');
 
         // get the actual content type
@@ -65,7 +65,7 @@ class StatementsController extends BaseController
             $mimeType = $get_type;
         }
 
-        //if mimetype multipart/mixed then we are dealing with physical attachments
+        // if mimetype multipart/mixed then we are dealing with physical attachments
         if ($mimeType == 'multipart/mixed') {
             //get statements and reset $incoming_statement
             $components = Attachments::setAttachments($content_type, $incoming_statement);
@@ -107,7 +107,6 @@ class StatementsController extends BaseController
      */
     public function saveStatement($statements, $attachments)
     {
-
         $save = $this->statement->create($statements, $this->lrs, $attachments);
         return $save;
     }
@@ -254,27 +253,20 @@ class StatementsController extends BaseController
      * */
     public function sendResponse($outcome)
     {
-
         switch ($outcome['success']) {
             case 'true':
                 return \Response::json($outcome['ids'], 200);
-                break;
             case 'conflict-nomatch':
                 return \Response::json(array('success' => false), 409);
-                break;
             case 'conflict-matches':
                 return \Response::json(array(), 204);
-                break;
             case 'put':
                 return \Response::json(array('success' => true), 204);
-                break;
             case 'noId':
                 return \Response::json(array('success' => false, 'message' => 'A statement ID is required to PUT.'), 400);
-                break;
             case 'false':
                 return \Response::json(array('success' => false,
                         'message' => implode($outcome['message'])), 400);
-                break;
         }
     }
 

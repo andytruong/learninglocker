@@ -21,9 +21,9 @@ namespace app\locker\statements;
 class xAPIValidation
 {
 
-    private $status = 'passed'; //status of the submitted statement. passed or failed.
-    private $errors = array();  //error messages if validation fails
-    private $statement = array();  //the statement submitted
+    private $status = 'passed'; // status of the submitted statement. passed or failed.
+    private $errors = array();  // error messages if validation fails
+    private $statement = array();  // the statement submitted
     private $subStatement = array();
 
     /**
@@ -76,7 +76,7 @@ class xAPIValidation
         $this->validateId();
         $this->validateStored();
 
-        //now validate a sub statement if one exists
+        // now validate a sub statement if one exists
         if (!empty($this->subStatement)) {
             $this->runValidation($this->subStatement);
         }
@@ -201,11 +201,13 @@ class xAPIValidation
             return false; //end here if not true
 
 
+
 //Check that only one functional identifier exists and is permitted
         $identifier_valid = $this->validActorIdentifier(array_keys($actor));
 
         if ($identifier_valid != true)
             return false; //end here if not true
+
 
 
 //check, if objectType is set, that it is either Group or Agent

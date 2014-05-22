@@ -146,13 +146,13 @@ class EloquentStatementRepository implements StatementRepository
     public function create($statements, $lrs, $attachments = '')
     {
 
-        //Full tincan statement validation to make sure the statement conforms
+        // Full tincan statement validation to make sure the statement conforms
 
         $saved_ids = array();
         foreach ($statements as &$statement) { //loop and amend - return on fail
             $verify = new \app\locker\statements\xAPIValidation();
 
-            //run full validation
+            // run full validation
             $return = $verify->runValidation($statement, \Site::first());
 
             if ($return['status'] == 'failed') {
@@ -163,10 +163,10 @@ class EloquentStatementRepository implements StatementRepository
             }
         }
 
-        //now we are sure that statements are valid - loop back through and actually add them
+        // now we are sure that statements are valid - loop back through and actually add them
         foreach ($statements as $vs) {
 
-            //check to see if the statementId already has a statement in the LRS
+            // check to see if the statementId already has a statement in the LRS
             if ($result = $this->doesStatementIdExist($lrs->_id, $vs['id'], $statement)) {
                 return array('success' => $result);
             }
@@ -447,15 +447,22 @@ class EloquentStatementRepository implements StatementRepository
      * */
     private function doesStatementIdExist($lrs, $id, $statement)
     {
-
         $exists = $this->statement->where('lrs._id', $lrs)
             ->where('statement.id', $id)
             ->first();
 
         if ($exists) {
-            if (array_multisort($exists->toArray()) === array_multisort($statement)) {
+            $saved_statement = (array)$exists['statement'];
+            unset($saved_statement['stored']);
+            array_multisort($saved_statement);
+            array_multisort($statement);
+            ksort($saved_statement);
+            ksort($statement);
+
+            if ($saved_statement == $statement) {
                 return 'conflict-matches';
             }
+
             return 'conflict-nomatch';
         }
 

@@ -331,7 +331,7 @@ Route::group( array('prefix' => 'data/xAPI/', 'before'=>'auth.statement'), funct
     return Response::json( array('X-Experience-API-Version'=>Config::get('xapi.using_version')));
   });
 
-  //statement resource (post, put, get, delete) route
+  // statement resource (post, put, get, delete) route
   Route::get('statements/grouped', array(
     'uses' => 'Controllers\xAPI\StatementsController@grouped',
   ));
@@ -500,4 +500,4 @@ App::missing(function ($exception) {
 | For Aduro
 |------------------------------------------------------------------
 */
-Route::resource('resource/lrs','Controllers\Aduro\AduroLrsController');
+Route::resource('resource/lrs', 'Controllers\Aduro\AduroLrsController');

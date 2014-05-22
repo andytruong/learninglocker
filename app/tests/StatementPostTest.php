@@ -15,14 +15,14 @@ class StatementPostTest extends TestCase
     }
 
     private function _makeRequest($param, $method, $auth)
-    {   
-        return $this->call($method, '/data/xAPI/statements', 
-            [], 
-            [], 
+    {
+        return $this->call($method, '/data/xAPI/statements',
+            [],
+            [],
             ['PHP_AUTH_USER' => $auth['user'],
                 'PHP_AUTH_PW' => $auth['pass'],
                 'HTTP_X-Experience-API-Version' => '1.0.1'
-            ], 
+            ],
             !empty($param) ? json_encode($param) : []
         );
     }
@@ -59,22 +59,15 @@ class StatementPostTest extends TestCase
 
         // case: conflict-matches
         $response = $this->_makeRequest($param, "POST", $auth);
-        $responseData = $response->getData();
-        $responseStatus = $response->getStatusCode();
+        $this->assertEquals(204, $response->getStatusCode());
+        $this->assertEmpty($response->getData());
 
-        $checkResponse = $responseStatus == 204 && empty($responseData);
-
-        $this->assertTrue($checkResponse);
-
-        //case: conflict nomatch
+        // case: conflict nomatch
         $param['result'] = array();
         $response = $this->_makeRequest($param, "POST", $auth);
         $responseData = $response->getData();
-        $responseStatus = $response->getStatusCode();
-        $checkResponse = $responseStatus == 409 && property_exists($responseData, 'success') 
-            && !$responseData->success;
-
-        $this->assertTrue($checkResponse);
+        $this->assertEquals(409, $response->getStatusCode());
+        $this->assertTrue(property_exists($responseData, 'success') && !$responseData->success);
 
         // Make sure response data for the get request
         $responseGet = $this->_makeRequest(array(), "GET", $auth);
@@ -116,14 +109,14 @@ class StatementPostTest extends TestCase
              'api_key' => $this->lrs->api['basic_key'],
              'api_secret' => $this->lrs->api['basic_secret'],
          ];
-  
+
         $authClient = $this->createClientAuth($authBody);
 
         $auth = array(
             'user' => $authClient['name'],
             'pass' => $authClient['api_secret'],
         );
-        
+
         $response = $this->_makeRequest($param, "POST", $auth);
         $responseData = $response->getData();
         $responseStatus = $response->getStatusCode();
