@@ -32,6 +32,7 @@ return array(
     'register' => 'Register',
     'login' => 'Login',
     'forgotten_pw' => 'Forgotten password',
+    'edit_settings' => 'Edit settings',
     'token' => 'Token',
     'auth_service_url' => 'Authentication Service URL',
     'auth_cache_time' => 'Authentication Cache Time',
