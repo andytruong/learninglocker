@@ -66,7 +66,17 @@ class AduroLrsController extends \Controller
     *
     */
     public function show($id) {
-        $lrs = \Lrs::where('_id', $id)->first();
+        $lrs = \Lrs::find($id);
+
+        if (!$lrs) {
+            $output = [
+                'success' => false,
+                'message' => 'Invalid id'
+            ];
+
+            return \Response::json($output);
+        }
+        
         $output = [
             'id' => $lrs->_id,
             'title' => $lrs->title,
