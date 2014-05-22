@@ -49,6 +49,28 @@
   </fieldset>
 
   <fieldset>
+    <legend>Authentication</legend>
+    <div class="form-group">
+      {{ Form::label('auth_token', Lang::get('site.token'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('auth_token', $site->auth_token, array('class' => 'form-control')) }}
+      </div>
+    </div>
+    <div class="form-group">
+      {{ Form::label('auth_service_url', Lang::get('site.auth_service_url'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('auth_service_url', $site->auth_service_url, array('class' => 'form-control')) }}
+      </div>
+    </div>
+    <div class="form-group">
+      {{ Form::label('auth_cache_time', Lang::get('site.auth_cache_time'), array('class' => 'col-sm-4 control-label' )) }}
+      <div class="col-sm-8">
+        {{ Form::text('auth_cache_time', $site->auth_cache_time, array('class' => 'form-control')) }}
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
     <legend>Footer Configuration</legend>
     <div class="form-group">
       {{ Form::label('footer_sitename', 'Footer sitename', array('class' => 'col-sm-4 control-label' )) }}

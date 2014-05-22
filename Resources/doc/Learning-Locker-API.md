@@ -81,16 +81,21 @@ until: 2014-03-02
 To get results for a single day include both since and until. E.g. 
 since=2014-03-01&until=2014-03-02 - this will return all results for a 24 hour period from 2014-03-01
 
-### GET - /aduro/lrs
-Parameter:
-- lrsId: lrs id, numberic
+----------------------------------------------------------------
 
-Return an json with array of lrs:
-- 1 lrs match with lrsId param
-- all of lrs if the request hasn't lrsId
+### GET - /resource/lrs
+
+Return an json with array of all lrs:
 Referrer: app/test/AduroLrsControllerTest.php, function testGetLRS() for more details
 
-### POST - /aduro/lrs/create
+
+### GET - /resource/lrs/{id}
+
+Return an json with lrs by id:
+Referrer: app/test/AduroLrsControllerTest.php, function testGetLRS() for more details
+
+
+### POST - /resource/lrs
 Parameter:
 - title: string, required
 - description: string, required
@@ -107,12 +112,12 @@ Return an json with following properties:
 
 Referrer: app/test/AduroLrsControllerTest.php, function testCreateLRS() for more details
 
-### POST - /aduro/lrs/update
+
+### PUT - /resource/lrs/{id}
 Parameter:
-- lrsId: lrs id, numberic
-- title: string, required
-- description: string, required
-- auth_service: number in (1, 2, 3), required
+- title: string
+- description: string
+- auth_service: number in (1, 2, 3)
 - auth_service_url: string
 - auth_cache_time: number, minutes
 - token: string
@@ -123,9 +128,8 @@ Return an json with following properties:
 
 Referrer: app/test/AduroLrsControllerTest.php, function testUpdateLRS() for more details
 
-### POST - /aduro/lrs/delete
-Parameter:
-- lrsId: lrs id, numberic, required
+
+### DELETE - /resource/lrs/{id}
 
 Return an json with following properties:
 - success: string (true or false)

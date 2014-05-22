@@ -269,3 +269,16 @@ Route::filter('csrf', function () {
         throw new Illuminate\Session\TokenMismatchException;
     }
 });
+
+/*
+  |--------------------------------------------------------------------------
+  | Aduro Filter
+  |--------------------------------------------------------------------------
+  |
+  | The request will be athenticated by Auth Service
+  |
+ */
+Route::filter('aduro.lrs', function () {
+    $auth = new \app\aduro\authentication\AuthenticationService();
+    return $auth->verifyLrsService();
+});
