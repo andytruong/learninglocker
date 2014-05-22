@@ -4,18 +4,34 @@ use \app\locker\helpers\Helpers as helpers;
 
 class AduroLrsControllerTest extends TestCase
 {
+    // public $authPassword;
+
 	public function setUp()
     {
         parent::setUp();
         Route::enableFilters();        
+
+        $this->timestamp = time();
+        $this->authUser = 'kien';
+        $api_key = 'abcded';
+        $api_secret = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANH9tnNhhmbwLRcaV1rJLvcix/Ol7mreCtmleIFzCFDx2ni9Sub7o58K7h4AHoKoBUv0JdQBPTGnjqT/Nhy6QqkCAwEAAQ==-----END PUBLIC KEY-----';
+
+        $this->authPassword =  base64_encode( hash_hmac('sha256', "{$api_key}{$this->timestamp}", $api_secret) );
+        
     }
 
-    public function _testGetLRS()
+    public function testGetLRS()
     {   
         //test get all
-        $response = $this->call("GET", '/aduro/lrs');
+        $response = $this->call("GET", '/resource/lrs', 
+            ['timestamp' => $this->timestamp], 
+            [],
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ] 
+        );
         $responseContent = json_decode($response->getContent());
-        $this->assertTrue(property_exists($responseContent, 'lrs'));
+        $this->assertTrue(property_exists($responseContent, "lrs"));
 
         //test show lrs by id
         $lrs = array(
@@ -23,16 +39,27 @@ class AduroLrsControllerTest extends TestCase
             'description' => 'testing description',
             'auth_service' => 3
         );
-        $responseLrs = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+        $responseLrs = $this->call("POST", '/resource/lrs/', 
+            ['timestamp' => $this->timestamp], 
+            [], 
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ], 
+            json_encode($lrs)
+        );
         $responseContent = json_decode($responseLrs->getContent());
-        $response = $this->call("GET", '/aduro/lrs', ['lrsId' => $responseContent->new_lrs]);
+        $response = $this->call("GET", "/resource/lrs/$responseContent->new_lrs",
+            ['timestamp' => $this->timestamp],
+            [],
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ] 
+        );
         $responseContent = json_decode($response->getContent());
-
         $this->assertTrue(count($responseContent->lrs) == 1);
-
     }
     
-    public function _testCreateLRS()
+    public function testCreateLRS()
     {
         $lrs = array(
             'title' => helpers::getRandomValue(),
@@ -40,7 +67,14 @@ class AduroLrsControllerTest extends TestCase
             'auth_service' => 3
         );
 
-        $response = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+        $response = $this->call("POST", '/resource/lrs/', 
+            ['timestamp' => $this->timestamp], 
+            [], 
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ], 
+            json_encode($lrs)
+        );
 
         $responseData = $response->getData();
 
@@ -59,23 +93,35 @@ class AduroLrsControllerTest extends TestCase
             'description' => 'testing description',
             'auth_service' => 3
         );
-
-        $responseLrs = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+        $responseLrs = $this->call("POST", '/resource/lrs/', 
+            ['timestamp' => $this->timestamp], 
+            [], 
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ], 
+            json_encode($lrs)
+        );
         $responseContent = json_decode($responseLrs->getContent());
         $updateParam = [
-            'lrsId' => $responseContent->new_lrs,
             'title' => 'update'.helpers::getRandomValue(),
             'description' => 'testing description',
             'auth_service' => 3
         ];
-        $response = $this->call("POST", '/aduro/lrs/update', [], [], [], json_encode($updateParam));
+        $response = $this->call("PUT", "/resource/lrs/$responseContent->new_lrs", 
+            ['timestamp' => $this->timestamp], 
+            [], 
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ],
+            json_encode($updateParam)
+        );
 
         $responseContent = json_decode($response->getContent());
 
         $this->assertTrue($responseContent->success === true);
     }
     
-    public function _testDeleteLRS()
+    public function testDeleteLRS()
     {
         $lrs = array(
             'title' => helpers::getRandomValue(),
@@ -83,10 +129,21 @@ class AduroLrsControllerTest extends TestCase
             'auth_service' => 3
         );
 
-        $responseLrs = $this->call("POST", '/aduro/lrs/create', [], [], [], json_encode($lrs));
+         $responseLrs = $this->call("POST", '/resource/lrs/', 
+            ['timestamp' => $this->timestamp], 
+            [], 
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword
+            ], 
+            json_encode($lrs)
+        );
         $responseContent = json_decode($responseLrs->getContent());
-        $deleteParam = ['lrsId' => $responseContent->new_lrs];
-        $response = $this->call("POST", '/aduro/lrs/delete', [], [], [], json_encode($deleteParam));
+        $response = $this->call('DELETE', "/resource/lrs/$responseContent->new_lrs", 
+            ['timestamp' => $this->timestamp], 
+            [], 
+            ['PHP_AUTH_USER' => $this->authUser,
+                'PHP_AUTH_PW' => $this->authPassword]
+        );
         $responseContent = json_decode($response->getContent());
 
         $this->assertTrue($responseContent->success === true);
