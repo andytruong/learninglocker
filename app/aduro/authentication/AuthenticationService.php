@@ -49,6 +49,11 @@ class AuthenticationService implements AuthenticationInterface
 
     public function verifyLrsService()
     {
+        $site = \Site::first();
+        if (!$site->use_auth) {// for development
+            return;
+        }
+
         $key = \Request::getUser();
         $secret = \Request::getPassword();
         $timestamp = \Request::get('timestamp');
@@ -60,8 +65,7 @@ class AuthenticationService implements AuthenticationInterface
                 $res = \Cache::get($cache_key, '');
                 $return = unserialize($res);
             }
-            else {
-                $site = \Site::first();
+            else {                
                 if (!$site->auth_token || !$site->auth_service_url) {
                     return \Response::json(array(
                             'error' => true,

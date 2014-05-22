@@ -21,6 +21,7 @@ class AduroLrsControllerTest extends TestCase
         $site = \Site::first();
         $site->auth_token = 'aduro';
         $site->auth_service_url = 'http://auth.services.adurolms.com';
+        $site->use_auth = 0;
         $site->save();
     }
 
