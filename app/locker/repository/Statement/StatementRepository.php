@@ -1,8 +1,11 @@
-<?php namespace Locker\Repository\Statement;
+<?php
+
+namespace Locker\Repository\Statement;
 
 interface StatementRepository
 {
-    public function all($id,$parameters);
+
+    public function all($id, $parameters);
 
     public function find($id);
 
@@ -12,6 +15,5 @@ interface StatementRepository
 
     public function statements($id);
 
-  public function count($lrs);
-
+    public function count($lrs);
 }

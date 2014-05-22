@@ -137,8 +137,7 @@ class EloquentStatementRepository implements StatementRepository
     /**
      * @param array $statements An array of statements to create
      * @param array $lrs
-     *
-     * */
+     */
     public function create($statements, $lrs)
     {
         //Full tincan statement validation to make sure the statement conforms
