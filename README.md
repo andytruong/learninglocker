@@ -29,4 +29,4 @@ There are several ways you can get involved with Learning Locker. Visit our site
 
 #### Copyright
 
-Learning Locker is copyright HT2 (http://ht2.co.uk)
+Learning Locker is copyright HT2 (http://ht2.co.uk).
