@@ -259,19 +259,10 @@ Route::post('migrate/{id}', array(
  * Information pages e.g. terms, privacy
  * ------------------------------------------------------------------
  */
-Route::get('terms', function () {
-    return View::make('partials.pages.terms');
-});
-// tools
-Route::get('tools', array(function () {
-    return View::make('partials.pages.tools', array('tools' => true));
-}));
-Route::get('help', array(function () {
-    return View::make('partials.pages.help', array('help' => true));
-}));
-Route::get('about', array(function () {
-    return View::make('partials.pages.about');
-}));
+Route::get('terms', array('uses' => 'SystemInfoController@terms'));
+Route::get('tools', array('uses' => 'SystemInfoController@tools'));
+Route::get('help',  array('uses' => 'SystemInfoController@help'));
+Route::get('about', array('uses' => 'SystemInfoController@about'));
 
 /**
  * ------------------------------------------------------------------
