@@ -7,6 +7,8 @@ class Lrs extends Eloquent
 
     const ADURO_AUTH_SERVICE = 1;
     const INTERNAL_LRS = 2;
+    const AUTH_MOCK = 3;
+    const OAUTH = 4;
 
     /**
      * Our MongoDB collection used by the model.

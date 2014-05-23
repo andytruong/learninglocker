@@ -15,27 +15,12 @@ class LrsTest extends TestCase {
       'description' => \app\locker\helpers\Helpers::getRandomValue(),
       'api' => array('basic_key' => \app\locker\helpers\Helpers::getRandomValue(),
         'basic_secret' => \app\locker\helpers\Helpers::getRandomValue()),
-      'auth_service' => \Lrs::INTERNAL_LRS
     );
     $validator = $lrs->validate($values);
     $this->assertTrue($validator->fails());
     $this->assertFalse($validator->passes());
 
     $values['title'] = \app\locker\helpers\Helpers::getRandomValue();
-    $validator = $lrs->validate($values);
-    $this->assertTrue($validator->passes());
-    
-    // Validate auth_service
-    $values['auth_service'] = \Lrs::ADURO_AUTH_SERVICE;
-    $validator = $lrs->validate($values);
-    $this->assertTrue($validator->fails());
-    
-    // Fails if auth_service_url is empty
-    $values['token'] = \app\locker\helpers\Helpers::getRandomValue();
-    $validator = $lrs->validate($values);
-    $this->assertTrue($validator->fails());
-    
-    $values['auth_service_url'] = 'http://' . \app\locker\helpers\Helpers::getRandomValue() . '.adurolms.com';
     $validator = $lrs->validate($values);
     $this->assertTrue($validator->passes());
 
