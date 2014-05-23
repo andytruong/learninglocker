@@ -27,10 +27,6 @@ class Lrs extends Eloquent
 
     public function validate($data)
     {
-        if ($data['auth_service'] == \Lrs::ADURO_AUTH_SERVICE) {
-            $this->rules['token'] = 'required';
-            $this->rules['auth_service_url'] = 'required|url';
-        }
         return Validator::make($data, $this->rules);
     }
 

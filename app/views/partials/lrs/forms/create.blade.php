@@ -23,54 +23,6 @@
     </div>
     <span class="form-suffix" style="display: inline-block;vertical-align: middle;margin-top: 5px;">.{{ Config::get('app.domain')}}</span>
 </div>
-
-<div class="panel panel-default col-sm-offset-2 ">
-    <div class="panel-heading">Authentication</div>
-    <div class="panel-body">
-
-        <div class="col-sm-10 col-sm-offset-2 ">
-            <div class="form-group">
-                <div class="radio">
-                    <label>
-                        {{ Form::radio('auth_service', Lrs::INTERNAL_LRS, false ,array('id'=>'internallrs-authentication')) }}
-                        {{ Lang::get('lrs.api.label.internal') }}
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="radio">
-                    <label>
-                        {{ Form::radio('auth_service', Lrs::ADURO_AUTH_SERVICE, true, array('id'=>'aduro-auth-service')) }}
-                        {{ Lang::get('lrs.api.label.auth_service') }}
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            {{ Form::label('token', Lang::get('site.token'), array('class' => 'col-sm-2 control-label' )) }}
-            <div class="col-sm-10">
-                {{ Form::text('token', Input::old('token'), array('class' => 'form-control')) }}
-                <span class="help-block">similar to the token configured in authentication service</span>
-            </div>
-        </div>
-
-        <div class="form-group">
-            {{ Form::label('auth_cache_time', Lang::get('lrs.auth_cache_time'), array('class' => 'col-sm-2 control-label' )) }}
-            <div class="col-sm-10">
-                {{ Form::text('auth_cache_time', Input::old('auth_cache_time'), array('class' => 'form-control')) }}
-                <span class="help-block">In minute, default to 15</span>
-            </div>
-        </div>
-        <div class="form-group">
-            {{ Form::label('auth_service_url', Lang::get('lrs.auth_service_url'), array('class' => 'col-sm-2 control-label' )) }}
-            <div class="col-sm-10">
-                {{ Form::text('auth_service_url', Input::old('auth_service_url'), array('class' => 'form-control')) }}
-                <span class="help-block">Full URL to auth service. E.g.: http://auth.services.adurolms.com</span>
-            </div>
-        </div>
-    </div>
-</div>
 <hr>
 <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">

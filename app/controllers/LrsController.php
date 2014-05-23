@@ -85,11 +85,6 @@ class LrsController extends BaseController
         $rules['auth_service_url'] = 'url';
         $rules['subdomain'] = 'unique:lrs|alpha_dash';
 
-        if ($data['auth_service'] == \lrs::ADURO_AUTH_SERVICE) {
-            $rules['token'] = 'required';
-            $rules['auth_service_url'] = 'required|url';
-        }
-
         $validator = Validator::make($data, $rules);
 
         if (!isset($data['subdomain']) || empty($data['subdomain'])) {
@@ -146,11 +141,6 @@ class LrsController extends BaseController
         $rules['title'] = "required|alpha_dash";
         if ($data['subdomain'] != $lrs->subdomain) {
             $rules['subdomain'] = 'unique:lrs|alpha_dash';
-        }
-
-        if ($data['auth_service'] == \lrs::ADURO_AUTH_SERVICE) {
-            $rules['token'] = 'required';
-            $rules['auth_service_url'] = 'required|url';
         }
         
         if (!isset($data['subdomain']) || empty($data['subdomain'])) {
@@ -338,6 +328,39 @@ class LrsController extends BaseController
         $change = $this->lrs->changeRole($id, $user, $role);
 
         return Response::json(array('success' => true));
+    }
+    
+    /**
+     * Update the authentication in storage.
+     *
+     * @param  int  $id
+     * @return View
+     */
+    public function authService($id)
+    {
+        $data = Input::all();
+        $lrs = $this->lrs->find($id);
+
+        $rules['token'] = 'required';
+        $rules['auth_service_url'] = 'required|url';
+
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            return Redirect::back()->withInput()->withErrors($validator);
+        }
+
+        $lrs->auth_service_url = $data['auth_service_url'];
+        $lrs->auth_cache_time = isset($data['auth_cache_time']) ? $data['auth_cache_time'] : '';
+        $lrs->token = $data['token'];
+        $l = $lrs->save();
+
+        if ($l) {
+            return Redirect::back()->with('success', Lang::get('lrs.updated'));
+        }
+
+        return Redirect::back()
+                ->withInput()
+                ->withErrors($this->lrs->errors());
     }
 
 }

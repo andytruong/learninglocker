@@ -40,6 +40,7 @@ return array(
     'endpoint' 	=> array(
         'endpoint'       => 'Endpoint',
         'basic_http'     => 'Basic HTTP Authentication',
+        'auth_service'   => 'Aduro Authentication Service',
         'submit'         => 'Accept xAPI Statements',
         'instructions'   => 'In order to accept xAPI statements you will need to submit to the following endpoint and authenticate.',
         'new_key_secret' => 'Generate new key and secret'
