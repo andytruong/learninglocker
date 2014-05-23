@@ -12,9 +12,22 @@ class AuthenticationService implements AuthenticationInterface
     {
         try {
             $lrs = \LrsHelpers::getLrsBySubdomain();
+            
+            // see if the lrs exists based on _id and clientname
+            $lrs_owner = \Lrs::where('_id', $lrs->_id)
+                    ->where('client_name', $key)
+                    ->select('owner._id')->first();
+            
+            // if client cant owner of lrs, return error
+            if ($lrs_owner == NULL) {
+                return \Response::json(array(
+                        'error' => true,
+                        'message' => 'Unauthorized request.'), 401
+                );
+            }
 
             // Get timestamp from request parameter
-            $timestamp = isset($_GET['timestamp']) ? $_GET['timestamp'] : time();
+            $timestamp = !is_null(\Request::get('timestamp')) ? \Request::get('timestamp') : time();
 
             // cache auth service
             $cache_key = "{$key}_{$secret}_{$timestamp}";
