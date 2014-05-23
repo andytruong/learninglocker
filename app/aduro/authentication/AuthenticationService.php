@@ -2,8 +2,8 @@
 
 namespace app\aduro\authentication;
 
-use \GuzzleHttp\Client as Client;
-use \GuzzleHttp\Exception\ClientException as ClientException;
+use GuzzleHttp\Client as Client;
+use GuzzleHttp\Exception\ClientException as ClientException;
 
 class AuthenticationService implements AuthenticationInterface
 {

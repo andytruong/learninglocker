@@ -11,31 +11,7 @@
  *
  */
 
-Route::get('/', function () {
-    if (Auth::check()) {
-        $site = \Site::first();
-        // if super admin, show site dashboard, otherwise show list of LRSs can access
-        if (Auth::user()->role == 'super') {
-            $list = Lrs::all();
-
-            return View::make('partials.site.dashboard', array('site' => $site, 'list' => $list, 'dash_nav' => true));
-        }
-        else {
-            $lrs = Lrs::where('users._id', \Auth::user()->_id)->get();
-
-            return View::make('partials.lrs.list', array('lrs' => $lrs, 'list' => $lrs, 'site' => $site));
-        }
-    }
-    else {
-        $site = \Site::first();
-        if (isset($site)) {
-            return View::make('system.forms.login', array('site' => $site));
-        }
-        else {
-            return View::make('system.forms.register');
-        }
-    }
-});
+Route::get('/', array('uses' => 'SiteFrontController@front'));
 
 /**
  * ------------------------------------------------------------------
@@ -119,34 +95,18 @@ Route::get('email/invite/{token}', array(
  * Site (this is for super admin users only)
  * ------------------------------------------------------------------
  */
-Route::get('site', array(
-    'uses' => 'SiteController@index',
-));
-Route::get('site/settings', array(
-    'uses' => 'SiteController@settings',
-));
-Route::get('site/apps', array(
-    'uses' => 'SiteController@apps',
-));
-Route::get('site/stats', array(
-    'uses' => 'SiteController@getStats',
-));
-Route::get('site/lrs', array(
-    'uses' => 'SiteController@lrs',
-));
-Route::get('site/users', array(
-    'uses' => 'SiteController@users',
-));
+Route::get('site', array('uses' => 'SiteController@index'));
+Route::get('site/settings', array('uses' => 'SiteController@settings'));
+Route::get('site/apps', array('uses' => 'SiteController@apps'));
+Route::get('site/stats', array('uses' => 'SiteController@getStats'));
+Route::get('site/lrs', array('uses' => 'SiteController@lrs'));
+Route::get('site/users', array('uses' => 'SiteController@users'));
 Route::get('site/invite', array(
     'uses' => 'SiteController@inviteUsersForm',
     'as' => 'site.invite'
 ));
-Route::post('site/invite', array(
-    'uses' => 'SiteController@inviteUsers',
-));
-Route::get('site/plugins', array(
-    'uses' => 'PluginController@index',
-));
+Route::post('site/invite', array('uses' => 'SiteController@inviteUsers'));
+Route::get('site/plugins', array('uses' => 'PluginController@index'));
 Route::resource('site', 'SiteController');
 Route::put('site/users/verify/{id}', array(
     'uses' => 'SiteController@verifyUser',
@@ -196,7 +156,6 @@ Route::resource('lrs', 'LrsController');
  * Reporting
  * ------------------------------------------------------------------
  */
-
 // index and create pages
 Route::get('lrs/{id}/reporting', array(
     'uses' => 'ReportingController@index',
@@ -300,7 +259,6 @@ Route::post('migrate/{id}', array(
  * Information pages e.g. terms, privacy
  * ------------------------------------------------------------------
  */
-
 Route::get('terms', function () {
     return View::make('partials.pages.terms');
 });
@@ -320,8 +278,6 @@ Route::get('about', array(function () {
  * Statement API
  * ------------------------------------------------------------------
  */
-
-
 Route::group(array('prefix' => 'data/xAPI/', 'before' => 'auth.statement'), function () {
     Config::set('xapi.using_version', '1.0.1');
 
@@ -404,7 +360,6 @@ Route::group(array('prefix' => 'data/xAPI/', 'before' => 'auth.statement'), func
  * Learning Locker RESTful API
  * ------------------------------------------------------------------
  */
-
 Route::group(array('prefix' => 'api/v1', 'before' => 'auth.statement'), function () {
     Config::set('api.using_version', 'v1');
 
@@ -427,7 +382,6 @@ Route::group(array('prefix' => 'api/v1', 'before' => 'auth.statement'), function
  * oAuth handling
  * ----------------------------------------------------------------------
  */
-
 Route::resource('oauth/apps', 'OAuthAppController');
 
 Route::post('oauth/access_token', function () {
