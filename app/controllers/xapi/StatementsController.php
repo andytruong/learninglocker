@@ -225,9 +225,8 @@ class StatementsController extends BaseController
             'X-Experience-API-Version' => \Config::get('xapi.using_version')
         );
 
-
-        //replace replace &46; in keys with .
-        //see https://github.com/LearningLocker/LearningLocker/wiki/A-few-quirks for more info
+        // replace replace &46; in keys with.
+        // see https://github.com/LearningLocker/LearningLocker/wiki/A-few-quirks for more info
         if (!empty($statements)) {
             foreach ($statements as &$s) {
                 $s = \app\locker\helpers\Helpers::replaceHtmlEntity($s['statement']);
@@ -273,7 +272,6 @@ class StatementsController extends BaseController
     /**
      * Run a check to make sure critria are being met, if not, reject
      * with a 400.
-     *
      */
     public function reject()
     {
@@ -290,10 +288,9 @@ class StatementsController extends BaseController
                                                       statementId and voidedStatementId'), 400);
             }
 
-            //The LRS MUST reject with an HTTP 400 error any requests to this resource
-            //which contain statementId or voidedStatementId parameters, and also contain any other
-            //parameter besides "attachments" or "format".
-
+            // The LRS MUST reject with an HTTP 400 error any requests to this
+            // resource which contain statementId or voidedStatementId parameters,
+            // and also contain any other parameter besides "attachments" or "format".
             if (array_key_exists("statementId", $this->params)
                 OR array_key_exists("voidedStatementId", $this->params)) {
 

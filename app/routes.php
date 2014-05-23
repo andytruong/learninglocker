@@ -273,10 +273,7 @@ Route::group(array('prefix' => 'data/xAPI/', 'before' => 'auth.statement'), func
     Config::set('xapi.using_version', '1.0.1');
 
     Route::options('/{extra}', 'Controllers\API\BaseController@CORSOptions')->where('extra', '(.*)');
-
-    Route::get('/about', function () {
-        return Response::json(array('X-Experience-API-Version' => Config::get('xapi.using_version')));
-    });
+    Route::options('/about', 'Controllers\xAPI\BaseController@about');
 
     // statement resource (post, put, get, delete) route
     Route::get('statements/grouped', array(
