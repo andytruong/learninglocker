@@ -35,7 +35,7 @@ class LrsTest extends TestCase {
     $validator = $lrs->validate($values);
     $this->assertTrue($validator->fails());
     
-    $values['auth_service_url'] = \app\locker\helpers\Helpers::getRandomValue();
+    $values['auth_service_url'] = 'http://' . \app\locker\helpers\Helpers::getRandomValue() . '.adurolms.com';
     $validator = $lrs->validate($values);
     $this->assertTrue($validator->passes());
 
