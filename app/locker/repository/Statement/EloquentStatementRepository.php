@@ -152,7 +152,7 @@ class EloquentStatementRepository implements StatementRepository
             $verify = new \app\locker\statements\xAPIValidation();
 
             // run full validation
-            $return = $verify->runValidation($statement, \Site::first());
+            $return = $verify->validate($statement, \Site::first());
 
             if ($return['status'] == 'failed') {
                 return array('success' => 'false', 'message' => $return['errors']);

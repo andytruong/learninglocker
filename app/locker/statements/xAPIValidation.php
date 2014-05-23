@@ -18,7 +18,7 @@
 
 namespace app\locker\statements;
 
-class xAPIValidation
+class xAPIValidation implements xAPIValidationInterface
 {
 
     protected $status = 'passed'; // status of the submitted statement. passed or failed.
@@ -34,17 +34,15 @@ class xAPIValidation
 
     }
 
+    public function getSpecificationVersion()
+    {
+        return '1.0.0';
+    }
+
     /**
-     * Validator
-     *
-     * Run a full validation on submitted statement.
-     * @param  array   $statement    The statement.
-     * @param  array   $authority      The authority storing statement.
-     *
-     * @return array An array containing status, errors (if any) and the statement
-     *
+     * {@inheritdoc}
      */
-    public function runValidation($statement = '', $authority = '')
+    public function validate($statement = array(), $authority = array())
     {
         $this->statement = $statement;
 
