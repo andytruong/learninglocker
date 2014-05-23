@@ -145,7 +145,6 @@ class EloquentStatementRepository implements StatementRepository
      */
     public function create($statements, $lrs, $attachments = '')
     {
-
         // Full tincan statement validation to make sure the statement conforms
 
         $saved_ids = array();
@@ -165,13 +164,12 @@ class EloquentStatementRepository implements StatementRepository
 
         // now we are sure that statements are valid - loop back through and actually add them
         foreach ($statements as $vs) {
-
             // check to see if the statementId already has a statement in the LRS
             if ($result = $this->doesStatementIdExist($lrs->_id, $vs['id'], $statement)) {
                 return array('success' => $result);
             }
 
-            //The date stored in LRS in ISO 8601 format
+            // The date stored in LRS in ISO 8601 format
             $current_date = DateTime::createFromFormat('U.u', microtime(true));
             $current_date->setTimezone(new \DateTimeZone(\Config::get('app.timezone')));
             $vs['stored'] = $current_date->format('Y-m-d\TH:i:s.uP');

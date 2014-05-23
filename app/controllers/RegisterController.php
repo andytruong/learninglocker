@@ -4,22 +4,22 @@ use Locker\Repository\User\UserRepository as User;
 
 class RegisterController extends BaseController
 {
+
     /**
-    * User
-    */
+     * User
+     */
     protected $user;
 
     /**
-    * Construct
-    *
-    * @param User $user
-    */
+     * Construct
+     *
+     * @param User $user
+     */
     public function __construct(User $user)
     {
         $this->user = $user;
         $this->beforeFilter('guest');
         $this->beforeFilter('registation.status');
-
     }
 
     public function index()
@@ -36,11 +36,11 @@ class RegisterController extends BaseController
         }
 
         //validate input
-        $validator = $this->user->validate( Input::all() );
+        $validator = $this->user->validate(Input::all());
         if ($validator->fails()) {
             return Redirect::back()
-                ->withInput(Input::except('password'))
-                ->withErrors($validator);
+                    ->withInput(Input::except('password'))
+                    ->withErrors($validator);
         }
 
         // Save the user
@@ -50,19 +50,20 @@ class RegisterController extends BaseController
             try {
                 //event hook to fire upon successful regitration
                 Event::fire('user.register', array($user));
-            } catch (Exception $e) {
-                return Redirect::to('/')
-                    ->withErrors($e->getMessage());
             }
-        
+            catch (Exception $e) {
+                return Redirect::to('/')
+                        ->withErrors($e->getMessage());
+            }
+
             // log in new user
             Auth::attempt(array(
-                'email'    => Input::get('email'),
+                'email' => Input::get('email'),
                 'password' => Input::get('password')
             ));
 
             return Redirect::to('/')
-                ->with('flash', 'The new user has been created');
+                    ->with('flash', 'The new user has been created');
         }
 
         return Redirect::to('/');

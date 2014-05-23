@@ -21,10 +21,10 @@ namespace app\locker\statements;
 class xAPIValidation
 {
 
-    private $status = 'passed'; // status of the submitted statement. passed or failed.
-    private $errors = array();  // error messages if validation fails
-    private $statement = array();  // the statement submitted
-    private $subStatement = array();
+    protected $status = 'passed'; // status of the submitted statement. passed or failed.
+    protected $errors = array();  // error messages if validation fails
+    protected $statement = array();  // the statement submitted
+    protected $subStatement = array();
 
     /**
      * Constructor
@@ -51,7 +51,6 @@ class xAPIValidation
         $this->getStarted($statement);
 
         foreach ($statement as $k => $v) {
-
             switch ($k) {
                 case 'actor': $this->validateActor($v);
                     break;
@@ -94,24 +93,24 @@ class xAPIValidation
      * @param array $statement The full statement.
      *
      */
-    public function getStarted($statement)
+    protected function getStarted($statement)
     {
-        //check statement is set, is an array and not empty
-        if (!$this->assertionCheck(
-                (isset($statement) && !empty($statement) && is_array($statement)), 'The statement doesn\'t exist or is not in the correct format.'))
+        // check statement is set, is an array and not empty
+        if (!$this->assertionCheck((isset($statement) && !empty($statement) && is_array($statement)), 'The statement doesn\'t exist or is not in the correct format.')) {
             return false;
+        }
 
         $data = $this->checkParams(
             array('id' => array('uuid', false),
-            'actor' => array('array', true),
-            'verb' => array('array', true),
-            'object' => array('array', true),
-            'result' => array('emptyArray', false),
-            'context' => array('emptyArray', false),
-            'timestamp' => array('timestamp', false),
-            'authority' => array('emptyArray', false),
-            'version' => array('string', false),
-            'attachments' => array('emptyArray', false)
+                'actor' => array('array', true),
+                'verb' => array('array', true),
+                'object' => array('array', true),
+                'result' => array('emptyArray', false),
+                'context' => array('emptyArray', false),
+                'timestamp' => array('timestamp', false),
+                'authority' => array('emptyArray', false),
+                'version' => array('string', false),
+                'attachments' => array('emptyArray', false)
             ), $statement, 'core statement'
         );
     }
@@ -125,13 +124,11 @@ class xAPIValidation
      * @param  string  $fail_error   The string to push into the errors array
      * @param  string  $fail_status  The string to set the status to
      * @return boolean               Whether we the assertion passed the test
-     *
      */
-    public function assertionCheck($assertion, $fail_error = 'There was an error', $fail_status = 'failed')
+    protected function assertionCheck($assertion, $fail_error = 'There was an error', $fail_status = 'failed')
     {
         if (!$assertion) {
             $this->setError($fail_error . ' ', $fail_status);
-
             return false;
         }
 
@@ -145,7 +142,6 @@ class xAPIValidation
      *
      * @param  string  $fail_error   The string to push into the errors array
      * @param  string  $fail_status  The string to set the status to
-     *
      */
     private function setError($fail_error = 'There was an error', $fail_status = 'failed')
     {
@@ -160,9 +156,9 @@ class xAPIValidation
      * @param UUID $id The statement ID.
      *
      */
-    public function validateId()
+    protected function validateId()
     {
-        //no id? Generate one.
+        // no id? Generate one.
         if (!isset($this->statement['id'])) {
             $id = $this->makeUUID();
             $this->statement['id'] = $id;
@@ -177,14 +173,12 @@ class xAPIValidation
 
     /**
      * Validate actor. Mandatory.
+     *
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#actor
-     *
      * @param array $actor
-     *
      * @todo check only one functional identifier is passed
-     *
      */
-    public function validateActor($actor)
+    protected function validateActor($actor)
     {
         $actor_valid = $this->checkParams(
             array(
@@ -197,28 +191,25 @@ class xAPIValidation
             ), $actor, 'actor'
         );
 
-        if ($actor_valid !== true)
+        if ($actor_valid !== true) {
             return false; //end here if not true
+        }
 
-
-
-//Check that only one functional identifier exists and is permitted
+        // Check that only one functional identifier exists and is permitted
         $identifier_valid = $this->validActorIdentifier(array_keys($actor));
 
-        if ($identifier_valid != true)
+        if ($identifier_valid != true) {
             return false; //end here if not true
+        }
 
-
-
-//check, if objectType is set, that it is either Group or Agent
+        // check, if objectType is set, that it is either Group or Agent
         if (isset($actor['objectType'])) {
-            if (!$this->assertionCheck(($actor['objectType'] == 'Agent' ||
-                    $actor['objectType'] == 'Group'), 'The Actor objectType must be Agent or Group.'))
+            if (!$this->assertionCheck(($actor['objectType'] == 'Agent' || $actor['objectType'] == 'Group'), 'The Actor objectType must be Agent or Group.')) {
                 return false;
+            }
 
             if ($actor['objectType'] == 'Group') {
-
-                //if objectType Group and no functional identifier: unidentified group
+                // if objectType Group and no functional identifier: unidentified group
                 if ($identifier_valid === false) {
                     //Unidentified group so it must have an array containing at least one member
                     if (!$this->assertionCheck((isset($actor['member']) && is_array($actor['member'])), 'As Actor objectType is Group, it must contain a members array.'))
@@ -238,7 +229,7 @@ class xAPIValidation
      * @param array $authority
      *
      */
-    public function validateAuthority($authority)
+    protected function validateAuthority($authority)
     {
         $this->statement['authority'] = array(
             'name' => $authority['name'],
@@ -255,7 +246,7 @@ class xAPIValidation
      * @param array $verb
      *
      */
-    public function validateVerb($verb)
+    protected function validateVerb($verb)
     {
         $this->checkParams(
             array(
@@ -265,13 +256,10 @@ class xAPIValidation
         );
     }
 
-    //
-
     /**
      * Validate object. Mandtory.
      *
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#object
-     *
      */
     public function validateObject($object)
     {
@@ -386,8 +374,7 @@ class xAPIValidation
         }
 
         if ($object_type == 'SubStatement') {
-
-            //remove "id", "stored", "version" or "authority" if exist
+            // remove "id", "stored", "version" or "authority" if exist
             unset($object['id']);
             unset($object['stored']);
             unset($object['version']);
@@ -396,7 +383,6 @@ class xAPIValidation
             //check object type is not SubStatement as nesting is not permitted
             if ($object['object']['objectType'] == 'SubStatement') {
                 $this->setError('A SubStatement cannot contain a nested statement.');
-
                 return false;
             }
 
@@ -406,11 +392,11 @@ class xAPIValidation
 
     /**
      * Validate context. Optional.
-     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#context
      *
+     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#context
      * @param array $content
      */
-    public function validateContext($context)
+    protected function validateContext($context)
     {
         $valid_context_keys = array('registration' => array('uuid', false),
             'instructor' => array('emptyArray', false),
@@ -422,18 +408,17 @@ class xAPIValidation
             'statement' => array('uuid', false),
             'extensions' => array('emptyArray', false));
 
-        //check all keys submitted are valid
+        // check all keys submitted are valid
         $this->checkParams($valid_context_keys, $context, 'context');
 
         //check properties in contextActivies
         if (isset($context['contextActivities'])) {
-
             $valid_context_keys = array('parent' => array('array'),
                 'grouping' => array('array'),
                 'category' => array('array'),
                 'other' => array('array'));
 
-            //check all keys submitted are valid
+            // check all keys submitted are valid
             $this->checkParams($valid_context_keys, $context['contextActivities'], 'contextActivities');
 
             //now check all property keys contain an array
@@ -466,14 +451,13 @@ class xAPIValidation
     }
 
     /**
-     *
      * Validate result. Optional.
-     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#result
      *
+     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#result
      * @param array $result
      *
      */
-    public function validateResult($result)
+    protected function validateResult($result)
     {
         $valid_keys = array('score' => array('emptyArray', false),
             'success' => array('boolean', false),
@@ -482,18 +466,17 @@ class xAPIValidation
             'duration' => array('iso8601Duration', false),
             'extensions' => array('emptyArray', false));
 
-        //check all keys submitted are valid
+        // check all keys submitted are valid
         $this->checkParams($valid_keys, $result, 'result');
 
-        //now check each part of score if it exists
+        // now check each part of score if it exists
         if (isset($result['score'])) {
-
             $valid_score_keys = array('scaled' => array('score'),
                 'raw' => array('score'),
                 'min' => array('score'),
                 'max' => array('score'));
 
-            //check all keys submitted are valid
+            // check all keys submitted are valid
             $this->checkParams($valid_score_keys, $result['score'], 'result score');
 
             //now check format of each score key
@@ -526,7 +509,6 @@ class xAPIValidation
 
     /**
      * Validate timestamp.
-     *
      */
     public function validateTimestamp()
     {
@@ -538,10 +520,9 @@ class xAPIValidation
             return false; //no timestamp set
         }
 
-        //check format using http://www.pelagodesign.com/blog/2009/05/20/iso-8601-date-validation-that-doesnt-suck/
+        // check format using http://www.pelagodesign.com/blog/2009/05/20/iso-8601-date-validation-that-doesnt-suck/
         if (!preg_match('/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/', $timestamp) > 0) {
             $this->setError('Timestamp needs to be in ISO 8601 format.');
-
             return false;
         }
 
@@ -552,7 +533,7 @@ class xAPIValidation
      * Validate stored.
      *
      */
-    public function validateStored()
+    protected function validateStored()
     {
         if (isset($this->statement['stored'])) {
             unset($this->statement['stored']);
@@ -562,7 +543,7 @@ class xAPIValidation
     /**
      * Validate version.
      */
-    public function validateVersion()
+    protected function validateVersion()
     {
         if (isset($this->statement['version'])) {
             $result = $result = substr($this->statement['version'], 0, 4);
@@ -596,7 +577,7 @@ class xAPIValidation
             'sha2' => array('base64', true),
             'fileUrl' => array('iri', false));
 
-        //check all keys are valid
+        // check all keys are valid
         if ($attachments) {
             foreach ($attachments as $a) {
                 $this->checkParams($valid_attachment_keys, $a, 'attachment');
@@ -611,7 +592,7 @@ class xAPIValidation
      * @return boolean
      *
      */
-    public function validActorIdentifier($actor_keys)
+    protected function validActorIdentifier($actor_keys)
     {
         $identifier_valid = false;
         $count = 0;
@@ -625,7 +606,7 @@ class xAPIValidation
             }
         }
 
-        //only allow one identifier
+        // only allow one identifier
         if ($count > 1) {
             $identifier_valid = false;
             $this->setError('A statement can only set one actor functional identifier.');
@@ -646,7 +627,7 @@ class xAPIValidation
      * @return boolean
      *
      */
-    public function checkKeys($valid_keys, $submitted_keys, $section = '')
+    protected function checkKeys($valid_keys, $submitted_keys, $section = '')
     {
         $valid = true;
         foreach ($submitted_keys as $k) {
@@ -663,7 +644,7 @@ class xAPIValidation
      * @return UUID
      *
      */
-    public function makeUUID()
+    protected function makeUUID()
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
@@ -688,11 +669,9 @@ class xAPIValidation
      *                               format: string, boolean, array
      * @param  array  $data          The data being submitted.
      * @param  string $section       The current section of the statement.
-     *
-     * @return array
-     *
+     * @return boolean
      */
-    public function checkParams($requirements = array(), $data = array(), $section = '')
+    protected function checkParams($requirements = array(), $data = array(), $section = '')
     {
         $valid = true;
 
@@ -700,10 +679,10 @@ class xAPIValidation
             return false;
         }
 
-        //first check to see if the data contains invalid keys
+        // first check to see if the data contains invalid keys
         $check_keys = array_diff_key($data, $requirements);
 
-        //if there are foriegn keys, set required error message
+        // if there are foriegn keys, set required error message
         if (!empty($check_keys)) {
             foreach ($check_keys as $k => $v) {
                 $this->setError(sprintf("`%s` is not a permitted property in %s", $k, $section), $fail_status = 'failed', $value = '');
@@ -711,17 +690,15 @@ class xAPIValidation
             $valid = false;
         }
 
-        //loop through all permitted keys and check type, required and values
+        // loop through all permitted keys and check type, required and values
         foreach ($requirements as $key => $value) {
-
             $data_type = $value[0];
             $required = isset($value[1]) ? $value[1] : false;
             $allowed_values = isset($value[2]) ? $value[2] : false;
 
-            //does key exist in data
+            // does key exist in data
             if (array_key_exists($key, $data)) {
-
-                //check data value is not null apart from in extensions
+                // check data value is not null apart from in extensions
                 if ($key != 'extensions') {
                     if (!$this->assertionCheck(!is_null($data[$key]), sprintf("`%s` in '%s' contains a NULL value which is not permitted.", $key, $section))) {
                         $valid = false;
@@ -730,13 +707,13 @@ class xAPIValidation
 
                 $this->checkTypes($key, $data[$key], $data_type, $section);
 
-                //@todo if allowed values set, check value is in allowed values
+                // @todo if allowed values set, check value is in allowed values
                 if ($allowed_values) {
                     //in_array( $value, $allowed_values )
                 }
             }
             else {
-                //check to see if the key was required. If yes, set valid to false and set error.
+                // check to see if the key was required. If yes, set valid to false and set error.
                 if (!$this->assertionCheck(!$required, sprintf("`%s` is a required key and is not present in %s", $key, $section))) {
                     $valid = false;
                 }
@@ -754,7 +731,7 @@ class xAPIValidation
      * @param string $section The current section being validated. Used in error messages.
      *
      */
-    public function checkTypes($key, $value, $expected_type, $section)
+    protected function checkTypes($key, $value, $expected_type, $section)
     {
         switch ($expected_type) {
             case 'string':
@@ -832,7 +809,7 @@ class xAPIValidation
      * Regex found here http://stackoverflow.com/questions/161738/what-is-the-best-regular-expression-to-check-if-a-string-is-a-valid-url
      *
      */
-    public function validateIRI($value)
+    protected function validateIRI($value)
     {
         if (preg_match('/^[a-z](?:[-a-z0-9\+\.])*:(?:\/\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:])*@)?(?:\[(?:(?:(?:[0-9a-f]{1,4}:){6}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|::(?:[0-9a-f]{1,4}:){5}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:[0-9a-f]{1,4}:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3})|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|v[0-9a-f]+[-a-z0-9\._~!\$&\'\(\)\*\+,;=:]+)\]|(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\.(?:[0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}|(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=@])*)(?::[0-9]*)?(?:\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@]))*)*|\/(?:(?:(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@]))+)(?:\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@]))*)*)?|(?:(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@]))+)(?:\/(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@]))*)*|(?!(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@])))(?:\?(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@])|[\x{E000}-\x{F8FF}\x{F0000}-\x{FFFFD}|\x{100000}-\x{10FFFD}\/\?])*)?(?:\#(?:(?:%[0-9a-f][0-9a-f]|[-a-z0-9\._~\x{A0}-\x{D7FF}\x{F900}-\x{FDCF}\x{FDF0}-\x{FFEF}\x{10000}-\x{1FFFD}\x{20000}-\x{2FFFD}\x{30000}-\x{3FFFD}\x{40000}-\x{4FFFD}\x{50000}-\x{5FFFD}\x{60000}-\x{6FFFD}\x{70000}-\x{7FFFD}\x{80000}-\x{8FFFD}\x{90000}-\x{9FFFD}\x{A0000}-\x{AFFFD}\x{B0000}-\x{BFFFD}\x{C0000}-\x{CFFFD}\x{D0000}-\x{DFFFD}\x{E1000}-\x{EFFFD}!\$&\'\(\)\*\+,;=:@])|[\/\?])*)?$/iu', $value)) {
             return true;
@@ -876,7 +853,7 @@ class xAPIValidation
      * @param string $item
      * @return boolean
      */
-    public function validateUUID($item)
+    protected function validateUUID($item)
     {
         if (preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/i', $item)) {
             return true;
@@ -901,11 +878,12 @@ class xAPIValidation
     }
 
     /**
-     * Returns true if an array is associative
+     * Returns true if an array is associative.
+     *
      * @param  Array  $arr
      * @return boolean
      */
-    private function isAssoc($arr)
+    protected function isAssoc($arr)
     {
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
