@@ -126,7 +126,7 @@ class xAPIValidation
      * @param  string  $fail_status  The string to set the status to
      * @return boolean               Whether we the assertion passed the test
      *
-     * */
+     */
     public function assertionCheck($assertion, $fail_error = 'There was an error', $fail_status = 'failed')
     {
         if (!$assertion) {
@@ -146,7 +146,7 @@ class xAPIValidation
      * @param  string  $fail_error   The string to push into the errors array
      * @param  string  $fail_status  The string to set the status to
      *
-     * */
+     */
     private function setError($fail_error = 'There was an error', $fail_status = 'failed')
     {
         $this->status = $fail_status;
@@ -527,7 +527,7 @@ class xAPIValidation
     /**
      * Validate timestamp.
      *
-     * */
+     */
     public function validateTimestamp()
     {
         //does timestamp exist?
@@ -551,7 +551,7 @@ class xAPIValidation
     /**
      * Validate stored.
      *
-     * */
+     */
     public function validateStored()
     {
         if (isset($this->statement['stored'])) {
@@ -561,7 +561,7 @@ class xAPIValidation
 
     /**
      * Validate version.
-     * */
+     */
     public function validateVersion()
     {
         if (isset($this->statement['version'])) {
@@ -610,7 +610,7 @@ class xAPIValidation
      * @param $actor_keys (array) The array of actor keys to validate
      * @return boolean
      *
-     * */
+     */
     public function validActorIdentifier($actor_keys)
     {
         $identifier_valid = false;
@@ -645,7 +645,7 @@ class xAPIValidation
      * @param $valid_keys     (array) The array of valid keys to check against.
      * @return boolean
      *
-     * */
+     */
     public function checkKeys($valid_keys, $submitted_keys, $section = '')
     {
         $valid = true;
@@ -662,7 +662,7 @@ class xAPIValidation
      *
      * @return UUID
      *
-     * */
+     */
     public function makeUUID()
     {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

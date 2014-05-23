@@ -15,17 +15,17 @@ class SiteController extends BaseController
 
     /**
      * Lrs
-     * */
+     */
     protected $lrs;
 
     /**
      * $user
-     * */
+     */
     protected $user;
 
     /**
      * Statements
-     * */
+     */
     protected $statement;
 
     /**
@@ -106,7 +106,7 @@ class SiteController extends BaseController
      * Grab site stats
      *
      * @return Response
-     * */
+     */
     public function getStats()
     {
         $stats = new \app\locker\data\dashboards\AdminDashboard();
@@ -166,7 +166,7 @@ class SiteController extends BaseController
     /**
      * Invite in the users
      *
-     * */
+     */
     public function inviteUsers()
     {
         $invite = \app\locker\helpers\User::inviteUser(Input::all());
@@ -176,7 +176,7 @@ class SiteController extends BaseController
 
     /**
      * Verify a user.
-     * */
+     */
     public function verifyUser($id)
     {
         $verify = $this->site->verifyUser($id);

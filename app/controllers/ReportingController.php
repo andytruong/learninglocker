@@ -65,7 +65,7 @@ class ReportingController extends \BaseController
      * Return json feed of reports
      *
      * @return response
-     * */
+     */
     public function getReports($id, $limit = 5)
     {
         $reports = $this->report->all($id);
@@ -227,7 +227,7 @@ class ReportingController extends \BaseController
 
     /**
      * Get available actors to use with typeahead.
-     * */
+     */
     public function getActors($lrs, $query)
     {
         $results = $this->report->getActors($lrs, $query);
@@ -237,7 +237,7 @@ class ReportingController extends \BaseController
 
     /**
      * Get available activities to use with typeahead.
-     * */
+     */
     public function getActivities($lrs, $query)
     {
         $results = $this->setQuery($lrs, $query, 'statement.object', 'statement.object.id');
@@ -247,7 +247,7 @@ class ReportingController extends \BaseController
 
     /**
      * Get available parent activities to use with typeahead.
-     * */
+     */
     public function getParents($lrs, $query)
     {
         $results = $this->setQuery($lrs, $query, 'statement.context.contextActivities.parent', 'statement.context.contextActivities.parent.id');

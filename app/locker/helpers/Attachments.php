@@ -13,7 +13,7 @@ class Attachments
      *
      * @return array
      *
-     * */
+     */
     static function setAttachments($content_type, $incoming_statement)
     {
 

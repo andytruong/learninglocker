@@ -19,7 +19,7 @@ class LrsController extends BaseController
 
     /**
      * Statements
-     * */
+     */
     protected $statements;
 
     /**
@@ -279,7 +279,7 @@ class LrsController extends BaseController
     /**
      * Generate a new key and secret for basic auth
      *
-     * */
+     */
     public function editCredentials($id)
     {
         $lrs = $this->lrs->find($id);

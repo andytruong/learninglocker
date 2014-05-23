@@ -37,7 +37,7 @@ class EloquentStatementRepository implements StatementRepository
      * @param string Lrs
      * @return count
      *
-     * */
+     */
     public function count($lrs)
     {
         return $this->statement->where('lrs._id', $lrs)->remember(5)->count();
@@ -54,7 +54,7 @@ class EloquentStatementRepository implements StatementRepository
      *
      * @return statement objects
      *
-     * */
+     */
     public function all($lrs, $parameters)
     {
 
@@ -115,7 +115,7 @@ class EloquentStatementRepository implements StatementRepository
      *
      * @param string $id A statement id (uuid)
      * @return response
-     * */
+     */
     public function find($id)
     {
 
@@ -188,7 +188,7 @@ class EloquentStatementRepository implements StatementRepository
               |------------------------------------------------------------------------------
              */
             if (isset($vs['object']['definition'])) {
-                $this->activity->saveActivity( $vs['object']['id'], $vs['object']['definition'] );
+                $this->activity->saveActivity($vs['object']['id'], $vs['object']['definition']);
             }
 
 
@@ -443,7 +443,7 @@ class EloquentStatementRepository implements StatementRepository
      * @param string $lrs
      * @return boolean
      *
-     * */
+     */
     private function doesStatementIdExist($lrs, $id, $statement)
     {
         $exists = $this->statement->where('lrs._id', $lrs)
@@ -451,7 +451,7 @@ class EloquentStatementRepository implements StatementRepository
             ->first();
 
         if ($exists) {
-            $saved_statement = (array)$exists['statement'];
+            $saved_statement = (array) $exists['statement'];
             unset($saved_statement['stored']);
             array_multisort($saved_statement);
             array_multisort($statement);
@@ -479,7 +479,7 @@ class EloquentStatementRepository implements StatementRepository
      *
      * @return $statements object
      *
-     * */
+     */
     private function getLinkedStatements($statements, $lrs)
     {
         $ids = array();
@@ -529,7 +529,7 @@ class EloquentStatementRepository implements StatementRepository
      * @param $lrs int LRS in question
      *
      * @return $statements
-     * */
+     */
     private function getConnected($id, $lrs)
     {
         return \Statement::where('lrs._id', $lrs)->where('statement.object.id', $id)->get();
@@ -542,7 +542,7 @@ class EloquentStatementRepository implements StatementRepository
      *
      * @return $statements
      *
-     * */
+     */
     private function relatedAgents($statements, $lrs, $actor)
     {
 
@@ -610,7 +610,7 @@ class EloquentStatementRepository implements StatementRepository
     /**
      * Related Activities
      *
-     * */
+     */
     private function relatedActivities($statements, $lrs, $activityId)
     {
 
@@ -667,7 +667,7 @@ class EloquentStatementRepository implements StatementRepository
      * @param $ids
      *
      * @return $statements
-     * */
+     */
     private function addStatements($statements, $additional_statements, $ids)
     {
         if ($additional_statements) {
@@ -684,7 +684,7 @@ class EloquentStatementRepository implements StatementRepository
     /**
      * Store any attachments
      *
-     * */
+     */
     private function storeAttachments($attachments, $lrs)
     {
 

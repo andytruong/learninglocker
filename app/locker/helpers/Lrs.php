@@ -9,7 +9,7 @@ class Lrs
      * @param $role  Can the current user create LRS based on their role?
      *
      * @return boolean
-     * */
+     */
     public static function lrsCanCreate()
     {
         $site = \Site::first();
@@ -25,7 +25,7 @@ class Lrs
      * @param $lrs  Can the current user access based on passed role requirement
      *
      * @return boolean
-     * */
+     */
     public static function lrsAdmin($lrs)
     {
         $user = \Auth::user();
@@ -47,19 +47,19 @@ class Lrs
      * @param $lrs  Can the current user edit lrs
      *
      * @return boolean
-     * */
+     */
     public static function lrsEdit($lrs)
     {
         $user = \Auth::user();
 
-        //get all users with admin access to the lrs
+        // get all users with admin access to the lrs
         foreach ($lrs->users as $u) {
             if ($u['role'] == 'admin') {
                 $get_users[] = $u['_id'];
             }
         }
 
-        //check current user is in the list of allowed users and is an admin
+        // check current user is in the list of allowed users and is an admin
         if (in_array($user->_id, $get_users) || $user->role == 'super') {
             return true;
         }
@@ -72,7 +72,7 @@ class Lrs
      *
      * @return boolean
      *
-     * */
+     */
     public static function lrsOwner($lrs_id)
     {
         $lrs = \Lrs::find($lrs_id);
@@ -92,7 +92,7 @@ class Lrs
      *
      * @return boolean
      *
-     * */
+     */
     public static function isMember($lrs, $user)
     {
         $isMember = \Lrs::where('users._id', $user)->where('_id', $lrs)->first();
@@ -105,7 +105,7 @@ class Lrs
 
     /**
      * Get LRS by subdomain.
-     * */
+     */
     public static function getLrsBySubdomain()
     {
         $subs = explode(".", $_SERVER['SERVER_NAME']);

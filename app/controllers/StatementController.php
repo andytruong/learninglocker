@@ -79,7 +79,7 @@ class StatementController extends BaseController
 
     /**
      * Can current user submit statements to this LRS?
-     * */
+     */
     public function checkCanSubmit($route, $request)
     {
         $user = \Auth::user();

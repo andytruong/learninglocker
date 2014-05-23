@@ -15,12 +15,12 @@ class StatementsController extends BaseController
 
     /**
      * Current LRS based on Auth credentials
-     * */
+     */
     protected $lrs;
 
     /**
      * Filter parameters
-     * */
+     */
     protected $params;
 
     /**
@@ -196,7 +196,7 @@ class StatementsController extends BaseController
      *
      * @param object Statement
      * @return boolean
-     * */
+     */
     public function checkAccess($statement)
     {
 
@@ -217,7 +217,7 @@ class StatementsController extends BaseController
      *
      * @return response
      *
-     * */
+     */
     public function returnArray($statements = array(), $params = array(), $debug = array())
     {
 
@@ -250,7 +250,7 @@ class StatementsController extends BaseController
      *
      * @param array $outcome
      * @return response
-     * */
+     */
     public function sendResponse($outcome)
     {
         switch ($outcome['success']) {
@@ -274,7 +274,7 @@ class StatementsController extends BaseController
      * Run a check to make sure critria are being met, if not, reject
      * with a 400.
      *
-     * */
+     */
     public function reject()
     {
 

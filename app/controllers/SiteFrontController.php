@@ -2,7 +2,9 @@
 
 class SiteFrontController extends BaseController
 {
-    public function front() {
+
+    public function front()
+    {
         if (Auth::check()) {
             return $this->frontSuper();
         }
@@ -10,7 +12,8 @@ class SiteFrontController extends BaseController
         return $this->frontNormal();
     }
 
-    protected function frontSuper() {
+    protected function frontSuper()
+    {
         // if super admin, show site dashboard, otherwise show list of LRSs can access
         if (Auth::user()->role === 'super') {
             return View::make('partials.site.dashboard', array(
@@ -24,11 +27,13 @@ class SiteFrontController extends BaseController
         return View::make('partials.lrs.list', array('lrs' => $lrs, 'list' => $lrs, 'site' => $site));
     }
 
-    protected function frontNormal() {
+    protected function frontNormal()
+    {
         if ($site = \Site::first()) {
             return View::make('system.forms.login', array('site' => $site));
         }
 
         return View::make('system.forms.register');
     }
+
 }
