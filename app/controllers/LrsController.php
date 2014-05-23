@@ -147,12 +147,20 @@ class LrsController extends BaseController
         if ($data['subdomain'] != $lrs->subdomain) {
             $rules['subdomain'] = 'unique:lrs|alpha_dash';
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> bb8196e... LRS-114 Require token and auth service url
         if ($data['auth_service'] == \lrs::ADURO_AUTH_SERVICE) {
             $rules['token'] = 'required';
             $rules['auth_service_url'] = 'required|url';
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> bb8196e... LRS-114 Require token and auth service url
         if (!isset($data['subdomain']) || empty($data['subdomain'])) {
             $count = \Lrs::where('subdomain', '=', $data['title'])->count();
             if ($count > 0) {

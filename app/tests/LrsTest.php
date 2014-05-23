@@ -49,5 +49,4 @@ class LrsTest extends TestCase
         $db_lrs->delete();
         $this->assertEquals(Lrs::find($lrs_id), NULL, 'delete lrs');
     }
-
 }
