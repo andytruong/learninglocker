@@ -3,18 +3,19 @@
 namespace Controllers\Aduro;
 
 use Locker\Repository\Lrs\LrsRepository as Lrs;
-use \app\locker\helpers\Helpers as helpers;
+use app\locker\helpers\Helpers as helpers;
 
 class AduroLrsController extends \Controller
-{	
-	/**
-    * Lrs
-    */
-	protected $lrs;
+{
 
     /**
-    * Lrs rules
-    */
+     * Lrs
+     */
+    protected $lrs;
+
+    /**
+     * Lrs rules
+     */
     protected $rules = [
         'title' => 'required|alpha_dash|unique:lrs',
         'description' => 'required|alpha_spaces',
@@ -24,23 +25,22 @@ class AduroLrsController extends \Controller
         'subdomain' => 'unique:lrs|alpha_dash'
     ];
 
-	/**
-	* Construct
-	*
-	* @param Locker\Repository\Lrs\LrsRepository
-	*
-	*/
-	public function __construct(Lrs $lrs)
+    /**
+     * Construct
+     *
+     * @param Locker\Repository\Lrs\LrsRepository
+     */
+    public function __construct(Lrs $lrs)
     {
         $this->lrs = $lrs;
         $this->beforeFilter('aduro.lrs');
     }
 
     /**
-    * get LRS list
-    *
-    */
-    public function index() {
+     * Get LRS list
+     */
+    public function index()
+    {
         $lrss = \Lrs::get();
         foreach ($lrss as $lrs) {
             $output[] = [
@@ -62,10 +62,10 @@ class AduroLrsController extends \Controller
     }
 
     /**
-    * get LRS by id
-    *
-    */
-    public function show($id) {
+     * Get LRS by id
+     */
+    public function show($id)
+    {
         $lrs = \Lrs::find($id);
 
         if (!$lrs) {
@@ -76,7 +76,7 @@ class AduroLrsController extends \Controller
 
             return \Response::json($output);
         }
-        
+
         $output = [
             'id' => $lrs->_id,
             'title' => $lrs->title,
@@ -95,23 +95,22 @@ class AduroLrsController extends \Controller
     }
 
     /**
-    * Store a newly created resource in storage.
-    *
-    */
+     * Store a newly created resource in storage.
+     */
     public function store()
-    {	
-    	$input = json_decode(\Request::instance()->getContent(), TRUE);
+    {
+        $input = json_decode(\Request::instance()->getContent(), TRUE);
         $validator = $this->validate($input);
         if ($validator['success'] === false) {
             return \Response::json($validator);
         }
 
-        //creating new user
+        // creating new user
         $userName = helpers::getRandomValue();
 
         $user = new \User;
         $user->name = $userName;
-        $user->email = $userName.'@go1.com.au';
+        $user->email = $userName . '@go1.com.au';
         $user->verified = 'yes';
         $user->role = 'super';
         $user->password = \Hash::make(base_convert(uniqid('pass', true), 10, 36));
@@ -138,19 +137,18 @@ class AduroLrsController extends \Controller
             ]
         ];
 
-        $lrs->save() ? $result = true : $return = false;
-
-        //fire a create lrs event if it worked and saced
-        if ($result) {
+        // fire a create lrs event if it worked and saced
+        if ($lrs->save()) {
             $ouput = [
-        		'success' => true,
-        		'new_lrs' => $lrs->_id
-        	];
+                'success' => true,
+                'new_lrs' => $lrs->_id
+            ];
 
             try {
                 \Event::fire('user.create_lrs', ['user' => $user]);
                 \Event::fire('lrs.create', ['lrs' => $lrs]);
-            } catch (Exception $e) {
+            }
+            catch (Exception $e) {
                 $ouput = [
                     'success' => false,
                     'message' => $e->getMessage()
@@ -161,16 +159,15 @@ class AduroLrsController extends \Controller
         }
 
         $ouput = [
-    		'success' => false,
-    		'message' => 'Can\'t save lrs'
-    	];
+            'success' => false,
+            'message' => 'Can\'t save lrs'
+        ];
         return \Response::json($ouput);
     }
 
     /**
-    * Update LRS by id.
-    *
-    */
+     * Update LRS by id.
+     */
     public function update($id)
     {
         $lrs = \Lrs::find($id);
@@ -208,9 +205,8 @@ class AduroLrsController extends \Controller
     }
 
     /**
-    * Delete LRS by id.
-    *
-    */
+     * Delete LRS by id.
+     */
     public function destroy($id)
     {
         $lrs = \Lrs::find($id);
@@ -225,7 +221,7 @@ class AduroLrsController extends \Controller
         }
 
         $lrs->delete();
-        
+
         $output = [
             'success' => true
         ];
@@ -233,8 +229,9 @@ class AduroLrsController extends \Controller
         return \Response::json($output);
     }
 
-
-    //follow http://laravel.com/docs/controllers#resource-controllers but not work
+    /**
+     * Follow http://laravel.com/docs/controllers#resource-controllers but not work
+     */
     public function missingMethod($parameters = [])
     {
         $output = [
@@ -245,7 +242,13 @@ class AduroLrsController extends \Controller
         return \Response::json($output);
     }
 
-    //validate lrs data
+    /**
+     * Validate lrs data
+     *
+     * @param type $input
+     * @param type $rules
+     * @return type
+     */
     public function validate($input, $rules = [])
     {
         if (!$input) {
@@ -259,7 +262,7 @@ class AduroLrsController extends \Controller
             $rules = $this->rules;
         }
         $validator = \Validator::make($input, $rules);
-        
+
         if ($validator->fails()) {
             return [
                 'success' => false,
@@ -269,4 +272,5 @@ class AduroLrsController extends \Controller
 
         return ['success' => true];
     }
+
 }
