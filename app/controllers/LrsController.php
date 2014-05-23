@@ -81,10 +81,15 @@ class LrsController extends BaseController
 
         // lrs input validation
         $rules['title'] = 'required|alpha_dash|unique:lrs';
-        $rules['description'] = '';
         $rules['auth_cache_time'] = 'numeric';
         $rules['auth_service_url'] = 'url';
         $rules['subdomain'] = 'unique:lrs|alpha_dash';
+
+        if ($data['auth_service'] == \lrs::ADURO_AUTH_SERVICE) {
+            $rules['token'] = 'required';
+            $rules['auth_service_url'] = 'required|url';
+        }
+
         $validator = Validator::make($data, $rules);
 
         if (!isset($data['subdomain']) || empty($data['subdomain'])) {
@@ -139,9 +144,13 @@ class LrsController extends BaseController
 
         //lrs input validation
         $rules['title'] = "required|alpha_dash";
-//        $rules['description'] = 'alpha_spaces';
         if ($data['subdomain'] != $lrs->subdomain) {
             $rules['subdomain'] = 'unique:lrs|alpha_dash';
+        }
+
+        if ($data['auth_service'] == \lrs::ADURO_AUTH_SERVICE) {
+            $rules['token'] = 'required';
+            $rules['auth_service_url'] = 'required|url';
         }
 
         if (!isset($data['subdomain']) || empty($data['subdomain'])) {
