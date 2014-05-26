@@ -207,68 +207,20 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validateObject($object)
     {
-        $validate = new validators\ObjectValidator($manager, $object);
-        return $validate->validate();
+        $validator = new validators\ObjectValidator($this, $object);
+        return $validator->validate();
     }
 
     /**
      * Validate context. Optional.
      *
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#context
-     * @param array $content
+     * @param array $context
      */
     protected function validateContext($context)
     {
-        $valid_context_keys = array('registration' => array('uuid', false),
-            'instructor' => array('emptyArray', false),
-            'team' => array('emptyArray', false),
-            'contextActivities' => array('emptyArray', false),
-            'revision' => array('string', false),
-            'platform' => array('string', false),
-            'language' => array('string', false),
-            'statement' => array('uuid', false),
-            'extensions' => array('emptyArray', false));
-
-        // check all keys submitted are valid
-        $this->checkParams($valid_context_keys, $context, 'context');
-
-        // check properties in contextActivies
-        if (isset($context['contextActivities'])) {
-            $valid_context_keys = array('parent' => array('array'),
-                'grouping' => array('array'),
-                'category' => array('array'),
-                'other' => array('array'));
-
-            // check all keys submitted are valid
-            $this->checkParams($valid_context_keys, $context['contextActivities'], 'contextActivities');
-
-            // now check all property keys contain an array
-            // While the contextActivity may be an object on input, it must be stored as an array - so
-            // on each type we will check if an associative array has been passed and insert it into an array if needed
-            if (isset($context['contextActivities']['parent'])) {
-                if ($this->isAssoc($context['contextActivities']['parent'])) {
-                    $this->statement['context']['contextActivities']['parent'] = array($context['contextActivities']['parent']);
-                }
-            }
-
-            if (isset($context['contextActivities']['grouping'])) {
-                if ($this->isAssoc($context['contextActivities']['grouping'])) {
-                    $this->statement['context']['contextActivities']['grouping'] = array($context['contextActivities']['grouping']);
-                }
-            }
-
-            if (isset($context['contextActivities']['category'])) {
-                if ($this->isAssoc($context['contextActivities']['category'])) {
-                    $this->statement['context']['contextActivities']['category'] = array($context['contextActivities']['category']);
-                }
-            }
-
-            if (isset($context['contextActivities']['other'])) {
-                if ($this->isAssoc($context['contextActivities']['other'])) {
-                    $this->statement['context']['contextActivities']['other'] = array($context['contextActivities']['other']);
-                }
-            }
-        }
+        $validator = new validators\ContextValidator($this, $context);
+        return $validator->validate();
     }
 
     /**
