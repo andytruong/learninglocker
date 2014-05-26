@@ -152,7 +152,7 @@ class LrsController extends BaseController
             $rules['token'] = 'required';
             $rules['auth_service_url'] = 'required|url';
         }
-
+        
         if (!isset($data['subdomain']) || empty($data['subdomain'])) {
             $count = \Lrs::where('subdomain', '=', $data['title'])->count();
             if ($count > 0) {

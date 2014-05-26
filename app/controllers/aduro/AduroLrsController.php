@@ -20,6 +20,7 @@ class AduroLrsController extends \Controller
         'title' => 'required|alpha_dash|unique:lrs',
         'description' => 'required|alpha_spaces',
         'auth_service' => 'required|numeric',
+        'email' => 'required|email|unique:users',
         'auth_cache_time' => 'numeric',
         'auth_service_url' => 'url',
         'subdomain' => 'unique:lrs|alpha_dash'
@@ -105,16 +106,15 @@ class AduroLrsController extends \Controller
             return \Response::json($validator);
         }
 
-        // creating new user
-        $userName = helpers::getRandomValue();
-
-        $user = new \User;
-        $user->name = $userName;
-        $user->email = $userName . '@go1.com.au';
-        $user->verified = 'yes';
-        $user->role = 'super';
-        $user->password = \Hash::make(base_convert(uniqid('pass', true), 10, 36));
-        $user->save();
+        $client_name = \Request::getUser();
+        $lrs = \Lrs::where('client_name', $client_name)->first();
+        if ($lrs) {
+            $ouput = [
+                'success' => false,
+                'message' => 'Can\'t save lrs with existed client name'
+            ];
+            return \Response::json($ouput);
+        }
 
         // creating new LRS
         $lrs = new \Lrs;
@@ -128,6 +128,19 @@ class AduroLrsController extends \Controller
         $lrs->api = ['basic_key' => helpers::getRandomValue(),
             'basic_secret' => helpers::getRandomValue()
         ];
+        $lrs->client_name = $client_name;
+
+        //creating new user
+        $getUser = explode('@', $input['email']);
+
+        $user = new \User;
+        $user->name = $getUser[0];
+        $user->email = $input['email'];
+        $user->verified = 'yes';
+        $user->role = 'super';
+        $user->password = \Hash::make(base_convert(uniqid('pass', true), 10, 36));
+        $user->save();
+
         $lrs->owner = ['_id' => $user->_id];
         $lrs->users = [
             ['_id' => $user->_id,
@@ -137,8 +150,10 @@ class AduroLrsController extends \Controller
             ]
         ];
 
-        // fire a create lrs event if it worked and saced
-        if ($lrs->save()) {
+        $lrs->save() ? $result = true : $return = false;
+
+        //fire a create lrs event if it worked and saced
+        if ($result) {
             $ouput = [
                 'success' => true,
                 'new_lrs' => $lrs->_id
