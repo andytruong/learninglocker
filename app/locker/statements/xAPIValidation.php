@@ -31,7 +31,7 @@ class xAPIValidation extends xAPIValidationBase
         $this->setStatement($statement);
         $this->validateAuthority($authority);
 
-        if ($this->getStarted()) {
+        if ($this->validateStructure()) {
             // no id? Generate one.
             if (!isset($this->statement['id'])) {
                 $this->statement['id'] = $this->makeUUID();
@@ -59,7 +59,7 @@ class xAPIValidation extends xAPIValidationBase
      *
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#dataconstraints
      */
-    protected function getStarted()
+    protected function validateStructure()
     {
         $msg_type = 'The statement doesn\'t exist or is not in the correct format.';
 
