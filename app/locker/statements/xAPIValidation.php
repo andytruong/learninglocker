@@ -62,21 +62,22 @@ class xAPIValidation extends xAPIValidationBase
     protected function validateStructure()
     {
         $msg_type = 'The statement doesn\'t exist or is not in the correct format.';
+        if ($this->assertionCheck(!empty($this->statement) && is_array($this->statement), $msg_type)) {
+            $patterns = array(
+                'id' => array('uuid', false),
+                'actor' => array('array', true),
+                'verb' => array('array', true),
+                'object' => array('array', true),
+                'result' => array('emptyArray', false),
+                'context' => array('emptyArray', false),
+                'timestamp' => array('timestamp', false),
+                'authority' => array('emptyArray', false),
+                'version' => array('string', false),
+                'attachments' => array('emptyArray', false)
+            );
 
-        return $this->assertionCheck(!empty($this->statement) && is_array($this->statement), $msg_type)
-                && $this->checkParams(array(
-                    'id' => array('uuid', false),
-                    'actor' => array('array', true),
-                    'verb' => array('array', true),
-                    'object' => array('array', true),
-                    'result' => array('emptyArray', false),
-                    'context' => array('emptyArray', false),
-                    'timestamp' => array('timestamp', false),
-                    'authority' => array('emptyArray', false),
-                    'version' => array('string', false),
-                    'attachments' => array('emptyArray', false)
-                ), $this->statement, 'core statement'
-        );
+            return $this->checkParams($patterns, $this->statement, 'core statement');
+        }
     }
 
     /**
