@@ -10,6 +10,11 @@ class AuthenticationService implements AuthenticationInterface
 
     public function verify($key, $secret)
     {
+        if (\App::environment() === 'testing') {
+            \Config::set('testing.auth_type', \Lrs::ADURO_AUTH_SERVICE);
+            return ;
+        }
+        
         try {
             $lrs = \LrsHelpers::getLrsBySubdomain();
             
