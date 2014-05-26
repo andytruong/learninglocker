@@ -152,16 +152,19 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
     /**
      * Validate submitted keys vs allowed keys.
      *
-     * @param $submitted_keys (array) The array of keys to validate
-     * @param $valid_keys     (array) The array of valid keys to check against.
+     * @param array $valid_keys     The array of valid keys to check against.
+     * @param array $submitted_keys The array of keys to validate
      * @return boolean
      */
     protected function checkKeys($valid_keys, $submitted_keys, $section = '')
     {
         $valid = true;
+
         foreach ($submitted_keys as $k) {
-            if (!$this->assertionCheck(in_array($k, $valid_keys), sprintf("`%s` is not a permitted key in %s", $k, $section)))
+            $msg = sprintf("`%s` is not a permitted key in %s", $k, $section);
+            if (!$this->assertionCheck(in_array($k, $valid_keys), $msg)) {
                 $valid = false;
+            }
         }
 
         return $valid;

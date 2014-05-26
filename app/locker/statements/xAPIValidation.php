@@ -207,58 +207,72 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validateObject($object)
     {
-        //find out what type of object it is as that will inform next steps
-        if (isset($object['objectType'])) {
-            $object_type = $object['objectType'];
+        $object_type = isset($object['objectType']) ? $object['objectType'] : 'Activity';
 
-            $object_type_valid = $this->checkKeys(array(
-                'Activity',
-                'Group',
-                'Agent',
-                'SubStatement',
-                'StatementRef'
-                ), array($object_type), 'object'
+        $object_type_valid = $this->checkKeys(
+            ['Activity', 'Group', 'Agent', 'SubStatement', 'StatementRef'],
+            [$object_type], 'object'
+        );
+
+        switch ($object_type) {
+            case 'SubStatement':
+                return $this->validateObjectSubStatement($object);
+            default:
+                return $this->validateObjectSubStatement($object);
+        }
+    }
+
+    protected function validateObjectSubStatement($object)
+    {
+        // remove "id", "stored", "version" or "authority" if exist
+        unset($object['id'], $object['stored'], $object['version'], $object['authority']);
+
+        // check object type is not SubStatement as nesting is not permitted
+        if ($object['object']['objectType'] == 'SubStatement') {
+            $this->setError('A SubStatement cannot contain a nested statement.');
+            return false;
+        }
+
+        $this->subStatement = $object;
+    }
+
+    protected function validateObjectBasic($object)
+    {
+        // depending on the objectType, validate accordingly.
+        $object_keys = array_keys($object);
+
+        if ($object['objectType'] == 'StatementRef') {
+            $array = array('objectType' => array('string'),
+                'id' => array('uuid', true),
+                'definition' => array('emptyArray'));
+        }
+        elseif ($object['objectType'] == 'SubStatement') {
+            $array = array('objectType' => array('string'));
+        }
+        elseif ($object['objectType'] == 'Agent') {
+            $array = array(
+                'objectType' => array('string'),
+                'name' => array('string'),
+                'mbox' => array('mailto')
             );
         }
         else {
-            $object_type = 'Activity'; //this is the default if nothing defined.
+            $array = array('objectType' => array('string'),
+                'id' => array('iri', true),
+                'definition' => array('emptyArray'));
         }
 
-        //depending on the objectType, validate accordingly.
-        $object_keys = array_keys($object);
+        $object_valid = $this->checkParams($array, $object, 'object');
 
-        if (in_array($object_type, array('Activity', 'Agent', 'Group', 'StatementRef'))) {
+        if ($object_valid !== true) {
+            return false; //end here if not true
+        }
 
-            if ($object['objectType'] == 'StatementRef') {
-                $array = array('objectType' => array('string'),
-                    'id' => array('uuid', true),
-                    'definition' => array('emptyArray'));
-            }
-            elseif ($object['objectType'] == 'SubStatement') {
-                $array = array('objectType' => array('string'));
-            }
-            elseif ($object['objectType'] == 'Agent') {
-                $array = array('objectType' => array('string'),
-                    'name' => array('string'),
-                    'mbox' => array('mailto'));
-            }
-            else {
-                $array = array('objectType' => array('string'),
-                    'id' => array('iri', true),
-                    'definition' => array('emptyArray'));
-            }
+        if (isset($object['definition'])) {
+            $definition = $object['definition'];
 
-            $object_valid = $this->checkParams($array, $object, 'object');
-
-            if ($object_valid !== true)
-                return false; //end here if not true
-
-            if (isset($object['definition'])) {
-
-                $definition = $object['definition'];
-
-                $definition_valid = $this->checkParams(
-                    array(
+            $definition_valid = $this->checkParams(
+                array(
                     'name' => array('lang_map'),
                     'description' => array('lang_map'),
                     'type' => array('iri'),
@@ -271,65 +285,53 @@ class xAPIValidation extends xAPIValidationBase
                     'source' => array('array'),
                     'target' => array('array'),
                     'steps' => array('array')
-                    ), $definition, 'Object Definition'
-                );
+                ), $definition, 'Object Definition'
+            );
 
-                if ($definition_valid !== true)
-                    return false; //end here if not true
+            if ($definition_valid !== true) {
+                return false; //end here if not true
+            }
 
-                if (isset($definition['interactionType'])) {
-                    //check to see it type is set, if not, set to http://adlnet.gov/expapi/activities/cmi.interaction
-                    $allowed_interaction_types = array('choice',
-                        'sequencing',
-                        'Likert',
-                        'Matching',
-                        'Performance',
-                        'true-false',
-                        'fill-in',
-                        'numeric',
-                        'other');
+            if (isset($definition['interactionType'])) {
+                // check to see it type is set, if not, set to http://adlnet.gov/expapi/activities/cmi.interaction
+                $allowed_interaction_types = [
+                    'choice', 'sequencing', 'Likert', 'Matching',
+                    'Performance', 'true-false', 'fill-in', 'numeric', 'other'
+                ];
 
-                    $this->assertionCheck(
-                        (in_array($definition['interactionType'], $allowed_interaction_types)), 'Object: definition: interactionType is not valid.');
-                }
-
-                if (isset($definition['choices'], $definition['scale'], $definition['source'], $definition['target'], $definition['steps'])) {
-
-                    $check_valid_keys = array('id', 'description');
-                    $loop = array('choices', 'scale', 'source', 'target', 'steps');
-
-                    foreach ($loop as $l) {
-
-                        //check activity object definition only has valid keys.
-                        $is_valid = $this->checkKeys($check_valid_keys, $definition[$l], 'Object Definition');
-
-                        if (!$this->assertionCheck(($definition_valid === true), 'Object: definition: It has an invalid property.'))
-                            return false;
-
-                        $this->assertionCheck(
-                            (array_key_exists('id', $definition[$l]) || array_key_exists('description', $definition[$l])), 'Object: definition: It needs to be an array with keys id and description.');
-                    }
-                }
-
+                $msg = 'Object: definition: interactionType is not valid.';
                 $this->assertionCheck(
-                    (!isset($definition['extensions']) || is_array($definition['extensions'])), 'Object: definition: extensions need to be an object.');
-            }
-        }
-
-        if ($object_type == 'SubStatement') {
-            // remove "id", "stored", "version" or "authority" if exist
-            unset($object['id']);
-            unset($object['stored']);
-            unset($object['version']);
-            unset($object['authority']);
-            //unset($object['objectType']);
-            //check object type is not SubStatement as nesting is not permitted
-            if ($object['object']['objectType'] == 'SubStatement') {
-                $this->setError('A SubStatement cannot contain a nested statement.');
-                return false;
+                    in_array($definition['interactionType'], $allowed_interaction_types),
+                    $msg
+                );
             }
 
-            $this->subStatement = $object;
+            if (isset($definition['choices'], $definition['scale'], $definition['source'], $definition['target'], $definition['steps'])) {
+                $check_valid_keys = array('id', 'description');
+                $loop = array('choices', 'scale', 'source', 'target', 'steps');
+
+                foreach ($loop as $l) {
+                    //check activity object definition only has valid keys.
+                    $is_valid = $this->checkKeys($check_valid_keys, $definition[$l], 'Object Definition');
+
+                    $msg = 'Object: definition: It has an invalid property.';
+                    if (!$this->assertionCheck(($definition_valid === true), $msg)) {
+                        return false;
+                    }
+
+                    $msg = 'Object: definition: It needs to be an array with keys id and description.';
+                    $this->assertionCheck(
+                        array_key_exists('id', $definition[$l]) || array_key_exists('description', $definition[$l]),
+                        $msg
+                    );
+                }
+            }
+
+            $msg = 'Object: definition: extensions need to be an object.';
+            $this->assertionCheck(
+                !isset($definition['extensions']) || is_array($definition['extensions']),
+                $msg
+            );
         }
     }
 
