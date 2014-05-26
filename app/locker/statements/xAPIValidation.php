@@ -18,6 +18,10 @@
 
 namespace app\locker\statements;
 
+use app\locker\statements\validators\ContextValidator;
+use app\locker\statements\validators\ObjectValidator;
+use app\locker\statements\validators\ResultValidator;
+
 /**
  * @todo Test sub-statement.
  */
@@ -207,7 +211,7 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validateObject($object)
     {
-        $validator = new validators\ObjectValidator($this, $object);
+        $validator = new ObjectValidator($this, $object);
         return $validator->validate();
     }
 
@@ -219,7 +223,7 @@ class xAPIValidation extends xAPIValidationBase
      */
     protected function validateContext($context)
     {
-        $validator = new validators\ContextValidator($this, $context);
+        $validator = new ContextValidator($this, $context);
         return $validator->validate();
     }
 
@@ -232,52 +236,8 @@ class xAPIValidation extends xAPIValidationBase
      */
     protected function validateResult($result)
     {
-        $valid_keys = array('score' => array('emptyArray', false),
-            'success' => array('boolean', false),
-            'completion' => array('boolean', false),
-            'response' => array('string', false),
-            'duration' => array('iso8601Duration', false),
-            'extensions' => array('emptyArray', false));
-
-        // check all keys submitted are valid
-        $this->checkParams($valid_keys, $result, 'result');
-
-        // now check each part of score if it exists
-        if (isset($result['score'])) {
-            $valid_score_keys = array('scaled' => array('score'),
-                'raw' => array('score'),
-                'min' => array('score'),
-                'max' => array('score'));
-
-            // check all keys submitted are valid
-            $this->checkParams($valid_score_keys, $result['score'], 'result score');
-
-            //now check format of each score key
-            if (isset($result['score']['scaled'])) {
-                if ($result['score']['scaled'] > 1 || $result['score']['scaled'] < -1) {
-                    $this->setError('Result: score: scaled must be between 1 and -1.');
-                }
-            }
-            if (isset($result['score']['max'])) {
-                if ($result['score']['max'] < $result['score']['min']) {
-                    $this->setError('Result: score: max must be greater than min.');
-                }
-            }
-            if (isset($result['score']['min'])) {
-                if (isset($result['score']['max'])) {
-                    if ($result['score']['min'] > $result['score']['max']) {
-                        $this->setError('Result: score: min must be less than max.');
-                    }
-                }
-            }
-            if (isset($result['score']['raw'])) {
-                if (isset($result['score']['max']) && isset($result['score']['min'])) {
-                    if (($result['score']['raw'] > $result['score']['max']) || ($result['score']['raw'] < $result['score']['min'])) {
-                        $this->setError('Result: score: raw must be between max and min.');
-                    }
-                }
-            }
-        }
+        $validator = new ResultValidator($this, $result);
+        return $validator->validate();
     }
 
     /**
@@ -285,7 +245,6 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validateTimestamp()
     {
-        //does timestamp exist?
         if (isset($this->statement['timestamp'])) {
             $timestamp = $this->statement['timestamp'];
         }
@@ -294,7 +253,8 @@ class xAPIValidation extends xAPIValidationBase
         }
 
         // check format using http://www.pelagodesign.com/blog/2009/05/20/iso-8601-date-validation-that-doesnt-suck/
-        if (!preg_match('/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/', $timestamp) > 0) {
+        $pattern = '/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/';
+        if (!preg_match($pattern, $timestamp) > 0) {
             $this->setError('Timestamp needs to be in ISO 8601 format.');
             return false;
         }
@@ -382,83 +342,9 @@ class xAPIValidation extends xAPIValidationBase
     }
 
     /**
-     * Check types submitted to ensure allowed
-     *
-     * @param mixed   $data   The data to check
-     * @param string    $expected_type The type to check for e.g. array, object,
-     * @param string $section The current section being validated. Used in error messages.
-     *
-     */
-    protected function checkTypes($key, $value, $expected_type, $section)
-    {
-        switch ($expected_type) {
-            case 'string':
-                $this->assertionCheck(is_String($value), sprintf("`%s` is not a valid string in " . $section, $key));
-                break;
-            case 'array':
-                //used when an array is required
-                $this->assertionCheck((is_array($value) && !empty($value)), sprintf("`%s` is not a valid array in " . $section, $key));
-                break;
-            case 'emptyArray':
-                //used if value can be empty but if available needs to be an array
-                if ($value != '') {
-                    $this->assertionCheck(is_array($value), sprintf("`%s` is not a valid array in " . $section, $key));
-                }
-                break;
-            case 'object':
-                $this->assertionCheck(is_object($value), sprintf("`%s` is not a valid object in " . $section, $key));
-                break;
-            case 'iri':
-                $this->assertionCheck($this->validateIRI($value), sprintf("`%s` is not a valid IRI in " . $section, $key));
-                break;
-            case 'iso8601Duration':
-                $this->assertionCheck($this->validateISO8601($value), sprintf("`%s` is not a valid iso8601 Duration format in " . $section, $key));
-                break;
-            case 'timestamp':
-                $this->assertionCheck($this->validateTimestamp($value), sprintf("`%s` is not a valid timestamp in " . $section, $key));
-                break;
-            case 'uuid':
-                $this->assertionCheck($this->validateUUID($value), sprintf("`%s` is not a valid UUID in " . $section, $key));
-                break;
-            case 'irl':
-                $this->assertionCheck((!filter_var($value, FILTER_VALIDATE_URL)), sprintf("`%s` is not a valid irl in " . $section, $key));
-                break;
-            case 'lang_map':
-                $this->assertionCheck($this->validateLanguageMap($value), sprintf("`%s` is not a valid language map in " . $section, $key));
-                break;
-            case 'base64':
-                $this->assertionCheck(base64_encode(base64_decode($value)) === $value, sprintf("`%s` is not a valid language map in " . $section, $key));
-                break;
-            case 'boolean':
-                $this->assertionCheck(is_bool($value), sprintf("`%s` is not a valid boolean " . $section, $key));
-                break;
-            case 'score':
-                $this->assertionCheck(!is_string($value) && (is_int($value) || is_float($value)), sprintf(" `%s` needs to be a number in " . $section, $key));
-                break;
-            case 'numeric':
-                $this->assertionCheck(is_numeric($value), sprintf("`%s` is not numeric in " . $section, $key));
-                break;
-            case 'int':
-                $this->assertionCheck(is_int($value), sprintf("`%s` is not a valid number in " . $section, $key));
-                break;
-            case 'integer':
-                $this->assertionCheck(is_integer($value), sprintf("`%s` is not a valid integer in " . $section, $key));
-                break;
-            case 'contentType':
-                $this->assertionCheck($this->validateInternetMediaType($value), sprintf("`%s` is not a valid Internet Media Type in " . $section, $key));
-                break;
-            case 'mailto':
-                $mbox_format = substr($value, 0, 7);
-                $this->assertionCheck($mbox_format == 'mailto:' && is_string($value), sprintf("`%s` is not in the correct format in " . $section, $key));
-                break;
-        }
-    }
-
-    /*
       |---------------------------------------------------------------------------------
       | Various validation functions
       |---------------------------------------------------------------------------------
-      |
      */
 
     /**

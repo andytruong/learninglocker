@@ -54,11 +54,13 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
         }
     }
 
-    public function setSubStatement($sub_statement) {
+    public function setSubStatement($sub_statement)
+    {
         $this->subStatement = $sub_statement;
     }
 
-    protected function fillMissingElements($statement, $authority) {
+    protected function fillMissingElements($statement, $authority)
+    {
         if (!isset($statement['id'])) {
             $statement['id'] = $this->makeUUID();
         }
@@ -232,9 +234,82 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
     }
 
     /**
+     * Check types submitted to ensure allowed
+     *
+     * @param mixed   $data   The data to check
+     * @param string    $expected_type The type to check for e.g. array, object,
+     * @param string $section The current section being validated. Used in error messages.
+     */
+    protected function checkTypes($key, $value, $expected_type, $section)
+    {
+        switch ($expected_type) {
+            case 'string':
+                $this->assertionCheck(is_String($value), sprintf("`%s` is not a valid string in " . $section, $key));
+                break;
+            case 'array':
+                //used when an array is required
+                $this->assertionCheck((is_array($value) && !empty($value)), sprintf("`%s` is not a valid array in " . $section, $key));
+                break;
+            case 'emptyArray':
+                //used if value can be empty but if available needs to be an array
+                if ($value != '') {
+                    $this->assertionCheck(is_array($value), sprintf("`%s` is not a valid array in " . $section, $key));
+                }
+                break;
+            case 'object':
+                $this->assertionCheck(is_object($value), sprintf("`%s` is not a valid object in " . $section, $key));
+                break;
+            case 'iri':
+                $this->assertionCheck($this->validateIRI($value), sprintf("`%s` is not a valid IRI in " . $section, $key));
+                break;
+            case 'iso8601Duration':
+                $this->assertionCheck($this->validateISO8601($value), sprintf("`%s` is not a valid iso8601 Duration format in " . $section, $key));
+                break;
+            case 'timestamp':
+                $this->assertionCheck($this->validateTimestamp($value), sprintf("`%s` is not a valid timestamp in " . $section, $key));
+                break;
+            case 'uuid':
+                $this->assertionCheck($this->validateUUID($value), sprintf("`%s` is not a valid UUID in " . $section, $key));
+                break;
+            case 'irl':
+                $this->assertionCheck((!filter_var($value, FILTER_VALIDATE_URL)), sprintf("`%s` is not a valid irl in " . $section, $key));
+                break;
+            case 'lang_map':
+                $this->assertionCheck($this->validateLanguageMap($value), sprintf("`%s` is not a valid language map in " . $section, $key));
+                break;
+            case 'base64':
+                $this->assertionCheck(base64_encode(base64_decode($value)) === $value, sprintf("`%s` is not a valid language map in " . $section, $key));
+                break;
+            case 'boolean':
+                $this->assertionCheck(is_bool($value), sprintf("`%s` is not a valid boolean " . $section, $key));
+                break;
+            case 'score':
+                $this->assertionCheck(!is_string($value) && (is_int($value) || is_float($value)), sprintf(" `%s` needs to be a number in " . $section, $key));
+                break;
+            case 'numeric':
+                $this->assertionCheck(is_numeric($value), sprintf("`%s` is not numeric in " . $section, $key));
+                break;
+            case 'int':
+                $this->assertionCheck(is_int($value), sprintf("`%s` is not a valid number in " . $section, $key));
+                break;
+            case 'integer':
+                $this->assertionCheck(is_integer($value), sprintf("`%s` is not a valid integer in " . $section, $key));
+                break;
+            case 'contentType':
+                $this->assertionCheck($this->validateInternetMediaType($value), sprintf("`%s` is not a valid Internet Media Type in " . $section, $key));
+                break;
+            case 'mailto':
+                $mbox_format = substr($value, 0, 7);
+                $this->assertionCheck($mbox_format == 'mailto:' && is_string($value), sprintf("`%s` is not in the correct format in " . $section, $key));
+                break;
+        }
+    }
+
+    /**
      * Details for checkParam() method.
      */
-    protected function checkParam($requirement, $input, $key, $section) {
+    protected function checkParam($requirement, $input, $key, $section)
+    {
         list($type, $required, $allowed_values) = $requirement + array(null, false, array());
 
         if (!isset($input)) {
@@ -256,4 +331,5 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
             return false;
         }
     }
+
 }
