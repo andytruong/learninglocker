@@ -256,7 +256,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
                 // used if value can be empty but if available needs to be an array
                 if ($value != '') {
                     $msg = sprintf("`%s` is not a valid array in " . $section, $key);
-                    $this->assertionCheck(is_array($value), $mgs);
+                    $this->assertionCheck(is_array($value), $msg);
                 }
                 break;
             case 'object':
