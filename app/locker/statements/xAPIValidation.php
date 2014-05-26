@@ -25,11 +25,10 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validate($statement = array(), $authority = array())
     {
-        $this->statement = $statement;
-
+        $this->setStatement($statement);
         $this->getStarted($statement);
 
-        foreach ($statement as $k => $v) {
+        foreach ($this->statement as $k => $v) {
             switch ($k) {
                 case 'actor': $this->validateActor($v);
                     break;
@@ -67,30 +66,32 @@ class xAPIValidation extends xAPIValidationBase
     /**
      *
      * General validation of the core properties.
+     *
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#dataconstraints
-     *
-     * @param array $statement The full statement.
-     *
      */
-    protected function getStarted($statement)
+    protected function getStarted()
     {
         // check statement is set, is an array and not empty
-        if (!$this->assertionCheck((isset($statement) && !empty($statement) && is_array($statement)), 'The statement doesn\'t exist or is not in the correct format.')) {
+        if (!$this->assertionCheck(
+            !empty($this->statement) && is_array($this->statement),
+            'The statement doesn\'t exist or is not in the correct format.'
+        )) {
             return false;
         }
 
         $data = $this->checkParams(
-            array('id' => array('uuid', false),
-            'actor' => array('array', true),
-            'verb' => array('array', true),
-            'object' => array('array', true),
-            'result' => array('emptyArray', false),
-            'context' => array('emptyArray', false),
-            'timestamp' => array('timestamp', false),
-            'authority' => array('emptyArray', false),
-            'version' => array('string', false),
-            'attachments' => array('emptyArray', false)
-            ), $statement, 'core statement'
+            array(
+                'id' => array('uuid', false),
+                'actor' => array('array', true),
+                'verb' => array('array', true),
+                'object' => array('array', true),
+                'result' => array('emptyArray', false),
+                'context' => array('emptyArray', false),
+                'timestamp' => array('timestamp', false),
+                'authority' => array('emptyArray', false),
+                'version' => array('string', false),
+                'attachments' => array('emptyArray', false)
+            ), $this->statement, 'core statement'
         );
     }
 
@@ -562,66 +563,6 @@ class xAPIValidation extends xAPIValidationBase
         }
 
         return $identifier_valid;
-    }
-
-    /**
-     * Used to validate keys and values
-     * @param  array  $requirements  A list of allowed parameters with type, required and allowed values, if applicable.
-     *                               format: string, boolean, array
-     * @param  array  $data          The data being submitted.
-     * @param  string $section       The current section of the statement.
-     * @return boolean
-     */
-    protected function checkParams($requirements = array(), $data = array(), $section = '')
-    {
-        $valid = true;
-
-        if (empty($data)) {
-            return false;
-        }
-
-        // first check to see if the data contains invalid keys
-        $check_keys = array_diff_key($data, $requirements);
-
-        // if there are foriegn keys, set required error message
-        if (!empty($check_keys)) {
-            foreach ($check_keys as $k => $v) {
-                $this->setError(sprintf("`%s` is not a permitted property in %s", $k, $section), $fail_status = 'failed', $value = '');
-            }
-            $valid = false;
-        }
-
-        // loop through all permitted keys and check type, required and values
-        foreach ($requirements as $key => $value) {
-            $data_type = $value[0];
-            $required = isset($value[1]) ? $value[1] : false;
-            $allowed_values = isset($value[2]) ? $value[2] : false;
-
-            // does key exist in data
-            if (array_key_exists($key, $data)) {
-                // check data value is not null apart from in extensions
-                if ($key != 'extensions') {
-                    if (!$this->assertionCheck(!is_null($data[$key]), sprintf("`%s` in '%s' contains a NULL value which is not permitted.", $key, $section))) {
-                        $valid = false;
-                    }
-                }
-
-                $this->checkTypes($key, $data[$key], $data_type, $section);
-
-                // @todo if allowed values set, check value is in allowed values
-                if ($allowed_values) {
-                    //in_array( $value, $allowed_values )
-                }
-            }
-            else {
-                // check to see if the key was required. If yes, set valid to false and set error.
-                if (!$this->assertionCheck(!$required, sprintf("`%s` is a required key and is not present in %s", $key, $section))) {
-                    $valid = false;
-                }
-            }
-        }
-
-        return $valid;
     }
 
     /**

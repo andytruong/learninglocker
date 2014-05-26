@@ -20,6 +20,7 @@ namespace app\locker\statements;
 
 abstract class xAPIValidationBase implements xAPIValidationInterface
 {
+
     protected $status = 'passed'; // status of the submitted statement. passed or failed.
     protected $errors = array();  // error messages if validation fails
     protected $statement = array();  // the statement submitted
@@ -37,6 +38,22 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
     public function getSpecificationVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setStatement($statement)
+    {
+        $this->statement = $statement;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStatement()
+    {
+        return $this->statement;
     }
 
     /**
@@ -125,5 +142,88 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
         }
 
         return $valid;
+    }
+
+    /**
+     * Used to validate keys and values.
+     *
+     * Example:
+     *
+     *  $this->checkParams(
+     *      array(
+     *          // typed => uuid, required => false
+     *          'id'    => array('uuid', false),
+     *          // actor: type => array, required -> true
+     *          'actor' => array('array', true),
+     *          // type => boolean, required => true, allowed value: true/false
+     *          'status' => array('boolean', true, array(true, false)),
+     *      ),
+     *      $input = array(
+     *          // array to be validated
+     *      ),
+     *      $section = '…'
+     *  );
+     *
+     * @param  array  $requirements  A list of allowed parameters with type, required and allowed values, if applicable.
+     *                               format: string, boolean, array
+     * @param  array  $input         The data being submitted.
+     * @param  string $section       The current section of the statement.
+     * @return boolean
+     */
+    protected function checkParams($requirements = array(), $input = array(), $section = '')
+    {
+        if (empty($input)) {
+            return false;
+        }
+
+        // first check to see if the data contains invalid keys
+        $check_keys = array_diff_key($input, $requirements);
+
+        // if there are foreign keys, set required error message
+        if (!empty($check_keys)) {
+            foreach ($check_keys as $k => $v) {
+                $msg = sprintf("`%s` is not a permitted property in %s", $k, $section);
+                $this->setError($msg, $fail_status = 'failed', $value = '');
+            }
+            return false;
+        }
+
+        // there is nothing wrong yet
+        $valid = true;
+
+        // loop through all permitted keys and check type, required and values
+        foreach ($requirements as $key => $requirement) {
+            if (false === $this->checkParam($requirement, $input[$key], $key, $section)) {
+                $valid = false;
+            }
+        }
+
+        return $valid;
+    }
+
+    /**
+     * Details for checkParam() method.
+     */
+    protected function checkParam($requirement, $input, $key, $section) {
+        list($type, $required, $allowed_values) = $requirement + array(null, false, array());
+
+        if (!isset($input)) {
+            $msg = sprintf("`%s` is a required key and is not present in %s", $key, $section);
+            return $this->assertionCheck(!$required, $msg);
+        }
+
+        // check data value is not null apart from in extensions
+        if ($key != 'extensions') {
+            $msg = sprintf("`%s` in '%s' contains a NULL value which is not permitted.", $key, $section);
+            if (!$this->assertionCheck(!is_null($input), $msg)) {
+                $valid = false;
+            }
+        }
+
+        $this->checkTypes($key, $input, $type, $section);
+
+        if (!empty($allowed_values) && !in_array($input, $allowed_values)) {
+            return false;
+        }
     }
 }
