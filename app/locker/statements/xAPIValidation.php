@@ -18,6 +18,9 @@
 
 namespace app\locker\statements;
 
+/**
+ * @todo Test sub-statement.
+ */
 class xAPIValidation extends xAPIValidationBase
 {
     /**
