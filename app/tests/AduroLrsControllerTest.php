@@ -13,7 +13,7 @@ class AduroLrsControllerTest extends TestCase
         Route::enableFilters();
 
         $this->timestamp = time();
-        $this->authUser = 'kien';
+        $this->authUser = helpers::getRandomValue();
         $api_key = 'abcded';
         $api_secret = '-----BEGIN PUBLIC KEY-----MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANH9tnNhhmbwLRcaV1rJLvcix/Ol7mreCtmleIFzCFDx2ni9Sub7o58K7h4AHoKoBUv0JdQBPTGnjqT/Nhy6QqkCAwEAAQ==-----END PUBLIC KEY-----';
 
@@ -40,7 +40,8 @@ class AduroLrsControllerTest extends TestCase
         $lrs = array(
             'title' => helpers::getRandomValue(),
             'description' => 'testing description',
-            'auth_service' => 3
+            'auth_service' => 3,
+            'email' => helpers::getRandomValue() . '@go1.com.au'
         );
         $responseLrs = $this->call("POST", '/resource/lrs', ['timestamp' => $this->timestamp], [], ['PHP_AUTH_USER' => $this->authUser,
             'PHP_AUTH_PW' => $this->authPassword
@@ -57,10 +58,12 @@ class AduroLrsControllerTest extends TestCase
 
     public function testCreateLRS()
     {
+        // happy case
         $lrs = array(
             'title' => helpers::getRandomValue(),
             'description' => 'testing description',
-            'auth_service' => 3
+            'auth_service' => 3,
+            'email' => helpers::getRandomValue() . '@go1.com.au'
         );
 
         $response = $this->call("POST", '/resource/lrs', ['timestamp' => $this->timestamp], [], ['PHP_AUTH_USER' => $this->authUser,
@@ -69,10 +72,28 @@ class AduroLrsControllerTest extends TestCase
         );
 
         $responseData = $response->getData();
-
         $responseStatus = $response->getStatusCode();
-
         $checkResponse = $responseStatus == 200 && property_exists($responseData, 'success') && $responseData->success === true;
+
+        $this->assertTrue($checkResponse);
+
+        //make sure 1 client name & 1 LRS
+        $lrs = array(
+            'title' => helpers::getRandomValue(),
+            'description' => 'testing description',
+            'auth_service' => 3,
+            'email' => helpers::getRandomValue() . '@go1.com.au'
+        );
+
+        $response = $this->call("POST", '/resource/lrs', ['timestamp' => $this->timestamp], [], ['PHP_AUTH_USER' => $this->authUser,
+            'PHP_AUTH_PW' => $this->authPassword
+            ], json_encode($lrs)
+        );
+
+        $responseData = $response->getData();
+        $responseStatus = $response->getStatusCode();
+        $checkResponse = $responseStatus == 200 && property_exists($responseData, 'success') && 
+            $responseData->success === false && $responseData->message == 'Can\'t save lrs with existed client name';
 
         $this->assertTrue($checkResponse);
     }
@@ -82,7 +103,8 @@ class AduroLrsControllerTest extends TestCase
         $lrs = array(
             'title' => helpers::getRandomValue(),
             'description' => 'testing description',
-            'auth_service' => 3
+            'auth_service' => 3,
+            'email' => helpers::getRandomValue() . '@go1.com.au'
         );
         $responseLrs = $this->call("POST", '/resource/lrs', ['timestamp' => $this->timestamp], [], ['PHP_AUTH_USER' => $this->authUser,
             'PHP_AUTH_PW' => $this->authPassword
@@ -92,7 +114,8 @@ class AduroLrsControllerTest extends TestCase
         $updateParam = [
             'title' => 'update' . helpers::getRandomValue(),
             'description' => 'testing description',
-            'auth_service' => 3
+            'auth_service' => 3,
+            'email' => helpers::getRandomValue() . '@go1.com.au'
         ];
         $response = $this->call("PUT", "/resource/lrs/$responseContent->new_lrs", ['timestamp' => $this->timestamp], [], ['PHP_AUTH_USER' => $this->authUser,
             'PHP_AUTH_PW' => $this->authPassword
@@ -109,7 +132,8 @@ class AduroLrsControllerTest extends TestCase
         $lrs = array(
             'title' => helpers::getRandomValue(),
             'description' => 'testing description',
-            'auth_service' => 3
+            'auth_service' => 3,
+            'email' => helpers::getRandomValue() . '@go1.com.au'
         );
 
         $responseLrs = $this->call("POST", '/resource/lrs', ['timestamp' => $this->timestamp], [], ['PHP_AUTH_USER' => $this->authUser,
