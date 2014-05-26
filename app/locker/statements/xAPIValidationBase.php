@@ -237,8 +237,8 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      * Check types submitted to ensure allowed
      *
      * @param mixed   $data   The data to check
-     * @param string    $expected_type The type to check for e.g. array, object,
-     * @param string $section The current section being validated. Used in error messages.
+     * @param string  $expected_type The type to check for e.g. array, object,
+     * @param string  $section The current section being validated. Used in error messages.
      */
     protected function checkTypes($key, $value, $expected_type, $section)
     {
