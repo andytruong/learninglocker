@@ -26,36 +26,24 @@ class xAPIValidation extends xAPIValidationBase
     public function validate($statement = array(), $authority = array())
     {
         $this->setStatement($statement);
-        $this->getStarted($statement);
-
-        foreach ($this->statement as $k => $v) {
-            switch ($k) {
-                case 'actor': $this->validateActor($v);
-                    break;
-                case 'verb': $this->validateVerb($v);
-                    break;
-                case 'object': $this->validateObject($v);
-                    break;
-                case 'context': $this->validateContext($v);
-                    break;
-                case 'timestamp': $this->validateTimestamp($v);
-                    break;
-                case 'result': $this->validateResult($v);
-                    break;
-                case 'version': $this->validateVersion($v);
-                    break;
-                case 'attachments': $this->validateAttachments($v);
-                    break;
-            }
-        }
-
         $this->validateAuthority($authority);
-        $this->validateId();
-        $this->validateStored();
 
-        // now validate a sub statement if one exists
-        if (!empty($this->subStatement)) {
-            $this->runValidation($this->subStatement);
+        if ($this->getStarted()) {
+            // no id? Generate one.
+            if (!isset($this->statement['id'])) {
+                $this->statement['id'] = $this->makeUUID();
+            }
+
+            if (isset($this->statement['stored'])) {
+                unset($this->statement['stored']);
+            }
+
+            $this->validateParts();
+
+            // now validate a sub statement if one exists
+            if (!empty($this->subStatement)) {
+                $this->runValidation($this->subStatement);
+            }
         }
 
         return array('status' => $this->status,
@@ -64,56 +52,72 @@ class xAPIValidation extends xAPIValidationBase
     }
 
     /**
-     *
      * General validation of the core properties.
      *
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#dataconstraints
      */
     protected function getStarted()
     {
-        // check statement is set, is an array and not empty
-        if (!$this->assertionCheck(
-            !empty($this->statement) && is_array($this->statement),
-            'The statement doesn\'t exist or is not in the correct format.'
-        )) {
-            return false;
-        }
+        $msg_type = 'The statement doesn\'t exist or is not in the correct format.';
 
-        $data = $this->checkParams(
-            array(
-                'id' => array('uuid', false),
-                'actor' => array('array', true),
-                'verb' => array('array', true),
-                'object' => array('array', true),
-                'result' => array('emptyArray', false),
-                'context' => array('emptyArray', false),
-                'timestamp' => array('timestamp', false),
-                'authority' => array('emptyArray', false),
-                'version' => array('string', false),
-                'attachments' => array('emptyArray', false)
-            ), $this->statement, 'core statement'
+        return $this->assertionCheck(!empty($this->statement) && is_array($this->statement), $msg_type)
+                && $this->checkParams(array(
+                    'id' => array('uuid', false),
+                    'actor' => array('array', true),
+                    'verb' => array('array', true),
+                    'object' => array('array', true),
+                    'result' => array('emptyArray', false),
+                    'context' => array('emptyArray', false),
+                    'timestamp' => array('timestamp', false),
+                    'authority' => array('emptyArray', false),
+                    'version' => array('string', false),
+                    'attachments' => array('emptyArray', false)
+                ), $this->statement, 'core statement'
         );
     }
 
     /**
+     * Validate elements of statement.
+     *
+     * @return boolean
+     */
+    protected function validateParts() {
+        foreach ($this->statement as $k => $v) {
+            switch ($k) {
+                case 'id':
+                    return $this->validateId($v);
+                case 'actor':
+                    return $this->validateActor($v);
+                case 'verb':
+                    return $this->validateVerb($v);
+                case 'object':
+                    return $this->validateObject($v);
+                case 'context':
+                    return $this->validateContext($v);
+                case 'timestamp':
+                    return $this->validateTimestamp($v);
+                case 'result':
+                    return $this->validateResult($v);
+                case 'version':
+                    return $this->validateVersion($v);
+                case 'attachments':
+                    return $this->validateAttachments($v);
+            }
+        }
+    }
+
+    /**
      * Validate statement ID.
-     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#stmtid
      *
      * @param UUID $id The statement ID.
-     *
+     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#stmtid
      */
-    protected function validateId()
+    protected function validateId($id)
     {
-        // no id? Generate one.
-        if (!isset($this->statement['id'])) {
-            $id = $this->makeUUID();
-            $this->statement['id'] = $id;
-        }
-
-        $data = $this->checkParams(
-            array(
-            'statementId' => array('uuid', true),
-            ), array('statementId' => $this->statement['id']), 'statementId'
+        return $this->checkParams(
+            array('statementId' => array('uuid', true)),
+            array('statementId' => $id),
+            'statementId'
         );
     }
 
@@ -128,24 +132,24 @@ class xAPIValidation extends xAPIValidationBase
     {
         $actor_valid = $this->checkParams(
             array(
-            'mbox' => array('mailto'),
-            'name' => array('string'),
-            'objectType' => array('string'),
-            'mbox_sha1sum' => array('string'),
-            'openID' => array('irl'),
-            'account' => array('array')
+                'mbox' => array('mailto'),
+                'name' => array('string'),
+                'objectType' => array('string'),
+                'mbox_sha1sum' => array('string'),
+                'openID' => array('irl'),
+                'account' => array('array')
             ), $actor, 'actor'
         );
 
         if ($actor_valid !== true) {
-            return false; //end here if not true
+            return false;
         }
 
         // Check that only one functional identifier exists and is permitted
         $identifier_valid = $this->validActorIdentifier(array_keys($actor));
 
         if ($identifier_valid != true) {
-            return false; //end here if not true
+            return false;
         }
 
         // check, if objectType is set, that it is either Group or Agent
@@ -154,12 +158,14 @@ class xAPIValidation extends xAPIValidationBase
                 return false;
             }
 
-            if ($actor['objectType'] == 'Group') {
+            if ($actor['objectType'] === 'Group') {
                 // if objectType Group and no functional identifier: unidentified group
                 if ($identifier_valid === false) {
-                    //Unidentified group so it must have an array containing at least one member
-                    if (!$this->assertionCheck((isset($actor['member']) && is_array($actor['member'])), 'As Actor objectType is Group, it must contain a members array.'))
+                    // Unidentified group so it must have an array containing at least one member
+                    $msg = 'As Actor objectType is Group, it must contain a members array.';
+                    if (!$this->assertionCheck((isset($actor['member']) && is_array($actor['member'])), $msg)) {
                         return false;
+                    }
                 }
             }
         }
@@ -473,17 +479,6 @@ class xAPIValidation extends xAPIValidationBase
         }
 
         return true;
-    }
-
-    /**
-     * Validate stored.
-     *
-     */
-    protected function validateStored()
-    {
-        if (isset($this->statement['stored'])) {
-            unset($this->statement['stored']);
-        }
     }
 
     /**
