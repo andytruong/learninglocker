@@ -54,6 +54,10 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
         }
     }
 
+    public function setSubStatement($sub_statement) {
+        $this->subStatement = $sub_statement;
+    }
+
     protected function fillMissingElements($statement, $authority) {
         if (!isset($statement['id'])) {
             $statement['id'] = $this->makeUUID();
@@ -114,7 +118,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      * @param  string  $fail_status  The string to set the status to
      * @return boolean               Whether we the assertion passed the test
      */
-    protected function assertionCheck($assertion, $fail_error = 'There was an error', $fail_status = 'failed')
+    public function assertionCheck($assertion, $fail_error = 'There was an error', $fail_status = 'failed')
     {
         if (!$assertion) {
             $this->setError($fail_error . ' ', $fail_status);
@@ -156,7 +160,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      * @param array $submitted_keys The array of keys to validate
      * @return boolean
      */
-    protected function checkKeys($valid_keys, $submitted_keys, $section = '')
+    public function checkKeys($valid_keys, $submitted_keys, $section = '')
     {
         $valid = true;
 
@@ -196,7 +200,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      * @param  string $section       The current section of the statement.
      * @return boolean
      */
-    protected function checkParams($requirements = array(), $input = array(), $section = '')
+    public function checkParams($requirements = array(), $input = array(), $section = '')
     {
         if (empty($input)) {
             return false;

@@ -207,132 +207,8 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validateObject($object)
     {
-        $object_type = isset($object['objectType']) ? $object['objectType'] : 'Activity';
-
-        $object_type_valid = $this->checkKeys(
-            ['Activity', 'Group', 'Agent', 'SubStatement', 'StatementRef'],
-            [$object_type], 'object'
-        );
-
-        switch ($object_type) {
-            case 'SubStatement':
-                return $this->validateObjectSubStatement($object);
-            default:
-                return $this->validateObjectSubStatement($object);
-        }
-    }
-
-    protected function validateObjectSubStatement($object)
-    {
-        // remove "id", "stored", "version" or "authority" if exist
-        unset($object['id'], $object['stored'], $object['version'], $object['authority']);
-
-        // check object type is not SubStatement as nesting is not permitted
-        if ($object['object']['objectType'] == 'SubStatement') {
-            $this->setError('A SubStatement cannot contain a nested statement.');
-            return false;
-        }
-
-        $this->subStatement = $object;
-    }
-
-    protected function validateObjectBasic($object)
-    {
-        // depending on the objectType, validate accordingly.
-        $object_keys = array_keys($object);
-
-        if ($object['objectType'] == 'StatementRef') {
-            $array = array('objectType' => array('string'),
-                'id' => array('uuid', true),
-                'definition' => array('emptyArray'));
-        }
-        elseif ($object['objectType'] == 'SubStatement') {
-            $array = array('objectType' => array('string'));
-        }
-        elseif ($object['objectType'] == 'Agent') {
-            $array = array(
-                'objectType' => array('string'),
-                'name' => array('string'),
-                'mbox' => array('mailto')
-            );
-        }
-        else {
-            $array = array('objectType' => array('string'),
-                'id' => array('iri', true),
-                'definition' => array('emptyArray'));
-        }
-
-        $object_valid = $this->checkParams($array, $object, 'object');
-
-        if ($object_valid !== true) {
-            return false; //end here if not true
-        }
-
-        if (isset($object['definition'])) {
-            $definition = $object['definition'];
-
-            $definition_valid = $this->checkParams(
-                array(
-                    'name' => array('lang_map'),
-                    'description' => array('lang_map'),
-                    'type' => array('iri'),
-                    'moreInfo' => array('irl'),
-                    'extensions' => array('array'),
-                    'interactionType' => array('string'),
-                    'correctResponsesPattern' => array('array'),
-                    'choices' => array('array'),
-                    'scale' => array('array'),
-                    'source' => array('array'),
-                    'target' => array('array'),
-                    'steps' => array('array')
-                ), $definition, 'Object Definition'
-            );
-
-            if ($definition_valid !== true) {
-                return false; //end here if not true
-            }
-
-            if (isset($definition['interactionType'])) {
-                // check to see it type is set, if not, set to http://adlnet.gov/expapi/activities/cmi.interaction
-                $allowed_interaction_types = [
-                    'choice', 'sequencing', 'Likert', 'Matching',
-                    'Performance', 'true-false', 'fill-in', 'numeric', 'other'
-                ];
-
-                $msg = 'Object: definition: interactionType is not valid.';
-                $this->assertionCheck(
-                    in_array($definition['interactionType'], $allowed_interaction_types),
-                    $msg
-                );
-            }
-
-            if (isset($definition['choices'], $definition['scale'], $definition['source'], $definition['target'], $definition['steps'])) {
-                $check_valid_keys = array('id', 'description');
-                $loop = array('choices', 'scale', 'source', 'target', 'steps');
-
-                foreach ($loop as $l) {
-                    //check activity object definition only has valid keys.
-                    $is_valid = $this->checkKeys($check_valid_keys, $definition[$l], 'Object Definition');
-
-                    $msg = 'Object: definition: It has an invalid property.';
-                    if (!$this->assertionCheck(($definition_valid === true), $msg)) {
-                        return false;
-                    }
-
-                    $msg = 'Object: definition: It needs to be an array with keys id and description.';
-                    $this->assertionCheck(
-                        array_key_exists('id', $definition[$l]) || array_key_exists('description', $definition[$l]),
-                        $msg
-                    );
-                }
-            }
-
-            $msg = 'Object: definition: extensions need to be an object.';
-            $this->assertionCheck(
-                !isset($definition['extensions']) || is_array($definition['extensions']),
-                $msg
-            );
-        }
+        $validate = new validators\ObjectValidator($manager, $object);
+        return $validate->validate();
     }
 
     /**
@@ -356,7 +232,7 @@ class xAPIValidation extends xAPIValidationBase
         // check all keys submitted are valid
         $this->checkParams($valid_context_keys, $context, 'context');
 
-        //check properties in contextActivies
+        // check properties in contextActivies
         if (isset($context['contextActivities'])) {
             $valid_context_keys = array('parent' => array('array'),
                 'grouping' => array('array'),
@@ -366,9 +242,9 @@ class xAPIValidation extends xAPIValidationBase
             // check all keys submitted are valid
             $this->checkParams($valid_context_keys, $context['contextActivities'], 'contextActivities');
 
-            //now check all property keys contain an array
-            //While the contextActivity may be an object on input, it must be stored as an array - so
-            //on each type we will check if an associative array has been passed and insert it into an array if needed
+            // now check all property keys contain an array
+            // While the contextActivity may be an object on input, it must be stored as an array - so
+            // on each type we will check if an associative array has been passed and insert it into an array if needed
             if (isset($context['contextActivities']['parent'])) {
                 if ($this->isAssoc($context['contextActivities']['parent'])) {
                     $this->statement['context']['contextActivities']['parent'] = array($context['contextActivities']['parent']);
