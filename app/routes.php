@@ -148,6 +148,10 @@ Route::post('lrs/{id}/apikey', array(
     'before' => 'csrf',
     'uses' => 'LrsController@editCredentials'
 ));
+Route::put('lrs/{id}/authservice', array(
+  'uses'   => 'LrsController@authService',
+  'as' => 'lrs.authService'  
+));
 
 Route::resource('lrs', 'LrsController');
 

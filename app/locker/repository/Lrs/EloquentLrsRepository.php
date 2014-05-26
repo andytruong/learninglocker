@@ -57,10 +57,6 @@ class EloquentLrsRepository implements LrsRepository
         }
 
         $lrs->title = $input['title'];
-        $lrs->auth_service = $input['auth_service'];
-        $lrs->auth_service_url = isset($input['auth_service_url']) ? $input['auth_service_url'] : '';
-        $lrs->auth_cache_time = isset($input['auth_cache_time']) ? $input['auth_cache_time'] : '';
-        $lrs->token = isset($input['token']) ? $input['token'] : '';
         $lrs->subdomain = isset($input['subdomain']) ? $input['subdomain'] : '';
         $lrs->description = $input['description'];
         $lrs->api = array('basic_key' => \app\locker\helpers\Helpers::getRandomValue(),
@@ -93,10 +89,6 @@ class EloquentLrsRepository implements LrsRepository
 
         $lrs->title = $input['title'];
         $lrs->description = $input['description'];
-        $lrs->auth_service = $input['auth_service'];
-        $lrs->auth_service_url = isset($input['auth_service_url']) ? $input['auth_service_url'] : '';
-        $lrs->auth_cache_time = isset($input['auth_cache_time']) ? $input['auth_cache_time'] : '';
-        $lrs->token = isset($input['token']) ? $input['token'] : '';
         $lrs->subdomain = isset($input['subdomain']) ? $input['subdomain'] : '';
 
         $lrs->save();

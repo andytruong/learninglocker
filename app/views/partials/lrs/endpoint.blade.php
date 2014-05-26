@@ -6,7 +6,11 @@
 
 
 @section('content')
-
+  @if($errors->any())
+  <ul class="alert alert-danger">
+    {{ implode('', $errors->all('<li>:message</li>'))}}
+  </ul>
+  @endif
   @include('partials.site.elements.page_title', array('page' => Lang::get('lrs.endpoint.submit')))
 
   <div class="col-xs-12 col-sm-8 col-lg-8">
@@ -35,6 +39,10 @@
       <div class="col-sm-10">
         {{ $lrs->api['basic_secret'] }}
       </div>
+    </div>
+    <div class="bordered clearfix">
+        <h4>{{ Lang::get('lrs.endpoint.auth_service') }}</h4>
+        @include('partials.lrs.forms.auth_service')
     </div>
   </div>
 

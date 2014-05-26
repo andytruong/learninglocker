@@ -7,6 +7,11 @@ class AuthenticationInternal implements AuthenticationInterface
 
     public function verify($key, $secret)
     {
+        if (\App::environment() === 'testing') {
+            \Config::set('testing.auth_type', \Lrs::INTERNAL_LRS);
+            return ;
+        }
+        
         $method = \Request::server('REQUEST_METHOD');
 
         if ($method !== "OPTIONS") {

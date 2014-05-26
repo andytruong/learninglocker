@@ -48,24 +48,26 @@ Route::filter('auth.basic', function () {
   |
  */
 Route::filter('auth.statement', function () {
-    // Get lrs
-    $lrs = LrsHelpers::getLrsBySubdomain();
-
-    //set passed credentials
+    // Detect authentication type from GET parameter.
+    $auth_type = Lrs::INTERNAL_LRS; // Default system use basic authentication.
+    if (\Request::get('auth_type') === 'central') {
+        $auth_type = Lrs::ADURO_AUTH_SERVICE;
+    }
+    
+    // Get passed credentials
     $key = Request::getUser();
     $secret = Request::getPassword();
 
-    // Detect authentication type.
-    if ($lrs->auth_service == Lrs::ADURO_AUTH_SERVICE) {
+    // Handle authentication service.
+    if ($auth_type == Lrs::ADURO_AUTH_SERVICE) {
         $auth_service = new \app\aduro\authentication\AuthenticationService();
         return $auth_service->verify($key, $secret);
     }
-    elseif ($lrs->auth_service == Lrs::INTERNAL_LRS) {
+    elseif ($auth_type == Lrs::INTERNAL_LRS) {
         $auth_service = new \app\aduro\authentication\AuthenticationInternal();
         return $auth_service->verify($key, $secret);
     }
-    // @todo: Replace 3 with constant
-    elseif ($lrs->auth_service == 3) {
+    elseif ($auth_type == Lrs::AUTH_MOCK) {
         $auth_service = new \app\aduro\authentication\AuthenticationMock();
         return $auth_service->verify($key, $secret);
     }
