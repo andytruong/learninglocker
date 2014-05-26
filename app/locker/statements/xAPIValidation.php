@@ -23,24 +23,15 @@ namespace app\locker\statements;
  */
 class xAPIValidation extends xAPIValidationBase
 {
+
     /**
      * {@inheritdoc}
      */
     public function validate($statement = array(), $authority = array())
     {
-        $this->setStatement($statement);
-        $this->validateAuthority($authority);
+        $this->setStatement($statement, $authority);
 
         if ($this->validateStructure()) {
-            // no id? Generate one.
-            if (!isset($this->statement['id'])) {
-                $this->statement['id'] = $this->makeUUID();
-            }
-
-            if (isset($this->statement['stored'])) {
-                unset($this->statement['stored']);
-            }
-
             $this->validateParts();
 
             // now validate a sub statement if one exists
@@ -62,21 +53,22 @@ class xAPIValidation extends xAPIValidationBase
     protected function validateStructure()
     {
         $msg_type = 'The statement doesn\'t exist or is not in the correct format.';
+        if ($this->assertionCheck(!empty($this->statement) && is_array($this->statement), $msg_type)) {
+            $patterns = array(
+                'id' => array('uuid', false),
+                'actor' => array('array', true),
+                'verb' => array('array', true),
+                'object' => array('array', true),
+                'result' => array('emptyArray', false),
+                'context' => array('emptyArray', false),
+                'timestamp' => array('timestamp', false),
+                'authority' => array('emptyArray', false),
+                'version' => array('string', false),
+                'attachments' => array('emptyArray', false)
+            );
 
-        return $this->assertionCheck(!empty($this->statement) && is_array($this->statement), $msg_type)
-                && $this->checkParams(array(
-                    'id' => array('uuid', false),
-                    'actor' => array('array', true),
-                    'verb' => array('array', true),
-                    'object' => array('array', true),
-                    'result' => array('emptyArray', false),
-                    'context' => array('emptyArray', false),
-                    'timestamp' => array('timestamp', false),
-                    'authority' => array('emptyArray', false),
-                    'version' => array('string', false),
-                    'attachments' => array('emptyArray', false)
-                ), $this->statement, 'core statement'
-        );
+            return $this->checkParams($patterns, $this->statement, 'core statement');
+        }
     }
 
     /**
@@ -89,6 +81,8 @@ class xAPIValidation extends xAPIValidationBase
             switch ($k) {
                 case 'id':
                     return $this->validateId($v);
+                case 'authority':
+                    return $this->validateAuthority($v);
                 case 'actor':
                     return $this->validateActor($v);
                 case 'verb':
@@ -178,19 +172,16 @@ class xAPIValidation extends xAPIValidationBase
      * Validate authority. Mandatory.
      * Overwrite / Add. This assume basic http authentication for now. See @todo
      *
-     * @Requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#authority
-     * @todo rework to handle 3-legged OAuth.
-     *
      * @param array $authority
-     *
+     * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#authority
      */
     protected function validateAuthority($authority)
     {
-        $this->statement['authority'] = array(
-            'name' => $authority['name'],
-            'mbox' => 'mailto:' . $authority['email'],
-            'objectType' => 'Agent'
-        );
+        return $this->checkParam(array(
+            'objectType' => array('string', true, array('Agent')),
+            'name' => array('string', true),
+            'mbox' => array('string', true), // << @todo How to validate email address?
+        ), $authority, 'authority');
     }
 
     /**
@@ -203,12 +194,10 @@ class xAPIValidation extends xAPIValidationBase
      */
     protected function validateVerb($verb)
     {
-        $this->checkParams(
-            array(
-            'id' => array('iri', true),
-            'display' => array('lang_map', false)
-            ), $verb, 'verb'
-        );
+        $this->checkParams(array(
+                'id' => array('iri', true),
+                'display' => array('lang_map', false)
+            ), $verb, 'verb');
     }
 
     /**
@@ -220,7 +209,6 @@ class xAPIValidation extends xAPIValidationBase
     {
         //find out what type of object it is as that will inform next steps
         if (isset($object['objectType'])) {
-
             $object_type = $object['objectType'];
 
             $object_type_valid = $this->checkKeys(array(

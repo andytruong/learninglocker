@@ -43,9 +43,32 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
     /**
      * {@inheritdoc}
      */
-    public function setStatement($statement)
+    public function setStatement($statement, $authority = array())
     {
-        $this->statement = $statement;
+        if ($statement = $this->fillMissingElements($statement, $authority)) {
+            $this->statement = $statement;
+        }
+
+        if (isset($this->statement['stored'])) {
+            unset($this->statement['stored']);
+        }
+    }
+
+    protected function fillMissingElements($statement, $authority) {
+        if (!isset($statement['id'])) {
+            $statement['id'] = $this->makeUUID();
+        }
+
+        // Spec: The LRS MUST ensure that all Statements stored have an authority.
+        if (!empty($authority)) {
+            $statement['authority'] = array(
+                'objectType' => 'Agent',
+                'name' => !empty($authority['name']) ? $authority['name'] : 'Aduro',
+                'mbox' => 'mailto:' . (!empty($authority['email']) ? $authority['email'] : 'info@aduro.com'),
+            );
+        }
+
+        return $statement;
     }
 
     /**
