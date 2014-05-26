@@ -42,7 +42,7 @@ class xAPIValidation extends xAPIValidationBase
 
             // now validate a sub statement if one exists
             if (!empty($this->subStatement)) {
-                $this->runValidation($this->subStatement);
+                $this->validate($this->subStatement);
             }
         }
 
