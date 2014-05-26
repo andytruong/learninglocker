@@ -193,7 +193,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
 
         // loop through all permitted keys and check type, required and values
         foreach ($requirements as $key => $requirement) {
-            if (false === $this->checkParam($requirement, $input[$key], $key, $section)) {
+            if (false === $this->checkParam($requirement, isset($input[$key]) ? $input[$key] : null, $key, $section)) {
                 $valid = false;
             }
         }
