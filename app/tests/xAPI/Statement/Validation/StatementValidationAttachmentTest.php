@@ -10,17 +10,28 @@ class StatementValidationAttachmentTest extends BaseStatementValidationTest
         $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/content-type-is-not-string.json');
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals(
-            '`contentType` is not a valid Internet Media Type in attachment',
-            trim($results['errors'][0])
+            '`contentType` is not a valid Internet Media Type in attachment', trim($results['errors'][0])
         );
     }
 
-    public function testLength() {
+    public function testLength()
+    {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/length-is-not-integer.json');
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals(
-            '`length` is not a valid number in attachment',
-            trim($results['errors'][0])
+            '`length` is not a valid number in attachment', trim($results['errors'][0])
+        );
+    }
+
+    /**
+     * @group andy
+     */
+    public function testSha2()
+    {
+        $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/missing-sha2.json');
+        $this->assertEquals('failed', $results['status']);
+        $this->assertEquals(
+            '`sha2` is a required key and is not present in attachment', trim($results['errors'][0])
         );
     }
 
