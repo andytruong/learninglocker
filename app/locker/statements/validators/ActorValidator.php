@@ -56,7 +56,7 @@ class ActorValidator
 
         // check functional identifier exists and is valid
         foreach (array_keys($this->actor) as $k) {
-            if (in_array($k, ['mbox', 'mbox_sha1sum', 'openID', 'account'])) {
+            if (in_array($k, ['mbox', 'mbox_sha1sum', 'openID', 'account', 'objectType'])) {
                 if ($found_id) {
                     $this->manager->setError('A statement can only set one actor functional identifier.');
                     return false;
@@ -97,7 +97,7 @@ class ActorValidator
         // Unidentified group so it must have an array containing at least one member
         $bun = isset($this->actor['member']) && is_array($this->actor['member']);
         $msg = 'As Actor objectType is Group, it must contain a members array.';
-        if (!$this->assertionCheck($bun, $msg)) {
+        if (!$this->manager->assertionCheck($bun, $msg)) {
             return false;
         }
     }

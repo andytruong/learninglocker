@@ -18,7 +18,7 @@ class StatementValidationActorTest extends BaseStatementValidationTest
     public function testGroupMissingMember() {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Actor/Group/missing-member.json');
         $this->assertEquals('failed', $results['status']);
-        $this->assertNotEmpty($results['errors'][0]);
+        $this->assertEquals('As Actor objectType is Group, it must contain a members array.', trim($results['errors'][0]));
     }
 
 }
