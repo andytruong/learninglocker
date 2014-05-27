@@ -21,6 +21,7 @@ namespace app\locker\statements;
 use app\locker\statements\validators\ContextValidator;
 use app\locker\statements\validators\ObjectValidator;
 use app\locker\statements\validators\ResultValidator;
+use app\locker\statements\validators\ActorValidator;
 
 /**
  * @todo Test sub-statement.
@@ -132,45 +133,8 @@ class xAPIValidation extends xAPIValidationBase
      */
     protected function validateActor($actor)
     {
-        $actor_valid = $this->checkParams(
-            array(
-                'mbox' => array('mailto'),
-                'name' => array('string'),
-                'objectType' => array('string'),
-                'mbox_sha1sum' => array('string'),
-                'openID' => array('irl'),
-                'account' => array('array')
-            ), $actor, 'actor'
-        );
-
-        if ($actor_valid !== true) {
-            return false;
-        }
-
-        // Check that only one functional identifier exists and is permitted
-        $identifier_valid = $this->validActorIdentifier(array_keys($actor));
-
-        if ($identifier_valid != true) {
-            return false;
-        }
-
-        // check, if objectType is set, that it is either Group or Agent
-        if (isset($actor['objectType'])) {
-            if (!$this->assertionCheck(($actor['objectType'] == 'Agent' || $actor['objectType'] == 'Group'), 'The Actor objectType must be Agent or Group.')) {
-                return false;
-            }
-
-            if ($actor['objectType'] === 'Group') {
-                // if objectType Group and no functional identifier: unidentified group
-                if ($identifier_valid === false) {
-                    // Unidentified group so it must have an array containing at least one member
-                    $msg = 'As Actor objectType is Group, it must contain a members array.';
-                    if (!$this->assertionCheck((isset($actor['member']) && is_array($actor['member'])), $msg)) {
-                        return false;
-                    }
-                }
-            }
-        }
+        $validator = new ActorValidator($this, $actor);
+        return $validator->validate();
     }
 
     /**
@@ -307,39 +271,6 @@ class xAPIValidation extends xAPIValidationBase
                 $this->checkParams($valid_attachment_keys, $a, 'attachment');
             }
         }
-    }
-
-    /**
-     * Check to make sure an valid identifier has been included in the statement.
-     *
-     * @param $actor_keys (array) The array of actor keys to validate
-     * @return boolean
-     */
-    protected function validActorIdentifier($actor_keys)
-    {
-        $identifier_valid = false;
-        $count = 0;
-        $functional_identifiers = array('mbox', 'mbox_sha1sum', 'openID', 'account');
-
-        //check functional identifier exists and is valid
-        foreach ($actor_keys as $k) {
-            if (in_array($k, $functional_identifiers)) {
-                $identifier_valid = true;
-                $count++; //increment counter so we can check only one identifier is present
-            }
-        }
-
-        // only allow one identifier
-        if ($count > 1) {
-            $identifier_valid = false;
-            $this->setError('A statement can only set one actor functional identifier.');
-        }
-
-        if (!$identifier_valid) {
-            $this->setError('A statement must have a valid actor functional identifier.');
-        }
-
-        return $identifier_valid;
     }
 
     /**
