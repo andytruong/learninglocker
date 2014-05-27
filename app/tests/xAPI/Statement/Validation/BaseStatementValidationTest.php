@@ -1,7 +1,7 @@
 <?php
 use app\locker\statements\xAPIValidation as StatementValidationManager;
 
-class BaseStatementValidationTest extends PHPUnit_Framework_TestCase
+abstract class BaseStatementValidationTest extends PHPUnit_Framework_TestCase
 {
 
     protected function getFixturePath()
