@@ -20,12 +20,20 @@ class StatementValidationActorTest extends BaseStatementValidationTest
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals('As Actor objectType is Group, it must contain a members array.', trim($results['errors'][0]));
     }
-    
+
     public function testGroupMemberObjectTypeIsNotAgent()
     {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Actor/Group/Member/object-type-is-not-agent.json');
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals('Invalid object with characteristics of a Group when an Agent was expected.', trim($results['errors'][0]));
+    }
+
+    public function testMbox()
+    {
+        $results = $this->exec($this->getFixturePath() . '/Invalid/Actor/Mbox/invalid-format.json');
+        print_r($results);
+        $this->assertEquals('failed', $results['status']);
+        $this->assertEquals('`mbox` is not in the correct format in actor', trim($results['errors'][0]));
     }
 
 }
