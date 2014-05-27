@@ -23,7 +23,7 @@ class StatementValidationAttachmentTest extends BaseStatementValidationTest
         );
     }
 
-    public function testSha2()
+    public function testSha2Required()
     {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/missing-sha2.json');
         $this->assertEquals('failed', $results['status']);
@@ -32,9 +32,15 @@ class StatementValidationAttachmentTest extends BaseStatementValidationTest
         );
     }
 
-    /**
-     * @group andy
-     */
+    public function testSha2Valid()
+    {
+        $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/sha2-is-not-valid.json');
+        $this->assertEquals('failed', $results['status']);
+        $this->assertEquals(
+            '`sha2` is not a valid string with bas64 contents in attachment', trim($results['errors'][0])
+        );
+    }
+
     public function testUsageType()
     {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/missing-usage-type.json');

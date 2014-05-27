@@ -288,7 +288,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
                 $this->assertionCheck($this->validateLanguageMap($v), $msg);
                 break;
             case 'base64':
-                $msg = sprintf("`%s` is not a valid language map in " . $section, $k);
+                $msg = sprintf("`%s` is not a valid string with bas64 contents in " . $section, $k);
                 $this->assertionCheck(base64_encode(base64_decode($v)) === $v, $msg);
                 break;
             case 'boolean':
