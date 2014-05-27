@@ -23,15 +23,24 @@ class StatementValidationAttachmentTest extends BaseStatementValidationTest
         );
     }
 
-    /**
-     * @group andy
-     */
     public function testSha2()
     {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/missing-sha2.json');
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals(
             '`sha2` is a required key and is not present in attachment', trim($results['errors'][0])
+        );
+    }
+
+    /**
+     * @group andy
+     */
+    public function testUsageType()
+    {
+        $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/missing-usage-type.json');
+        $this->assertEquals('failed', $results['status']);
+        $this->assertEquals(
+            '`usageType` is a required key and is not present in attachment', trim($results['errors'][0])
         );
     }
 
