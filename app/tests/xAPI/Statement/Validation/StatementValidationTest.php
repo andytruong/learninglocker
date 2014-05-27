@@ -1,20 +1,9 @@
 <?php
 
-use app\locker\statements\xAPIValidation as StatementValidationManager;
+require_once __DIR__ . '/BaseStatementValidationTest.php';
 
-class StatementValidationTest extends PHPUnit_Framework_TestCase
+class StatementValidationTest extends BaseStatementValidationTest
 {
-    protected function getFixturePath() {
-        return __DIR__ . '/../../../Fixtures/Statements';
-    }
-
-    protected function exec($path) {
-        $json = file_get_contents($path);
-        $statement = json_decode($json, true);
-        $manager = new StatementValidationManager();
-        return $manager->validate($statement);
-    }
-
     /**
      * @dataProvider dataProviderSimple
      */
