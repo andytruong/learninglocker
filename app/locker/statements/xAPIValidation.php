@@ -86,25 +86,35 @@ class xAPIValidation extends xAPIValidationBase
         foreach ($this->statement as $k => $v) {
             switch ($k) {
                 case 'id':
-                    return $this->validateId($v);
+                    $this->validateId($v);
+                    break;
                 case 'authority':
-                    return $this->validateAuthority($v);
+                    $this->validateAuthority($v);
+                    break;
                 case 'actor':
-                    return $this->validateActor($v);
+                    $this->validateActor($v);
+                    break;
                 case 'verb':
-                    return $this->validateVerb($v);
+                    $this->validateVerb($v);
+                    break;
                 case 'object':
-                    return $this->validateObject($v);
+                    $this->validateObject($v);
+                    break;
                 case 'context':
-                    return $this->validateContext($v);
+                    $this->validateContext($v);
+                    break;
                 case 'timestamp':
-                    return $this->validateTimestamp($v);
+                    $this->validateTimestamp($v);
+                    break;
                 case 'result':
-                    return $this->validateResult($v);
+                    $this->validateResult($v);
+                    break;
                 case 'version':
-                    return $this->validateVersion($v);
+                    $this->validateVersion($v);
+                    break;
                 case 'attachments':
-                    return $this->validateAttachments($v);
+                    $this->validateAttachments($v);
+                    break;
             }
         }
     }

@@ -52,21 +52,21 @@ class ObjectValidator
                 break;
 
             case 'StatementRef':
-                $pattern += array(
+                $pattern = array(
                     'id' => array('uuid', true),
                     'definition' => array('emptyArray')
                 );
                 break;
 
             case 'Agent':
-                $pattern += array(
+                $pattern = array(
                     'name' => array('string'),
                     'mbox' => array('mailto')
                 );
                 break;
 
             default:
-                $pattern += array(
+                $pattern = array(
                     'id' => array('iri', true),
                     'definition' => array('emptyArray')
                 );
