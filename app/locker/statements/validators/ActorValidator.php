@@ -89,7 +89,7 @@ class ActorValidator
         // check, if objectType is set, that it is either Group or Agent
         $bun = in_array($this->actor['objectType'], ['Agent', 'Group']);
         $msg = 'The Actor objectType must be Agent or Group.';
-        if (!$this->manager->assertionCheck($bool, $msg)) {
+        if (!$this->manager->assertionCheck($bun, $msg)) {
             return false;
         }
 
