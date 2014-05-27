@@ -104,7 +104,7 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      * @param  string  $fail_error   The string to push into the errors array
      * @param  string  $fail_status  The string to set the status to
      */
-    private function setError($fail_error = 'There was an error', $fail_status = 'failed')
+    public function setError($fail_error = 'There was an error', $fail_status = 'failed')
     {
         $this->status = $fail_status;
         $this->errors[] = $fail_error;
