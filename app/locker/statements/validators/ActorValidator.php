@@ -88,7 +88,7 @@ class ActorValidator
 
     protected function validateGroup()
     {
-        if ($this->actor['objectType'] !== 'Group') {
+        if (!isset($this->actor['objectType']) || $this->actor['objectType'] !== 'Group') {
             return true;
         }
 
