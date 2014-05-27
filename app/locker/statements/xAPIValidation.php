@@ -39,6 +39,7 @@ class xAPIValidation extends xAPIValidationBase
             $this->validateParts();
 
             // now validate a sub statement if one exists
+            // @see app\locker\statements\validators\ObjectValidator::validateObjectSubStatement()
             if (!empty($this->subStatement)) {
                 $this->validate($this->subStatement);
             }
