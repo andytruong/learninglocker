@@ -1,8 +1,6 @@
 {
     "actor": {
-        "objectType": "Agent",
-        "mbox": "mailto:duy.nguyen@go1.com.au",
-        "name": "duynguyen"
+        "mbox": "mailto:zachary+pierce@gmail.com"
     },
     "verb": {
         "id": "http:\/\/adlnet.gov\/expapi\/verbs\/experienced",
@@ -10,29 +8,9 @@
             "und": "experienced"
         }
     },
-    "context": {
-        "contextActivities": {
-            "parent": {
-                "id": "http:\/\/tincanapi.com\/GolfExample_TCAPI",
-                "objectType": "Activity"
-            },
-            "grouping": {
-                "id": "http:\/\/tincanapi.com\/GolfExample_TCAPI",
-                "objectType": "Activity"
-            }
-        }
-    },
     "object": {
-        "id": "http:\/\/tincanapi.com\/GolfExample_TCAPI\/Playing\/Scoring.html",
-        "objectType": "Activity",
-        "definition": {
-            "name": {
-                "en-US": "Scoring"
-            },
-            "description": {
-                "en-US": "An overview of how to score a round of golf."
-            }
-        }
+        "id": "http://ZackPierce.github.io/xAPI-Validator-JS",
+        "objectType": "Activity"
     },
     "authority": {
         "objectType": "Group",
