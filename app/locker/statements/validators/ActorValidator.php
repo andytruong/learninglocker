@@ -52,31 +52,24 @@ class ActorValidator
      */
     protected function validActorIdentifier()
     {
-        $actor_keys = array_keys($this->actor);
-
-        $valid = false;
-        $count = 0;
-        $functional_identifiers = ['mbox', 'mbox_sha1sum', 'openID', 'account'];
+        $found_id = false;
 
         // check functional identifier exists and is valid
-        foreach ($actor_keys as $k) {
-            if (in_array($k, $functional_identifiers)) {
-                $valid = true;
-                $count++; //increment counter so we can check only one identifier is present
+        foreach (array_keys($this->actor) as $k) {
+            if (in_array($k, ['mbox', 'mbox_sha1sum', 'openID', 'account'])) {
+                if ($found_id) {
+                    $this->manager->setError('A statement can only set one actor functional identifier.');
+                    return false;
+                }
+                $found_id = true;
             }
         }
 
-        // only allow one identifier
-        if ($count > 1) {
-            $valid = false;
-            $this->manager->setError('A statement can only set one actor functional identifier.');
-        }
-
-        if (!$valid) {
+        if (!$found_id) {
             $this->manager->setError('A statement must have a valid actor functional identifier.');
         }
 
-        return $valid;
+        return isset($found_id);
     }
 
     protected function validateObjectType()
