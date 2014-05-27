@@ -82,8 +82,7 @@ class ActorValidator
     protected function validateObjectType()
     {
         if (!isset($this->actor['objectType'])) {
-            $this->manager->setError('objectType property was required to be a string but was absent.');
-            return false;
+            return true;
         }
 
         // check, if objectType is set, that it is either Group or Agent

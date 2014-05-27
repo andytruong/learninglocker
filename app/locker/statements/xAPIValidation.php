@@ -257,18 +257,20 @@ class xAPIValidation extends xAPIValidationBase
      */
     public function validateAttachments($attachments)
     {
-        $valid_attachment_keys = array('usageType' => array('iri', true),
-            'display' => array('lang_map', true),
-            'description' => array('lang_map', false),
-            'contentType' => array('contentType', false),
-            'length' => array('int', true),
-            'sha2' => array('base64', true),
-            'fileUrl' => array('iri', false));
+        $schema = [
+            'usageType' => ['iri', true],
+            'display' => ['lang_map', true],
+            'description' => ['lang_map', false],
+            'contentType' => ['contentType', false],
+            'length' => ['int', true],
+            'sha2' => ['base64', true],
+            'fileUrl' => ['iri', false]
+        ];
 
         // check all keys are valid
         if ($attachments) {
             foreach ($attachments as $a) {
-                $this->checkParams($valid_attachment_keys, $a, 'attachment');
+                $this->checkParams($schema, $a, 'attachment');
             }
         }
     }

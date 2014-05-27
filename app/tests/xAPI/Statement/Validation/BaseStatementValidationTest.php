@@ -1,4 +1,9 @@
 <?php
+
+/**
+ * Ref http://zackpierce.github.io/xAPI-Validator-JS/
+ */
+
 use app\locker\statements\xAPIValidation as StatementValidationManager;
 
 abstract class BaseStatementValidationTest extends PHPUnit_Framework_TestCase
