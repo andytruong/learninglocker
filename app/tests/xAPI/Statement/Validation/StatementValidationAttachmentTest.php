@@ -5,12 +5,21 @@ require_once __DIR__ . '/BaseStatementValidationTest.php';
 class StatementValidationAttachmentTest extends BaseStatementValidationTest
 {
 
-    public function testX()
+    public function testContentType()
     {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/content-type-is-not-string.json');
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals(
             '`contentType` is not a valid Internet Media Type in attachment',
+            trim($results['errors'][0])
+        );
+    }
+
+    public function testLength() {
+        $results = $this->exec($this->getFixturePath() . '/Invalid/Attachment/length-is-not-integer.json');
+        $this->assertEquals('failed', $results['status']);
+        $this->assertEquals(
+            '`length` is not a valid number in attachment',
             trim($results['errors'][0])
         );
     }
