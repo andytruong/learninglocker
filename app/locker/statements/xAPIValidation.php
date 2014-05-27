@@ -156,11 +156,12 @@ class xAPIValidation extends xAPIValidationBase
      */
     protected function validateAuthority($authority)
     {
-        return $this->checkParam(array(
-            'objectType' => array('string', true, array('Agent')),
-            'name' => array('string', true),
-            'mbox' => array('string', true), // << @todo How to validate email address?
-        ), $authority, 'authority');
+        $pattern = [
+            'objectType' => ['string', true],
+            'name' => ['string', true],
+            'mbox' => ['mailto', true],
+        ];
+        return $this->checkParams($pattern, $authority, 'authority');
     }
 
     /**

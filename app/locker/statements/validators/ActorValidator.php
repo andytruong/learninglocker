@@ -25,10 +25,7 @@ class ActorValidator
 
     public function validate()
     {
-        return $this->validateStructure()
-                    && $this->validateObjectType()
-                    && $this->validActorIdentifier()
-                    && $this->validateObjectTypeGroup();
+        return $this->validateStructure() && $this->validateObjectType() && $this->validActorIdentifier() && $this->validateGroup();
     }
 
     protected function validateStructure()
@@ -39,7 +36,8 @@ class ActorValidator
             'objectType' => ['string'],
             'mbox_sha1sum' => ['string'],
             'openID' => ['irl'],
-            'account' => ['array']
+            'account' => ['array'],
+            'member' => ['array', false]
         ];
 
         return $this->manager->checkParams($schema, $this->actor, 'actor');
@@ -56,7 +54,7 @@ class ActorValidator
 
         // check functional identifier exists and is valid
         foreach (array_keys($this->actor) as $k) {
-            if (in_array($k, ['mbox', 'mbox_sha1sum', 'openID', 'account', 'objectType'])) {
+            if (in_array($k, ['mbox', 'mbox_sha1sum', 'openID', 'account'])) {
                 if ($found_id) {
                     $this->manager->setError('A statement can only set one actor functional identifier.');
                     return false;
@@ -65,7 +63,7 @@ class ActorValidator
             }
         }
 
-        if (!$found_id) {
+        if (!$found_id && !isset($this->actor['objectType'])) {
             $this->manager->setError('A statement must have a valid actor functional identifier.');
         }
 
@@ -88,7 +86,7 @@ class ActorValidator
         return true;
     }
 
-    protected function validateObjectTypeGroup()
+    protected function validateGroup()
     {
         if ($this->actor['objectType'] !== 'Group') {
             return true;
@@ -100,6 +98,25 @@ class ActorValidator
         if (!$this->manager->assertionCheck($bun, $msg)) {
             return false;
         }
+
+        $return = true;
+        foreach ($this->actor['member'] as $i => $member) {
+            if (!$this->validateGroupMember($i, $member)) {
+                $return = false;
+            }
+        }
+        return $return;
+    }
+
+    protected function validateGroupMember($i, $member)
+    {
+        if (isset($member['objectType']) && $member['objectType'] === 'Group') {
+            $this->manager->setError('Invalid object with characteristics of a Group when an Agent was expected.');
+            return false;
+        }
+
+        $validator = new self($this->manager, $member);
+        return $validator->validate();
     }
 
 }

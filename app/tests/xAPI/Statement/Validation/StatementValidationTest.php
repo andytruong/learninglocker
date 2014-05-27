@@ -14,7 +14,7 @@ class StatementValidationTest extends BaseStatementValidationTest
     }
 
     public function dataProviderSimple() {
-        $data = array();
+        $data = [];
 
         foreach (['', 'Object', 'Verb/Display'] as $k) {
             foreach (glob($this->getFixturePath() . "/Valid/{$k}/*.json") as $file) {
