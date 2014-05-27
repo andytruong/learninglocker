@@ -324,6 +324,14 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
     }
 
     /**
+     * @todo Regex to validate Internet media type
+     */
+    protected function validateInternetMediaType($v)
+    {
+        return is_string($v);
+    }
+
+    /**
      * Details for checkParam() method.
      */
     protected function checkParam($requirement, $input, $key, $section)
