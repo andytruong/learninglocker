@@ -83,38 +83,10 @@ class xAPIValidation extends xAPIValidationBase
      * @return boolean
      */
     protected function validateParts() {
+        $keys = ['id', 'authority', 'actor', 'attachments', 'verb', 'object', 'context', 'timestamp', 'result', 'version'];
         foreach ($this->statement as $k => $v) {
-            switch ($k) {
-                case 'id':
-                    $this->validateId($v);
-                    break;
-                case 'authority':
-                    $this->validateAuthority($v);
-                    break;
-                case 'actor':
-                    $this->validateActor($v);
-                    break;
-                case 'verb':
-                    $this->validateVerb($v);
-                    break;
-                case 'object':
-                    $this->validateObject($v);
-                    break;
-                case 'context':
-                    $this->validateContext($v);
-                    break;
-                case 'timestamp':
-                    $this->validateTimestamp($v);
-                    break;
-                case 'result':
-                    $this->validateResult($v);
-                    break;
-                case 'version':
-                    $this->validateVersion($v);
-                    break;
-                case 'attachments':
-                    $this->validateAttachments($v);
-                    break;
+            if (in_array($k, $keys)) {
+                $this->{'validate' . ucfirst($k)}($v);
             }
         }
     }
@@ -306,7 +278,7 @@ class xAPIValidation extends xAPIValidationBase
     /**
      * @todo Regex to validate Internet media type
      */
-    private function validateInternetMediaType()
+    protected function validateInternetMediaType()
     {
         return true;
     }

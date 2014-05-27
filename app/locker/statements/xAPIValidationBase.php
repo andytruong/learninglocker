@@ -240,85 +240,85 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      * @param string  $expected_type The type to check for e.g. array, object,
      * @param string  $section The current section being validated. Used in error messages.
      */
-    protected function checkTypes($key, $value, $expected_type, $section)
+    protected function checkTypes($k, $v, $expected_type, $section)
     {
         switch ($expected_type) {
             case 'string':
-                $msg = sprintf("`%s` is not a valid string in " . $section, $key);
-                $this->assertionCheck(is_string($value), $msg);
+                $msg = sprintf("`%s` is not a valid string in " . $section, $k);
+                $this->assertionCheck(is_string($v), $msg);
                 break;
             case 'array':
                 // used when an array is required
-                $msg = sprintf("`%s` is not a valid array in " . $section, $key);
-                $this->assertionCheck(is_array($value) && !empty($value), $msg);
+                $msg = sprintf("`%s` is not a valid array in " . $section, $k);
+                $this->assertionCheck(is_array($v) && !empty($v), $msg);
                 break;
             case 'emptyArray':
                 // used if value can be empty but if available needs to be an array
-                if ($value != '') {
-                    $msg = sprintf("`%s` is not a valid array in " . $section, $key);
-                    $this->assertionCheck(is_array($value), $msg);
+                if ($v != '') {
+                    $msg = sprintf("`%s` is not a valid array in " . $section, $k);
+                    $this->assertionCheck(is_array($v), $msg);
                 }
                 break;
             case 'object':
-                $msg = sprintf("`%s` is not a valid object in " . $section, $key);
-                $this->assertionCheck(is_object($value), $msg);
+                $msg = sprintf("`%s` is not a valid object in " . $section, $k);
+                $this->assertionCheck(is_object($v), $msg);
                 break;
             case 'iri':
-                $msg = sprintf("`%s` is not a valid IRI in " . $section, $key);
-                $this->assertionCheck($this->validateIRI($value), $msg);
+                $msg = sprintf("`%s` is not a valid IRI in " . $section, $k);
+                $this->assertionCheck($this->validateIRI($v), $msg);
                 break;
             case 'iso8601Duration':
-                $msg = sprintf("`%s` is not a valid iso8601 Duration format in " . $section, $key);
-                $this->assertionCheck($this->validateISO8601($value), $msg);
+                $msg = sprintf("`%s` is not a valid iso8601 Duration format in " . $section, $k);
+                $this->assertionCheck($this->validateISO8601($v), $msg);
                 break;
             case 'timestamp':
-                $msg = sprintf("`%s` is not a valid timestamp in " . $section, $key);
-                $this->assertionCheck($this->validateTimestamp($value), $msg);
+                $msg = sprintf("`%s` is not a valid timestamp in " . $section, $k);
+                $this->assertionCheck($this->validateTimestamp($v), $msg);
                 break;
             case 'uuid':
-                $msg = sprintf("`%s` is not a valid UUID in " . $section, $key);
-                $this->assertionCheck($this->validateUUID($value), $msg);
+                $msg = sprintf("`%s` is not a valid UUID in " . $section, $k);
+                $this->assertionCheck($this->validateUUID($v), $msg);
                 break;
             case 'irl':
-                $msg = sprintf("`%s` is not a valid irl in " . $section, $key);
-                $this->assertionCheck((!filter_var($value, FILTER_VALIDATE_URL)), $msg);
+                $msg = sprintf("`%s` is not a valid irl in " . $section, $k);
+                $this->assertionCheck((!filter_var($v, FILTER_VALIDATE_URL)), $msg);
                 break;
             case 'lang_map':
-                $msg = sprintf("`%s` is not a valid language map in " . $section, $key);
-                $this->assertionCheck($this->validateLanguageMap($value), $msg);
+                $msg = sprintf("`%s` is not a valid language map in " . $section, $k);
+                $this->assertionCheck($this->validateLanguageMap($v), $msg);
                 break;
             case 'base64':
-                $msg = sprintf("`%s` is not a valid language map in " . $section, $key);
-                $this->assertionCheck(base64_encode(base64_decode($value)) === $value, $msg);
+                $msg = sprintf("`%s` is not a valid language map in " . $section, $k);
+                $this->assertionCheck(base64_encode(base64_decode($v)) === $v, $msg);
                 break;
             case 'boolean':
-                $msg = sprintf("`%s` is not a valid boolean " . $section, $key);
-                $this->assertionCheck(is_bool($value), $msg);
+                $msg = sprintf("`%s` is not a valid boolean " . $section, $k);
+                $this->assertionCheck(is_bool($v), $msg);
                 break;
             case 'score':
-                $msg = sprintf(" `%s` needs to be a number in " . $section, $key);
-                $this->assertionCheck(!is_string($value) && (is_int($value) || is_float($value)), $msg);
+                $msg = sprintf(" `%s` needs to be a number in " . $section, $k);
+                $this->assertionCheck(!is_string($v) && (is_int($v) || is_float($v)), $msg);
                 break;
             case 'numeric':
-                $msg = sprintf("`%s` is not numeric in " . $section, $key);
-                $this->assertionCheck(is_numeric($value), $msg);
+                $msg = sprintf("`%s` is not numeric in " . $section, $k);
+                $this->assertionCheck(is_numeric($v), $msg);
                 break;
             case 'int':
-                $msg = sprintf("`%s` is not a valid number in " . $section, $key);
-                $this->assertionCheck(is_int($value), $msg);
+                $msg = sprintf("`%s` is not a valid number in " . $section, $k);
+                $this->assertionCheck(is_int($v), $msg);
                 break;
             case 'integer':
-                $msg = sprintf("`%s` is not a valid integer in " . $section, $key);
-                $this->assertionCheck(is_integer($value), $msg);
+                $msg = sprintf("`%s` is not a valid integer in " . $section, $k);
+                $this->assertionCheck(is_integer($v), $msg);
                 break;
             case 'contentType':
-                $msg = sprintf("`%s` is not a valid Internet Media Type in " . $section, $key);
-                $this->assertionCheck($this->validateInternetMediaType($value), $msg);
+                $msg = sprintf("`%s` is not a valid Internet Media Type in " . $section, $k);
+                $this->assertionCheck($this->validateInternetMediaType($v), $msg);
                 break;
             case 'mailto':
-                $mbox_format = substr($value, 0, 7);
-                $msg = sprintf("`%s` is not in the correct format in " . $section, $key);
-                $this->assertionCheck($mbox_format === 'mailto:' && is_string($value), $msg);
+                $mbox_format = substr($v, 0, 7);
+                $msg = sprintf("`%s` is not in the correct format in " . $section, $k);
+                $this->assertionCheck($mbox_format === 'mailto:' && is_string($v), $msg);
                 break;
         }
     }
