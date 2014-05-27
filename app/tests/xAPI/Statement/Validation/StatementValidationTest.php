@@ -26,9 +26,11 @@ class StatementValidationTest extends PHPUnit_Framework_TestCase
 
     public function dataProviderSimple() {
         $data = array();
-        
-        foreach (glob($this->getFixturePath() . "/Valid/*.json") as $file) {
-            $data[][] = $file;
+
+        foreach (['', 'Object', 'Verb/Display'] as $k) {
+            foreach (glob($this->getFixturePath() . "/Valid/{$k}/*.json") as $file) {
+                $data[][] = $file;
+            }
         }
 
         return $data;
