@@ -96,7 +96,7 @@ class ActorValidator
         return true;
     }
 
-    protected function validateX()
+    protected function validateObjectTypeGroup()
     {
         if ($this->actor['objectType'] !== 'Group') {
             return true;
