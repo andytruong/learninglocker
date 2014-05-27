@@ -18,10 +18,10 @@
 
 namespace app\locker\statements;
 
-use app\locker\statements\validators\ContextValidator;
-use app\locker\statements\validators\ObjectValidator;
-use app\locker\statements\validators\ResultValidator;
-use app\locker\statements\validators\ActorValidator;
+use app\locker\statements\validators\ActorValidator,
+    app\locker\statements\validators\ContextValidator,
+    app\locker\statements\validators\ObjectValidator,
+    app\locker\statements\validators\ResultValidator;
 
 /**
  * @todo Test sub-statement.

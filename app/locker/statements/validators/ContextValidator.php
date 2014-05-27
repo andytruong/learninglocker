@@ -42,7 +42,7 @@ class ContextValidator
             'extensions' => ['emptyArray', false],
         ];
 
-        $this->checkParams($pattern, $this->context, 'context');
+        $this->manager->checkParams($pattern, $this->context, 'context');
     }
 
     /**
