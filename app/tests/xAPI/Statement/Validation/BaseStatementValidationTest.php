@@ -8,6 +8,7 @@ use app\locker\statements\xAPIValidation as StatementValidationManager;
 
 abstract class BaseStatementValidationTest extends PHPUnit_Framework_TestCase
 {
+    protected $json_input;
 
     protected function getFixturePath()
     {
@@ -17,9 +18,9 @@ abstract class BaseStatementValidationTest extends PHPUnit_Framework_TestCase
     protected function exec($path)
     {
         $json = file_get_contents($path);
-        $statement = json_decode($json, true);
+        $this->json_input = json_decode($json, true);
         $manager = new StatementValidationManager();
-        return $manager->validate($statement);
+        return $manager->validate($this->json_input);
     }
 
 }
