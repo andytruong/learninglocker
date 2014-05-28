@@ -45,6 +45,8 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
      */
     public function setStatement($statement, $authority = array())
     {
+        $cors = new CORSCompatible();
+        $statement = $cors->Compatible($statement);
         if ($statement = $this->fillMissingElements($statement, $authority)) {
             $this->statement = $statement;
         }
