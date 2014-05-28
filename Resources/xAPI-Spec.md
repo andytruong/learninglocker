@@ -177,76 +177,76 @@ OSD, Training Readiness & Strategy (TRS)
 <a name="wg"/>
 
 ### 2.2.1 Working Group Participants
-<table>
-	<tr><th>Name</th><th>Organization</th></tr>
-	<tr><td>Aaron Silvers</td><td>ADL</td></tr>
-	<tr><td>Al Bejcek</td><td>NetDimensions</td></tr>
-	<tr><td>Ali Shahrazad</td><td>SaLTBOX</td></tr>
-	<tr><td>Andrew Downes</td><td>Epic</td></tr>
-	<tr><td>Andy Johnson</td><td>ADL</td></tr>
-	<tr><td>Andy Whitaker</td><td>Rustici Software</td></tr>
-	<tr><td>Anthony Altieri</td><td>American Red Cross</td></tr>
-	<tr><td>Anto Valan</td><td>Omnivera Learning Solutions</td></tr>
-	<tr><td>Avron Barr</td><td>Aldo Ventures, Inc.</td></tr>
-	<tr><td>Ben Clark</td><td>Rustici Software</td></tr>
-	<tr><td>Bill McDonald</td><td>Boeing</td></tr>
-	<tr><td>Brian J. Miller</td><td>Rustici Software</td></tr>
-	<tr><td>Chad Udell</td><td>Float Mobile Learning</td></tr>
-	<tr><td>Chris Sawwa</td><td>Meridian Knowledge Solutions</td></tr>
-	<tr><td>Dan Allen</td><td>Litmos</td></tr>
-	<tr><td>Dan Kuemmel</td><td>Sentry Insurance</td></tr>
-	<tr><td>Dave Mozealous</td><td>Articulate</td></tr>
-	<tr><td>David Ells</td><td>Rustici Software</td></tr>
-	<tr><td>David N. Johnson</td><td>Clear Learning Systems</td></tr>
-	<tr><td>Doug Hagy</td><td>Twin Lakes Consulting Corporation</td></tr>
-	<tr><td>Eric Johnson</td><td>Planning and Learning Technologies, Inc.</td></tr>
-	<tr><td>Fiona Leteney</td><td>Feenix e-learning</td></tr>
-	<tr><td>Greg Tatka</td><td>Menco Social Learning</td></tr>
-	<tr><td>Ingo Dahn</td><td>University Koblenz-Landau</td></tr>
-	<tr><td>Jason Haag</td><td>ADL</td></tr>
-	<tr><td>Jeff Place</td><td>Questionmark</td></tr>
-	<tr><td>Jennifer Cameron</td><td>Sencia Corporate Web Solutions</td></tr>
-	<tr><td>Jeremy Brockman</td><td> </td></tr>
-	<tr><td>Jhorlin De Armas</td><td>Riptide Software</td></tr>
-	<tr><td>Joe Gorup</td><td>CourseAvenue</td></tr>
-	<tr><td>John Kleeman</td><td>Questionmark</td></tr>
-	<tr><td>Jonathan Archibald</td><td>Brightwave</td></tr>
-	<tr><td>Jonathan Poltrack</td><td>ADL</td></tr>
-	<tr><td>Kris Miller</td><td>edcetra Training</td></tr>
-	<tr><td>Kris Rockwell</td><td>Hybrid Learning Systems</td></tr>
-	<tr><td>Lang Holloman</td><td> </td></tr>
-	<tr><td>Lou Wolford</td><td>ADL</td></tr>
-	<tr><td>Luke Hickey</td><td>dominKnow</td></tr>
-	<tr><td>Marcus Birtwhistle</td><td>ADL</td></tr>
-	<tr><td>Mark Davis</td><td>Exambuilder</td></tr>
-	<tr><td>Matteo Scaramuccia</td><td> </td></tr>
-	<tr><td>Megan Bowe</td><td>Rustici Software</td></tr>
-	<tr><td>Melanie VanHorn</td><td>ADL</td></tr>
-	<tr><td>Michael Flores</td><td>Here Everything's Better</td></tr>
-	<tr><td>Michael Roberts</td><td>vTrainingRoom</td></tr>
-	<tr><td>Mike Palmer</td><td>OnPoint Digital</td></tr>
-	<tr><td>Mike Rustici</td><td>Rustici Software</td></tr>
-	<tr><td>Nick Washburn</td><td>Riptide Software</td></tr>
-	<tr><td>Nikolaus Hruska</td><td>ADL</td></tr>
-	<tr><td>Pankaj Agrawal</td><td>Next Software Solutions</td></tr>
-	<tr><td>Patrick Kedziora</td><td>Kedzoh</td></tr>
-	<tr><td>Paul Esch</td><td>Nine Set</td></tr>
-	<tr><td>Paul Roberts</td><td>Questionmark</td></tr>
-	<tr><td>Rich Chetwynd</td><td>Litmos</td></tr>
-	<tr><td>Richard Fouchaux</td><td>Ontario Human Rights  Commission</td></tr>
-	<tr><td>Richard Lenz</td><td>Organizational Strategies, Inc.</td></tr>
-	<tr><td>Rick Raymer</td><td></td></tr>
-	<tr><td>Rob Chadwick</td><td>ADL</td></tr>
-	<tr><td>Robert Lowe</td><td>NetDimensions</td></tr>
-	<tr><td>Russell Duhon</td><td>SaLTBOX</td></tr>
-	<tr><td>Stephen Trevorrow</td><td>Problem Solutions, LLC.</td></tr>
-	<tr><td>Steve Baumgartner</td><td></td></tr>
-	<tr><td>Steve Flowers</td><td>XPConcept</td></tr>
-	<tr><td>Thomas Ho</td><td></td></tr>
-	<tr><td>Tim Martin</td><td>Rustici Software</td></tr>
-	<tr><td>Tom Creighton</td><td>ADL</td></tr>
-	<tr><td>Walt Grata</td><td>ADL</td></tr>
-</table>
+
+| Name                | Organization                              |
+| ------------------- | ----------------------------------------- |
+| Aaron Silvers       | ADL                                       |
+| Al Bejcek           | NetDimensions                             |
+| Ali Shahrazad       | SaLTBOX                                   |
+| Andrew Downes       | Epic                                      |
+| Andy Johnson        | ADL                                       |
+| Andy Whitaker       | Rustici Software                          |
+| Anthony Altieri     | American Red Cross                        |
+| Anto Valan          | Omnivera Learning Solutions               |
+| Avron Barr          | Aldo Ventures, Inc.                       |
+| Ben Clark           | Rustici Software                          |
+| Bill McDonald       | Boeing                                    |
+| Brian J. Miller     | Rustici Software                          |
+| Chad Udell          | Float Mobile Learning                     |
+| Chris Sawwa         | Meridian Knowledge Solutions              |
+| Dan Allen           | Litmos                                    |
+| Dan Kuemmel         | Sentry Insurance                          |
+| Dave Mozealous      | Articulate                                |
+| David Ells          | Rustici Software                          |
+| David N. Johnson    | Clear Learning Systems                    |
+| Doug Hagy           | Twin Lakes Consulting Corporation         |
+| Eric Johnson        | Planning and Learning Technologies, Inc.  |
+| Fiona Leteney       | Feenix e-learning                         |
+| Greg Tatka          | Menco Social Learning                     |
+| Ingo Dahn           | University Koblenz-Landau                 |
+| Jason Haag          | ADL                                       |
+| Jeff Place          | Questionmark                              |
+| Jennifer Cameron    | Sencia Corporate Web Solutions            |
+| Jeremy Brockman     |                                           |
+| Jhorlin De Armas    | Riptide Software                          |
+| Joe Gorup           | CourseAvenue                              |
+| John Kleeman        | Questionmark                              |
+| Jonathan Archibald  | Brightwave                                |
+| Jonathan Poltrack   | ADL                                       |
+| Kris Miller         | edcetra Training                          |
+| Kris Rockwell       | Hybrid Learning Systems                   |
+| Lang Holloman       |                                           |
+| Lou Wolford         | ADL                                       |
+| Luke Hickey         | dominKnow                                 |
+| Marcus Birtwhistle  | ADL                                       |
+| Mark Davis          | Exambuilder                               |
+| Matteo Scaramuccia  |                                           |
+| Megan Bowe          | Rustici Software                          |
+| Melanie VanHorn     | ADL                                       |
+| Michael Flores      | Here Everything's Better                  |
+| Michael Roberts     | vTrainingRoom                             |
+| Mike Palmer         | OnPoint Digital                           |
+| Mike Rustici        | Rustici Software                          |
+| Nick Washburn       | Riptide Software                          |
+| Nikolaus Hruska     | ADL                                       |
+| Pankaj Agrawal      | Next Software Solutions                   |
+| Patrick Kedziora    | Kedzoh                                    |
+| Paul Esch           | Nine Set                                  |
+| Paul Roberts        | Questionmark                              |
+| Rich Chetwynd       | Litmos                                    |
+| Richard Fouchaux    | Ontario Human Rights  Commission          |
+| Richard Lenz        | Organizational Strategies, Inc.           |
+| Rick Raymer         |                                           |
+| Rob Chadwick        | ADL                                       |
+| Robert Lowe         | NetDimensions                             |
+| Russell Duhon       | SaLTBOX                                   |
+| Stephen Trevorrow   | Problem Solutions, LLC.                   |
+| Steve Baumgartner   |                                           |
+| Steve Flowers       | XPConcept                                 |
+| Thomas Ho           |                                           |
+| Tim Martin          | Rustici Software                          |
+| Tom Creighton       | ADL                                       |
+| Walt Grata          | ADL                                       |
 
 <a name="reqparticipants"/>
 
@@ -4421,49 +4421,15 @@ attachment message format.
 
 ## Appendix F: Table of All Endpoints
 
-<table>
-	<tr>
-		<th>Endpoint (Base IRI of the LRS Precedes Each Endpoint)</th>
-		<th>Function</th>
-	</tr>
-	<tr>
-		<td>statements</td>
-		<td>Statement Storage/Retrieval</td>
-	</tr>
-	<tr>
-		<td>agents</td>
-		<td>Agent Object Storage/Retrieval</td>
-	</tr>
-	<tr>
-		<td>agents/profile</td>
-		<td>Agent Profile API</td>
-	</tr>
-	<tr>
-		<td>activities</td>
-		<td>Activity Object Storage/Retrieval</td>
-	</tr>
-	<tr>
-		<td>activities/profile</td>
-		<td>Activity Profile API</td>
-	</tr>
-	<tr>
-		<td>activities/state</td>
-		<td>State API</td>
-	</tr>
-	<tr>
-		<td>about</td>
-		<td>LRS Information</td>
-	</tr>
-	<tr>
-		<td>OAuth/initiate</td>
-		<td>Temporary Credential Request</td>
-	</tr>
-	<tr>
-		<td>OAuth/authorize</td>
-		<td>Resource Owner Authorization</td>
-	</tr>
-	<tr>
-		<td>OAuth/token</td>
-		<td>Token Request</td>
-	</tr>
-</table>
+| Endpoint (Base IRI of the LRS Precedes Each Endpoint) | Function                          |
+| ----------------------------------------------------- | --------------------------------- |
+| statements                                            | Statement Storage/Retrieval       |
+| agents                                                | Agent Object Storage/Retrieval    |
+| agents/profile                                        | Agent Profile API                 |
+| activities                                            | Activity Object Storage/Retrieval |
+| activities/profile                                    | Activity Profile API              |
+| activities/state                                      | State API                         |
+| about                                                 | LRS Information                   |
+| OAuth/initiate                                        | Temporary Credential Request      |
+| OAuth/authorize                                       | Resource Owner Authorization      |
+| OAuth/token                                           | Token Request                     |
