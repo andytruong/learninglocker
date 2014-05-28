@@ -69,20 +69,18 @@ class AgentController extends DocumentController
      */
     public function store()
     {
-        $data = $this->checkParams(
-            array(
-            'agent' => array('string', 'json'),
+        $data = $this->checkParams(array(
+            'agent' => ['string', 'json'],
             'profileId' => 'string'
-            ), array(), $this->params
-        );
+        ), [], $this->params);
 
-        //Get the content from the request
+        // Get the content from the request
         $data['content_info'] = $this->getAttachedContent('content');
 
-        //Get the updated timestamp
+        // Get the updated timestamp
         $updated = $this->getUpdatedValue();
 
-        //Store the document
+        // Store the document
         $store = $this->document->store($this->lrs->_id, $this->document_type, $data, $updated, $this->method);
 
         if ($store) {
@@ -97,7 +95,6 @@ class AgentController extends DocumentController
      * Multiple document deletes are not permitted on activities
      *
      * @param  int  $id
-     *
      * @return Response
      */
     public function delete()
@@ -105,12 +102,10 @@ class AgentController extends DocumentController
         $single_delete = isset($this->params[$this->document_ident]);
 
         if ($single_delete) { //single document delete
-            $data = $this->checkParams(
-                array(
-                'agent' => array('string', 'json'),
+            $data = $this->checkParams([
+                'agent' => ['string', 'json'],
                 'profileId' => 'string'
-                ), array(), $this->params
-            );
+            ], [], $this->params);
         }
         else {
             \App::abort(400, 'Multiple document DELETE not permitted');
@@ -132,20 +127,15 @@ class AgentController extends DocumentController
      * */
     public function search()
     {
-        $data = $this->checkParams(
-            array(
-            'agent' => array('string', 'json')
-            ), array(), $this->params
-        );
-
+        $data = $this->checkParams(['agent' => ['string', 'json']], [], $this->params);
 
         // @todo - Multiple Agent profiling into person
-        // While the LRS doesn't have the ability to link agents (as an agent can only be defined by one identifier) we will simply return the queryied agent as a Person
+        // While the LRS doesn't have the ability to link agents (as an agent
+        // can only be defined by one identifier) we will simply return the
+        // queried agent as a Person
         $agent = $data['agent'];
 
-        $person = array(
-            'objectType' => 'Person'
-        );
+        $person = ['objectType' => 'Person'];
 
         if (isset($agent->name)) {
             $person['name'] = array($agent->name);

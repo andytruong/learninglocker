@@ -46,7 +46,6 @@ class StatementsController extends BaseController
      */
     public function store()
     {
-
         // grab incoming statement
         $request = \Request::instance();
         $incoming_statement = $request->getContent();
@@ -68,8 +67,8 @@ class StatementsController extends BaseController
             //get statements and reset $incoming_statement
             $components = Attachments::setAttachments($content_type, $incoming_statement);
             if (empty($components)) {
-                return \Response::json(array('error' => true,
-                        'message' => 'There is a problem with the formatting of your submitted content.'), 400);
+                $msg = 'There is a problem with the formatting of your submitted content.';
+                return \Response::json(array('error' => true, 'message' => $msg), 400);
             }
             $incoming_statement = $components['body'];
             //if no attachments, abort
@@ -99,7 +98,7 @@ class StatementsController extends BaseController
     /**
      * Save statements in the DB
      *
-     * @param json $incoming_statement
+     * @param json $statements
      * @param array $attachments
      * @return response
      */
@@ -117,15 +116,14 @@ class StatementsController extends BaseController
      */
     public function storePut()
     {
-
         $request = \Request::instance();
         $incoming_statement = $request->getContent();
         $statement = json_decode($incoming_statement, TRUE);
 
-
-        //if no id submitted, reject
-        if (!isset($statement['id']))
+        // if no id submitted, reject
+        if (!isset($statement['id'])) {
             return $this->sendResponse(array('success' => 'noId'));
+        }
 
         $save = $this->saveStatement(array($statement));
 
@@ -143,9 +141,8 @@ class StatementsController extends BaseController
      */
     public function index()
     {
-
-        //If the statementId or voidedStatementId parameter is specified a
-        //single Statement is returned.
+        // If the statementId or voidedStatementId parameter is specified a
+        // single Statement is returned.
         if (isset($this->params['statementId'])) {
             return $this->show($this->params['statementId']);
         }
@@ -174,16 +171,15 @@ class StatementsController extends BaseController
      */
     public function show($id)
     {
-
         $statement = $this->statement->find($id);
 
-        //can the requester access this statement?
+        // can the requester access this statement?
         if ($this->checkAccess($statement)) {
             return $this->returnArray(array($statement->toArray()));
         }
         else {
-            return \Response::json(array('error' => true,
-                    'message' => 'You are not authorized to access this statement.'), 403);
+            $msg = 'You are not authorized to access this statement.';
+            return \Response::json(array('error' => true, 'message' => $msg), 403);
         }
     }
 
@@ -197,14 +193,8 @@ class StatementsController extends BaseController
      */
     public function checkAccess($statement)
     {
-
         $statement_lrs = $statement['lrs']['_id'];
-
-        if ($statement_lrs == $this->lrs->_id) {
-            return true;
-        }
-
-        return false;
+        return $statement_lrs == $this->lrs->_id;
     }
 
     /**
@@ -212,13 +202,10 @@ class StatementsController extends BaseController
      *
      * @param array $statements  Statements to return
      * @param array $params      Parameters used to filter statements
-     *
      * @return response
-     *
      */
     public function returnArray($statements = array(), $params = array(), $debug = array())
     {
-
         $array = array(
             'X-Experience-API-Version' => \Config::get('xapi.using_version')
         );
@@ -231,7 +218,7 @@ class StatementsController extends BaseController
             }
         }
 
-        //$array['count'] = sizeof($statements);
+        // $array['count'] = sizeof($statements);
         $array['statements'] = $statements;
 
         $array['more'] = ''; // @todo if more results available, provide link to access them
@@ -263,11 +250,12 @@ class StatementsController extends BaseController
                 $msg = 'A statement ID is required to PUT.';
                 return \Response::json(['success' => false, 'message' => $msg], 400);
             case 'false':
-                $msg = !isset($outcome['message']) ? '' : (
-                            is_string($outcome['message'])
-                                ? $outcome['message']
-                                : implode('', $outcome['message'])
-                        );
+                $msg = '';
+                if (isset($outcome['message'])) {
+                    $msg = is_string($outcome['message'])
+                            ? $outcome['message']
+                            : implode('', $outcome['message']);
+                }
                 return \Response::json(['success' => false, 'message' => $msg], 400);
         }
     }
