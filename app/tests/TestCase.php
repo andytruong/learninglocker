@@ -18,23 +18,24 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         return require __DIR__ . '/../../bootstrap/start.php';
     }
-    
-    public function setUp() {
+
+    public function setUp()
+    {
         parent::setUp();
         $user = User::firstOrCreate(['email' => 'quan@ll.com']);
         //if first user, create site object
-        if ( \User::count() == 1) {
-          $site            = new \Site;
-          $site->name        = '';
-          $site->description = '';
-          $site->email       = $user->email;
-          $site->lang        = 'en-US';
-          $site->create_lrs  = array('super');
-          $site->registration = 'Closed';
-          $site->restrict    = 'None'; //restrict registration to a specific email domain
-          $site->domain      = '';
-          $site->super       = array( array('user' => $user->_id ) );
-          $site->save();
+        if (\User::count() == 1) {
+            $site = new \Site;
+            $site->name = '';
+            $site->description = '';
+            $site->email = $user->email;
+            $site->lang = 'en-US';
+            $site->create_lrs = array('super');
+            $site->registration = 'Closed';
+            $site->restrict = 'None'; //restrict registration to a specific email domain
+            $site->domain = '';
+            $site->super = array(array('user' => $user->_id));
+            $site->save();
         }
     }
 
@@ -69,7 +70,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
 
         $lrs->save();
         $this->lrs = $lrs;
-        
+
         // Hack header request
         $_SERVER['SERVER_NAME'] = $this->lrs->title . '.com.vn';
         return $lrs;
@@ -150,10 +151,10 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             'api_secret' => $auth['api_secret'],
         ];
     }
-    
-    protected function dummyEmail() {
+
+    protected function dummyEmail()
+    {
         return helpers::getRandomValue() . '@go1.com.au';
     }
-            
 
 }
