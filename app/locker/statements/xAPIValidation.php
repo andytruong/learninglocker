@@ -19,6 +19,7 @@
 namespace app\locker\statements;
 
 use app\locker\statements\validators\ActorValidator,
+    app\locker\statements\validators\AuthorityValidator,
     app\locker\statements\validators\ContextValidator,
     app\locker\statements\validators\ObjectValidator,
     app\locker\statements\validators\ResultValidator;
@@ -37,7 +38,13 @@ class xAPIValidation extends xAPIValidationBase
         $this->setStatement($statement, $authority);
 
         if ($this->validateStructure()) {
-            $this->validateParts();
+            // Validate elements of statement.
+            $keys = ['id', 'authority', 'actor', 'attachments', 'verb', 'object', 'context', 'timestamp', 'result', 'version'];
+            foreach ($this->statement as $k => $v) {
+                if (in_array($k, $keys)) {
+                    $this->{'validate' . ucfirst($k)}($v);
+                }
+            }
 
             // now validate a sub statement if one exists
             // @see app\locker\statements\validators\ObjectValidator::validateObjectSubStatement()
@@ -46,9 +53,7 @@ class xAPIValidation extends xAPIValidationBase
             }
         }
 
-        return array('status' => $this->status,
-            'errors' => $this->errors,
-            'statement' => $this->statement);
+        return ['status' => $this->status, 'errors' => $this->errors, 'statement' => $this->statement];
     }
 
     /**
@@ -74,20 +79,6 @@ class xAPIValidation extends xAPIValidationBase
             );
 
             return $this->checkParams($patterns, $this->statement, 'core statement');
-        }
-    }
-
-    /**
-     * Validate elements of statement.
-     *
-     * @return boolean
-     */
-    protected function validateParts() {
-        $keys = ['id', 'authority', 'actor', 'attachments', 'verb', 'object', 'context', 'timestamp', 'result', 'version'];
-        foreach ($this->statement as $k => $v) {
-            if (in_array($k, $keys)) {
-                $this->{'validate' . ucfirst($k)}($v);
-            }
         }
     }
 
@@ -128,12 +119,8 @@ class xAPIValidation extends xAPIValidationBase
      */
     protected function validateAuthority($authority)
     {
-        $pattern = [
-            'objectType' => ['string', true],
-            'name' => ['string', true],
-            'mbox' => ['mailto', true],
-        ];
-        return $this->checkParams($pattern, $authority, 'authority');
+        $validator = new AuthorityValidator($this, $authority);
+        return $validator->validate();
     }
 
     /**

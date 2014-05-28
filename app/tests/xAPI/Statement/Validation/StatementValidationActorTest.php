@@ -31,7 +31,6 @@ class StatementValidationActorTest extends BaseStatementValidationTest
     public function testMbox()
     {
         $results = $this->exec($this->getFixturePath() . '/Invalid/Actor/Mbox/invalid-format.json');
-        print_r($results);
         $this->assertEquals('failed', $results['status']);
         $this->assertEquals('`mbox` is not in the correct format in actor', trim($results['errors'][0]));
     }
