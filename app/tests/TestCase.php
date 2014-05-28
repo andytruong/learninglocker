@@ -115,7 +115,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
                 )
             ),
             "authority" => array(
-                "name" => "",
+                "name" => "Quan Vo",
                 "mbox" => "mailto:quan@ll.com",
                 "objectType" => "Agent"
             ),

@@ -23,4 +23,17 @@ interface xAPIValidationInterface
      */
     public function validate($statement = array(), $authority = array());
 
+    /**
+     * Set statement property.
+     *
+     * @param array $statement
+     */
+    public function setStatement($statement);
+
+    /**
+     * Get statement property.
+     *
+     * @return array
+     */
+    public function getStatement();
 }
