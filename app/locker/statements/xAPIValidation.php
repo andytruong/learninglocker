@@ -124,12 +124,11 @@ class xAPIValidation extends xAPIValidationBase
     }
 
     /**
-     *
      * Validate verb. Mandatory.
+     *
+     * @todo: display propety is recommanded, not required
      * @requirements https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md#verb
-     *
      * @param array $verb
-     *
      */
     protected function validateVerb($verb)
     {
