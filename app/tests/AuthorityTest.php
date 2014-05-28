@@ -41,6 +41,7 @@ class AuthorityTest extends TestCase
         $return = $this->createStatement($stmt, $this->lrs);
         $stmt_id = reset($return['ids']);
         $obj_stmt = $this->statement->find($stmt_id);
+
         $stmt_authority = $obj_stmt->statement['authority'];
         $this->assertEquals($authority, $stmt_authority);
     }
