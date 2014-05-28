@@ -4,6 +4,12 @@ namespace app\locker\statements\validators;
 
 use app\locker\statements\xAPIValidation as Manager;
 
+/**
+ * @todo Validate team, language
+ * @todo The revision property MUST only be used if the Statement's Object is an Activity.
+ * @todo The platform property MUST only be used if the Statement's Object is an Activity.
+ * @todo The language property MUST NOT be used if not applicable or unknown.
+ */
 class ContextValidator
 {
 
@@ -37,7 +43,7 @@ class ContextValidator
             'contextActivities' => ['emptyArray', false],
             'revision' => ['string', false],
             'platform' => ['string', false],
-            'language' => ['string', false],
+            'language' => ['string', false], // @string defined in RFC-5646
             'statement' => ['uuid', false],
             'extensions' => ['emptyArray', false],
         ];

@@ -1,7 +1,10 @@
 <?php
 
 /**
- * Ref http://zackpierce.github.io/xAPI-Validator-JS/
+ * References
+ *
+ *  - https://github.com/adlnet/xAPI-Spec/blob/master/xAPI.md
+ *  - http://zackpierce.github.io/xAPI-Validator-JS/
  */
 
 use app\locker\statements\xAPIValidation as StatementValidationManager;
