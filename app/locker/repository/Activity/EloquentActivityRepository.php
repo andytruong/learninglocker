@@ -22,31 +22,29 @@ class EloquentActivityRepository implements ActivityRepository
         $this->activity = $activity;
     }
 
-    public function saveActivity($activity_id, $activity_def)
+    public function saveActivity($id, $definition)
     {
-        $exists = \DB::table('activities')->find($activity_id);
+        $exists = \Activity::find($id);
 
         // if the object activity exists, return details on record.
         if ($exists) {
-            //update record
-            \DB::table('activities')
-                ->where('_id', $activity_id)
-                ->update(array('definition' => $activity_def));
+            $exists->definition = $definition;
+            $exists->save();
         }
         else {
-            // save new record
-            \DB::table('activities')->insert(
-                array('_id' => $activity_id,
-                    'definition' => $activity_def)
-            );
+            $activity = new \Activity();
+            $activity->_id = $id;
+            $activity->definition = $definition;
+            $activity->save();
 
-            return $activity_def;
+            // @todo: Why?
+            return $definition;
         }
     }
 
-    public function getActivity($activity_id)
+    public function getActivity($id)
     {
-        return \DB::table('activities')->where('_id', $activity_id)->first();
+        return $this->activity->where('_id', $id)->first();
     }
 
 }
