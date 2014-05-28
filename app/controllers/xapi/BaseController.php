@@ -19,13 +19,14 @@ class BaseController extends APIBaseController
 
     /**
      * Check request header for correct xAPI version
-     * */
+     */
     public function checkVersion($route, $request)
     {
         // should be X-Experience-API-Version: 1.0.0 or 1.0.1 (can accept 1.0), reject everything else.
         $version = \Request::header('X-Experience-API-Version');
 
-        if (!isset($version) || ( $version < '1.0.0' || $version > '1.0.99' ) && $version != '1.0') {
+        // @todo: Compare string? This is wrong, use herrera-io/php-version instead
+        if (!isset($version) || ($version < '1.0.0' || $version > '1.0.99') && $version !== '1.0') {
             return $this->returnSuccessError(false, 'This is not an accepted version of xAPI.', '400');
         }
     }
