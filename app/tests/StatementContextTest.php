@@ -1,11 +1,10 @@
 <?php
 
-/**
- * 
- */
-class StatementContextTest extends TestCase {
+class StatementContextTest extends TestCase
+{
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         // Authentication as super user.
         $user = User::firstOrCreate(array('email' => $this->dummyEmail()));
@@ -15,29 +14,23 @@ class StatementContextTest extends TestCase {
     }
 
     /**
-     * The LRS MUST return every value in the contextActivities Object as an array, 
-     * even if it arrived as a single Activity object
+     * The LRS MUST return single Activity Objects as an array of length one
+     * containing the same Activity.
      */
-    public function testContext1() {
-    }
-
-    /**
-     * The LRS MUST return single Activity Objects as an array of length one containing the same Activity.
-     */
-    public function testContext2() {
+    public function testContextActivities()
+    {
         $stmt = $this->defaultStatment();
         $parent = new stdClass();
         $parent->id = 'http://tincanapi.com/GolfExample_TCAPI';
         $parent->objectType = 'Activity';
-        $contextActivities = array(
-            "parent" => $parent,
-        );
+        $contextActivities = ["parent" => $parent];
         $stmt['context']['contextActivities'] = $contextActivities;
         $return = $this->createStatement($stmt, $this->lrs);
+
         $id = $return['ids'][0];
-        $stmt = $this->statement->find($id);
+        $saved_statement = $this->statement->find($id);
         // The parent must be array.
-        $this->assertTrue(is_array($stmt['statement']['context']['contextActivities']['parent']));
+        $this->assertTrue(is_array($saved_statement['statement']['context']['contextActivities']['parent']));
     }
 
 }
