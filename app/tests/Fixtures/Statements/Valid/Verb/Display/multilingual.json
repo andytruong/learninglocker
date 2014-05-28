@@ -4,7 +4,7 @@
         "mbox": "mailto:zachary+pierce@gmail.com"
     },
     "verb": {
-        "id": "http://adlnet.gov/expapi/verbs/created",
+        "id": "http://adlnet.gov/expapi/verbs/passed/",
         "display": {
             "en-US": "created",
             "en-US": "created",

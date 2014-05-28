@@ -1,6 +1,7 @@
 <?php
 
-class LrsTest extends TestCase {
+class LrsTest extends TestCase
+{
 
     public function setUp()
     {
@@ -12,11 +13,12 @@ class LrsTest extends TestCase {
         $user = User::firstOrCreate(['email' => 'quan@ll.com']);
         Auth::login($user);
     }
-    
+
     /**
      * Test LRS
      */
-    public function testLRS() {
+    public function testLRS()
+    {
         $lrs = new Lrs;
 
         // Test title required.
@@ -39,7 +41,7 @@ class LrsTest extends TestCase {
         $values['auth_service_url'] = \app\locker\helpers\Helpers::getRandomValue();
         $validator = $lrs->validate($values);
         $this->assertTrue($validator->fails());
-        
+
         $values['auth_service_url'] = 'http://' . \app\locker\helpers\Helpers::getRandomValue() . '.adurolms.com';
         $validator = $lrs->validate($values);
         $this->assertTrue($validator->passes());
@@ -67,7 +69,8 @@ class LrsTest extends TestCase {
         $this->assertEquals(Lrs::find($lrs_id), NULL, 'delete lrs');
     }
 
-    public function testInternalAuthentication() {
+    public function testInternalAuthentication()
+    {
         $this->createLRS();
 
         //create client for Auth Service
@@ -86,13 +89,13 @@ class LrsTest extends TestCase {
         // Make sure response data for the get request
         $response = $this->_makeRequest($auth);
         $this->assertEquals($response->getStatusCode(), 200);
-        
+
         $auth_type = \Config::get('testing.auth_type');
         $this->assertEquals($auth_type, \Lrs::INTERNAL_LRS);
-        
     }
-    
-    public function testAuthenticationService() {
+
+    public function testAuthenticationService()
+    {
         $this->lrsAuthMethod = \Lrs::ADURO_AUTH_SERVICE;
         $this->createLRS();
 
@@ -112,12 +115,11 @@ class LrsTest extends TestCase {
         // Make sure response data for the get request
         $response = $this->_makeRequest($auth, ['auth_type' => 'central']);
         $this->assertEquals($response->getStatusCode(), 200);
-        
+
         $auth_type = \Config::get('testing.auth_type');
         $this->assertEquals($auth_type, \Lrs::ADURO_AUTH_SERVICE);
-        
     }
-    
+
     private function _makeRequest($auth, $param = [])
     {
         return $this->call("GET", '/data/xAPI/statements', $param, [], ['PHP_AUTH_USER' => $auth['user'],
@@ -126,8 +128,9 @@ class LrsTest extends TestCase {
                 ]
         );
     }
-    
-    public function testEnpoint() {
+
+    public function testEnpoint()
+    {
         $this->assertTrue(true);
     }
 
