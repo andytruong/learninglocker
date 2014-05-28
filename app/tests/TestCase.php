@@ -150,5 +150,10 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
             'api_secret' => $auth['api_secret'],
         ];
     }
+    
+    protected function dummyEmail() {
+        return helpers::getRandomValue() . '@go1.com.au';
+    }
+            
 
 }
