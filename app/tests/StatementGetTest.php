@@ -31,7 +31,7 @@ class StatementGetTest extends TestCase
      * @return void
      * @dataProvider dataGetAuthService
      */
-    public function testGetAuthService($version)
+    public function testGetAuthService($version, $expecting_code)
     {
         $lrs = $this->createLRS();
         $this->lrsAuthMethod = 3;
@@ -50,19 +50,22 @@ class StatementGetTest extends TestCase
 
         // Make sure response data for the get request
         $response = $this->_makeRequest($auth, $version);
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals($expecting_code, $response->getStatusCode());
 
         $lrs->delete();
     }
 
     public function dataGetAuthService() {
-        $data = array();
+        $data = [];
 
         foreach (range(0, 20) as $i) {
             if (array_rand([true, false])) {
-                $data[][] = "1.0.{$i}";
+                $data[] = ["1.0.{$i}", 200];
             }
         }
+
+        $data[] = ["0.9", 400];
+        $data[] = ["1.1", 400];
 
         return $data;
     }
