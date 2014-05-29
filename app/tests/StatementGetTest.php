@@ -14,24 +14,27 @@ class StatementGetTest extends TestCase
         Auth::login($user);
     }
 
-    private function _makeRequest($auth)
+    private function _makeRequest($auth, $version)
     {
-        return $this->call("GET", '/data/xAPI/statements', [], [], ['PHP_AUTH_USER' => $auth['user'],
+        return $this->call("GET", '/data/xAPI/statements', [], [], [
+                'PHP_AUTH_USER' => $auth['user'],
                 'PHP_AUTH_PW' => $auth['pass'],
-                'HTTP_X-Experience-API-Version' => '1.0.1'
-                ]
+                'HTTP_X-Experience-API-Version' => $version
+            ]
         );
     }
 
     /**
      * Create statements for lrs
      *
+     * @param string $version Make sure LRS response to all valid version.
      * @return void
+     * @dataProvider dataGetAuthService
      */
-    public function testGetAuthService()
+    public function testGetAuthService($version)
     {
+        $lrs = $this->createLRS();
         $this->lrsAuthMethod = 3;
-        $this->createLRS();
 
         //create client for Auth Service
         $authBody = [
@@ -46,8 +49,21 @@ class StatementGetTest extends TestCase
         );
 
         // Make sure response data for the get request
-        $response = $this->_makeRequest($auth);
+        $response = $this->_makeRequest($auth, $version);
         $this->assertEquals($response->getStatusCode(), 200);
+
+        $lrs->delete();
     }
 
+    public function dataGetAuthService() {
+        $data = array();
+
+        foreach (range(0, 20) as $i) {
+            if (array_rand([true, false])) {
+                $data[][] = "1.0.{$i}";
+            }
+        }
+
+        return $data;
+    }
 }
