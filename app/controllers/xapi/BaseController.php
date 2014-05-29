@@ -39,17 +39,6 @@ class BaseController extends APIBaseController
         $this->params = \Request::all();
         $this->CORS = isset($this->params['method']);
         $this->method = $this->CORS ? $this->params['method'] : \Request::server('REQUEST_METHOD');
-        
-        // Support articulate. (CORS IE)
-        if (\app\locker\helpers\Helpers::CORSIE()) {
-            $request = \Request::instance();
-            $data = $request->getContent();
-            
-            // Extract variables.
-            parse_str($data, $output);
-            $this->params = array_merge($this->params, $output);
-            $this->params['agent'] = $this->params['actor'];
-        }
     }
 
     /**

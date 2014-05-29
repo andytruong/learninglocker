@@ -46,23 +46,6 @@ class StatementsController extends BaseController
      */
     public function store()
     {
-        // Support articulate. (CORS IE)
-        if (\app\locker\helpers\Helpers::CORSIE()) {
-            $request = \Request::instance();
-            $data = $request->getContent();
-            
-            // Extract variables.
-            parse_str($data);
-            
-            $content = json_decode($content, true);
-            $content['id'] = $statementId;
-            $save = $this->saveStatement(array($content));
-            if ($save['success'] == 'true') {
-                return $this->sendResponse(array('success' => 'put'));
-            }
-            return $this->sendResponse(array('success' => 'put'));
-        }
-        
         // grab incoming statement
         $request = \Request::instance();
         $incoming_statement = $request->getContent();
