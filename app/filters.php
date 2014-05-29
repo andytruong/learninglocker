@@ -12,7 +12,11 @@
  */
 
 App::before(function ($request) {
-    //
+    // Set default X-Experience-API-Version if the request is'nt contain.
+    $version = \Request::header('X-Experience-API-Version');
+    if (is_null($version)) {
+        $request->headers->set('X-Experience-API-Version', '1.0.0');
+    }
 });
 
 App::after(function ($request, $response) {
@@ -57,6 +61,22 @@ Route::filter('auth.statement', function () {
     // Get passed credentials
     $key = Request::getUser();
     $secret = Request::getPassword();
+    
+    // Support articulate. (CORS IE)
+    if (\app\locker\helpers\Helpers::CORSIE()) {
+        $request = \Request::instance();
+        $data = $request->getContent();
+
+        // Extract variables.
+        parse_str($data);
+        $Authorization = str_replace('Basic ', '', $Authorization);
+        $Authorization = base64_decode($Authorization);
+        $auth = explode(":", $Authorization);
+        
+        $key = array_shift($auth);
+        $secret = array_shift($auth);
+        
+    }
 
     // Handle authentication service.
     if ($auth_type == Lrs::ADURO_AUTH_SERVICE) {
