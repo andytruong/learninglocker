@@ -67,6 +67,10 @@ abstract class xAPIValidationBase implements xAPIValidationInterface
             $statement['id'] = $this->makeUUID();
         }
 
+        if (!isset($statement['version'])) {
+            $statement['version'] = $this->getSpecificationVersion();
+        }
+
         // Spec: The LRS MUST ensure that all Statements stored have an authority.
         if (!empty($authority)) {
             $statement['authority'] = array(
