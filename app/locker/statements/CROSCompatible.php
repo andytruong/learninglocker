@@ -2,9 +2,11 @@
 
 namespace app\locker\statements;
 
-class CORSCompatible extends xAPIValidationBase {
+class CORSCompatible extends xAPIValidationBase
+{
 
-    public function Compatible($statement) {
+    public function Compatible($statement)
+    {
         foreach ($statement as $type => &$v) {
             switch ($type) {
                 case 'actor':
@@ -44,7 +46,8 @@ class CORSCompatible extends xAPIValidationBase {
         return $statement;
     }
 
-    protected function getVerb($name) {
+    protected function getVerb($name)
+    {
         // List verb.
         $verbs = array(
             'answered', 'asked', 'attempted', 'attended', 'commented', 'completed',
@@ -61,20 +64,21 @@ class CORSCompatible extends xAPIValidationBase {
         return array();
     }
 
-    protected function getActivities($name) {
+    protected function getActivities($name)
+    {
         $activities = array(
-            'course' => 'http://adlnet.gov/expapi/activities/course',
-            'module' => 'http://adlnet.gov/expapi/activities/module',
-            'meeting' => 'http://adlnet.gov/expapi/activities/meeting',
-            'media' => 'http://adlnet.gov/expapi/activities/media',
-            'performance' => 'http://adlnet.gov/expapi/activities/performance',
-            'simulation' => 'http://adlnet.gov/expapi/activities/simulation',
             'assessment' => 'http://adlnet.gov/expapi/activities/assessment',
-            'interaction' => 'http://adlnet.gov/expapi/activities/interaction',
             'cmi.interaction' => 'http://adlnet.gov/expapi/activities/cmi.interaction',
-            'question' => 'http://adlnet.gov/expapi/activities/question',
+            'course' => 'http://adlnet.gov/expapi/activities/course',
+            'interaction' => 'http://adlnet.gov/expapi/activities/interaction',
+            'link' => 'http://adlnet.gov/expapi/activities/link',
+            'media' => 'http://adlnet.gov/expapi/activities/media',
+            'meeting' => 'http://adlnet.gov/expapi/activities/meeting',
+            'module' => 'http://adlnet.gov/expapi/activities/module',
             'objective' => 'http://adlnet.gov/expapi/activities/objective',
-            'link' => 'http://adlnet.gov/expapi/activities/link'
+            'performance' => 'http://adlnet.gov/expapi/activities/performance',
+            'question' => 'http://adlnet.gov/expapi/activities/question',
+            'simulation' => 'http://adlnet.gov/expapi/activities/simulation',
         );
         return isset($activities[$name]) ? $activities[$name] : $name;
     }

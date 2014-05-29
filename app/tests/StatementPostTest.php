@@ -25,7 +25,7 @@ class StatementPostTest extends TestCase
     }
 
     /**
-     * make a post request to LRS
+     * Make a post request to LRS
      *
      * @return void
      */
@@ -55,6 +55,7 @@ class StatementPostTest extends TestCase
         );
 
         // case: conflict-matches
+        /* @var $response Illuminate\Http\JsonResponse */
         $response = $this->_makeRequest($param, "POST", $auth);
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEmpty($response->getData());

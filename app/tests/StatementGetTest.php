@@ -36,7 +36,7 @@ class StatementGetTest extends TestCase
         $lrs = $this->createLRS();
         $this->lrsAuthMethod = 3;
 
-        //create client for Auth Service
+        // create client for Auth Service
         $authBody = [
             'api_key' => $this->lrs->api['basic_key'],
             'api_secret' => $this->lrs->api['basic_secret'],

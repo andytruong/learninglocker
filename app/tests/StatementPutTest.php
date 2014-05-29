@@ -16,10 +16,11 @@ class StatementPutTest extends TestCase
 
     private function _makeRequest($param, $auth)
     {
-        return $this->call('PUT', '/data/xAPI/statements', ['statementId' => $param['id']], [], ['PHP_AUTH_USER' => $auth['user'],
+        return $this->call('PUT', '/data/xAPI/statements', ['statementId' => $param['id']], [], [
+                'PHP_AUTH_USER' => $auth['user'],
                 'PHP_AUTH_PW' => $auth['pass'],
                 'HTTP_X-Experience-API-Version' => '1.0.1'
-                ], json_encode($param)
+            ], json_encode($param)
         );
     }
 
@@ -122,10 +123,10 @@ class StatementPutTest extends TestCase
     {
         parent::tearDown();
 
-        /**
-         *   Need LRS table is empty because waiting the getLrsBySubdomain()
-         */
-        $this->lrs->delete();
+        // Need LRS table is empty because waiting the getLrsBySubdomain()
+        if ($this->lrs) {
+            $this->lrs->delete();
+        }
     }
 
 }

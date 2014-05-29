@@ -124,18 +124,15 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase
     }
 
     /**
-     * Create dummy statement with lrs
-     * @param type $lrs
+     * Create dummy statement with lrs.
+     *
+     * @param Lrs $lrs
      * @return type
      */
-    protected function createStatement($vs, $lrs)
+    protected function createStatement($statement, $lrs)
     {
-        // Load object of ioc container.
-        $statement = App::make('Locker\Repository\Statement\EloquentStatementRepository');
-
-        // create statement with EloquentStatementRepository
-        $result = $statement->create([$vs], $lrs);
-        return $result;
+        return App::make('Locker\Repository\Statement\EloquentStatementRepository')
+                ->create([$statement], $lrs);
     }
 
     /**
