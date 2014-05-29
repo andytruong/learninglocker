@@ -16,14 +16,11 @@ class StatementPostTest extends TestCase
 
     private function _makeRequest($param, $method, $auth)
     {
-        return $this->call($method, '/data/xAPI/statements',
-            [],
-            [],
-            ['PHP_AUTH_USER' => $auth['user'],
+        return $this->call($method, '/data/xAPI/statements', [], [], [
+                'PHP_AUTH_USER' => $auth['user'],
                 'PHP_AUTH_PW' => $auth['pass'],
                 'HTTP_X-Experience-API-Version' => '1.0.1'
-            ],
-            !empty($param) ? json_encode($param) : []
+            ], !empty($param) ? json_encode($param) : []
         );
     }
 
@@ -104,11 +101,11 @@ class StatementPostTest extends TestCase
             'timestamp' => $createdStatement->statement['timestamp'],
         ];
 
-        //create client for Auth Service
+        // create client for Auth Service
         $authBody = [
-             'api_key' => $this->lrs->api['basic_key'],
-             'api_secret' => $this->lrs->api['basic_secret'],
-         ];
+            'api_key' => $this->lrs->api['basic_key'],
+            'api_secret' => $this->lrs->api['basic_secret'],
+        ];
 
         $authClient = $this->createClientAuth($authBody);
 

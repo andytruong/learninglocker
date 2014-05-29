@@ -10,9 +10,7 @@ class Attachments
      *
      * @param $content_type
      * @param $incoming_statement
-     *
      * @return array
-     *
      */
     static function setAttachments($content_type, $incoming_statement)
     {
@@ -20,9 +18,10 @@ class Attachments
         $return = array();
         $sha_hashes = array();
 
-        //grab boundary from content_type header - @todo not sure which way is better?
+        // grab boundary from content_type header - @todo not sure which way is better?
         preg_match('/boundary=(.*)$/', $content_type, $matches);
-        //if no boundary, abort
+
+        // if no boundary, abort
         if (!isset($matches[1])) {
             \App::abort(400, 'You need to set a boundary if submitting attachments.');
         }
@@ -34,12 +33,12 @@ class Attachments
         $raw_headers = $body = '';
         $count = 0;
 
-        //loop through all parts on the body
+        // loop through all parts on the body
         foreach ($parts as $part) {
-
             // At the end of the file, break
-            if ($part == "--")
+            if ($part == "--") {
                 break;
+            }
 
             // Separate body contents from headers
             $part = ltrim($part, "\n");
@@ -53,14 +52,14 @@ class Attachments
                 $headers[strtolower($name)] = ltrim($value, ' ');
             }
 
-            //the first part must be statements
+            // the first part must be statements
             if ($count == 0) {
-                //this is part one, which must be statements
+                // this is part one, which must be statements
                 if ($headers['content-type'] !== 'application/json') {
                     \App::abort(400, 'Statements must make up the first part of the body.');
                 }
 
-                //get sha2 hash from each statement
+                // get sha2 hash from each statement
                 $set_body = json_decode($body, true);
                 if (is_array(json_decode($body))) {
                     foreach ($set_body as $a) {
@@ -75,34 +74,34 @@ class Attachments
                     }
                 }
 
-                //set body which will = statements
+                // set body which will = statements
                 $return['body'] = $body;
             }
             else {
 
-                //get the attachment type (Should this be required? @todo)
+                // get the attachment type (Should this be required? @todo)
                 if (!isset($headers['content-type'])) {
                     \App::abort(400, 'You need to set a content type for your attachments.');
                 }
 
-                //get the correct ext if valid
+                // get the correct ext if valid
                 $fileTypes = new \Locker\Repository\Document\FileTypes;
                 $ext = array_search($headers['content-type'], $fileTypes::getMap());
                 if ($ext === false) {
                     \App::abort(400, 'This file type cannot be supported');
                 }
 
-                //if content-transfer-encoding is not binary, reject attachment @todo
+                // if content-transfer-encoding is not binary, reject attachment @todo
                 if ($headers['content-transfer-encoding'] !== 'binary') {
                     \App::abort(400, 'This is the wrong encoding type');
                 }
 
-                //check X-Experience-API-Hash is set, otherwise reject @todo
+                // check X-Experience-API-Hash is set, otherwise reject @todo
                 if (!isset($headers['x-experience-api-hash']) || $headers['x-experience-api-hash'] == '') {
                     \App::abort(400, 'Attachments require an api hash.');
                 }
 
-                //check x-experience-api-hash is contained within a statement
+                // check x-experience-api-hash is contained within a statement
                 if (!in_array($headers['x-experience-api-hash'], $sha_hashes)) {
                     \App::abort(400, 'Attachments need to contain x-experience-api-hash that is declared in statement.');
                 }

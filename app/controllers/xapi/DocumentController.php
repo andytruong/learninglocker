@@ -47,10 +47,8 @@ class DocumentController extends BaseController
             case "PUT":
             case "POST":
                 return $this->store();
-                break;
             case "DELETE":
                 return $this->delete();
-                break;
         }
     }
 
@@ -58,7 +56,6 @@ class DocumentController extends BaseController
      * Retrieve attached file content
      *
      * @param  string $name Field name
-     *
      * @return Array
      */
     public function getAttachedContent($name = 'content')
@@ -75,7 +72,7 @@ class DocumentController extends BaseController
                     if (!isset($contentType)) {
                         \App::abort(400, 'PUT requests must include a Content-Type header');
                     }
-                    //Get body content and check content type sent
+                    // Get body content and check content type sent
                     $request = \Request::instance();
                     $incoming_data = $request->getContent();
                     $content = $incoming_data;
@@ -97,17 +94,16 @@ class DocumentController extends BaseController
      * Checks for files, then retrieves the stored param
      *
      * @param  String $name Field name
-     *
      * @return Array
      */
     public function getPostContent($name)
     {
-        if (\Input::hasFile($name)) { //If a file has been sent, retrieve it with the correct file type
+        // If a file has been sent, retrieve it with the correct file type
+        if (\Input::hasFile($name)) {
             $content = \Input::file($name);
             $type = $content->getClientMimeType();
         }
         elseif (isset($this->params[$name])) {
-
             $content = $this->params['content'];
             $type = is_object(json_decode($content)) ? "application/json" : "text/plain";
         }
@@ -115,22 +111,19 @@ class DocumentController extends BaseController
             \App::abort(400, sprintf('`%s` was not sent in this request', $name));
         }
 
-        return array(
-            'content' => $content,
-            'contentType' => $type
-        );
+        return array('content' => $content, 'contentType' => $type);
     }
 
     /**
      * Generate content response
      *
      * @param  array $data Mixed data var to select Document with
-     *
      * @return Response
      */
     public function documentResponse($data)
     {
-        $document = $this->document->find($this->lrs->_id, $this->document_type, $data); //find the correct document
+        // find the correct document
+        $document = $this->document->find($this->lrs->_id, $this->document_type, $data);
         if (!$document) {
             \App::abort(204);
         }
@@ -144,7 +137,6 @@ class DocumentController extends BaseController
             $response = \Response::make(null, 200, $headers);
         }
         else {
-
             switch ($document->contentType) {
                 case "application/json":
                     $response = \Response::json($document->content, 200, $headers);
@@ -167,7 +159,6 @@ class DocumentController extends BaseController
      * @param  array  $required a list of expected parameters and allows types
      * @param  array  $optional a list of optional parameters in required
      * @return array
-     *
      */
     public function checkParams($required = array(), $optional = array(), $data = null)
     {
@@ -195,7 +186,6 @@ class DocumentController extends BaseController
         }
 
         foreach ($optional as $name => &$expected_types) {
-
             if (isset($data[$name])) {
                 $value = (!empty($expected_types) ) ? $this->checkTypes($name, $data[$name], $expected_types) : $data[$name];
             }
@@ -244,21 +234,24 @@ class DocumentController extends BaseController
 
         // error on any unexpected parameter types
         if (!in_array($type, $expected_types)) {
-            \App::abort(400, sprintf("`%s` is not an accepted type - expected %s - received %s", $name, implode(',', $expected_types), $type));
+            $msg = sprintf("`%s` is not an accepted type - expected %s - received %s", $name, implode(',', $expected_types), $type);
+            \App::abort(400, $msg);
         }
 
         // Check if we have requested a JSON parameter
         if (in_array('json', $expected_types)) {
             $value = json_decode($value);
             if (!is_object($value)) {
-                \App::abort(400, sprintf("`%s` is not an accepted type - expected a JSON formatted string", $name));
+                $msg = sprintf("`%s` is not an accepted type - expected a JSON formatted string", $name);
+                \App::abort(400, $msg);
             }
         }
 
         // Check if we have a timestamp paramater
         if (in_array('timestamp', $expected_types)) {
             if (!$this->validateTimestamp($value)) {
-                \App::abort(400, sprintf("`%s` is not an accepted type - expected an ISO 8601 formatted timestamp", $name));
+                $msg = sprintf("`%s` is not an accepted type - expected an ISO 8601 formatted timestamp", $name);
+                \App::abort(400, $msg);
             }
         }
 
